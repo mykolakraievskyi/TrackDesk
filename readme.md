@@ -33,17 +33,17 @@ When working on a new task, create a branch from main and name it with your task
 ```git
 git checkout -b adding-new-button
 ```
-when finished, push your branch and create a pull request
-It is done in GitHub
+when finished, push your branch and create a pull request  
+It is done in GitHub  
 Then you just pull main and can start to work on a new task!
 ```git
 git pull
 ```
 
 ### 3. Meaningful commits
-Please, be aware of how you name commits. It is better for everyone if commit message describes what functionality was added
-To make your commit message even better, you can navigate to .git (this folder is hidden, you may need to change your laptops setting)
-And navigate to folder ***hooks***
-There change the name of *prepare-commit-msg.sample* to *prepare-commit-msg*
-That will automatically add a branches name to a commit message
+Please, be aware of how you name commits. It is better for everyone if commit message describes what functionality was added  
+To make your commit message even better, you can navigate to .git (this folder is hidden, you may need to change your laptops setting)  
+And navigate to folder ***hooks***  
+There change the name of *prepare-commit-msg.sample* to *prepare-commit-msg*  
+That will automatically add a branches name to a commit message  
 _And you're all set!_
