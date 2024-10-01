@@ -29,8 +29,7 @@ All further actions are explained in the frontend project's README file.
 ## Git flow
 ### 1. Do not push in main please)
 ### 2. New task - new branch
-When working on a new task, create a branch from main and name it with your tasks's name
-For example
+When working on a new task, create a branch from main and name it with your tasks's name, for example
 ```git
 git checkout -b adding-new-button
 ```
