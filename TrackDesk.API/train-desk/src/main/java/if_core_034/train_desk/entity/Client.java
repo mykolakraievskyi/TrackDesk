@@ -7,10 +7,15 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class Client {
+public class Client implements Comparable<Client> {
     private int id;
     private ClientStatus status;
     private List<Ticket> tickets;
     private Entrance entrance;
     private Position position;
+
+    @Override
+    public int compareTo(Client otherClient) {
+        return this.status.compareTo(otherClient.status);
+    }
 }
