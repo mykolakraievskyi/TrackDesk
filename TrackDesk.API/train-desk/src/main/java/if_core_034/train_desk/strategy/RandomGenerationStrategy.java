@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
-public class IntervalGenerationStrategy implements ClientGenerationStrategy {
+public class RandomGenerationStrategy implements ClientGenerationStrategy {
     private TimeRange timeRange;
 
     public LocalTime getNextArrivalTime() {
