@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +20,11 @@ public class StationController {
     @MessageMapping("/message")
     public void processMessage(@Payload String message) {
         System.out.println(message);
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void sendOpenMsg() {
+        simpMessagingTemplate.convertAndSendToUser(String.valueOf(1), "/open/message", "Open station");
     }
 
     @GetMapping("/get/station")
