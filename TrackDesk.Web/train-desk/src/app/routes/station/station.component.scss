@@ -4,5 +4,42 @@
   background-repeat: no-repeat;
   background-position: center;
   width: 100%;
-  height: 100vh; 
+  height: 100vh;
+}
+
+.train-container {
+  background-image: url('../../../../assets/images/people/regular/7.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: absolute;
+  top: -100px;
+  right: 0px;
+  width: 100px;
+  height: 100px; // have to be the same as -top position
+}
+
+.train-animation {
+  opacity: 0;
+  animation: moveDiagonalWithDelay 20s ease-in-out infinite;
+  animation-delay: 1s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes moveDiagonalWithDelay {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  5% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate(0, 120vh);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 120vh); // Hold position for the delay
+    opacity: 1;
+  }
 }
