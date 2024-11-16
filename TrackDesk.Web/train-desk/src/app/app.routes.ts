@@ -1,10 +1,9 @@
 import { Routes } from '@angular/router';
-import { StationComponent } from './routes/station/station.component';
 import { HomeComponent } from './routes/home/home.component';
+import { StationComponent } from './routes/station/station.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'home', redirectTo: 'home', component: HomeComponent },
-  { path: 'station', component: StationComponent, pathMatch: 'full' },
-  { path: '**', redirectTo: 'home' },
+  { path: '', component: HomeComponent },
+  { path: 'game', component: StationComponent },
+  { path: '**', redirectTo: '' },
 ];

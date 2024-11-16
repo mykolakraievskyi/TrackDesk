@@ -1,0 +1,50 @@
+<div class="body">
+  <div class="ticket-icon">
+    <img src="../../../assets/images/ticket.png" alt="Ticket Icon" />
+  </div>
+  <div class="form-container">
+    <h2>Enter data to start the simulator</h2>
+    <form>
+      <label for="exit-doors">Num of exit doors:</label>
+      <input
+        type="number"
+        id="exit-doors"
+        placeholder="(2-9 sec)"
+        min="2"
+        max="9" />
+
+      <label for="entry-doors">Num of entry doors:</label>
+      <input
+        type="number"
+        id="entry-doors"
+        placeholder="(2-9 sec)"
+        min="2"
+        max="9" />
+
+      <label for="cash-registers">Num of cash registers:</label>
+      <input
+        type="number"
+        id="cash-registers"
+        placeholder="(1-11 sec)"
+        min="1"
+        max="11" />
+
+      <label>Service time per customer:</label>
+      <div class="radio-group">
+        <label class="custom-radio">
+          <input type="radio" name="time-option" id="static-time" />
+          <span class="checkmark"></span>Static time per customer:
+        </label>
+        <label class="custom-radio">
+          <input type="radio" name="time-option" id="random-time" checked />
+          <span class="checkmark"></span>Random time per customer:
+        </label>
+      </div>
+
+      <input type="text" id="time-range" placeholder="(Enter range 2-10 sec)" />
+      <div class="center-button">
+        <button type="button" class="start-button">Start</button>
+      </div>
+    </form>
+  </div>
+</div>
