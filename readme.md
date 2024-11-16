@@ -29,14 +29,15 @@ All further actions are explained in the frontend project's README file.
 ## Git flow
 ### 1. Do not push in main please)
 ### 2. New task - new branch
-When working on a new task, create a branch from main and name it with your tasks's name, for example
+When working on a new task, create a branch from develop and name it with your tasks's name, for example
 ```git
 git checkout -b adding-new-button
 ```
-when finished, push your branch and create a pull request  
+when finished, push your branch (to develop) and create a pull request  
 It is done in GitHub  
-Then you just pull main and can start to work on a new task!
+Then you just pull develop and can start to work on a new task!
 ```git
+git checkout develop
 git pull
 ```
 
