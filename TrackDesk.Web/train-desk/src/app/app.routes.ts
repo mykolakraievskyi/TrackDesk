@@ -3,7 +3,8 @@ import { HomeComponent } from './routes/home/home.component';
 import { StationComponent } from './routes/station/station.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'game', component: StationComponent },
-  { path: '**', redirectTo: '' },
+  // { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },
+  { path: 'station', component: StationComponent, pathMatch: 'full' },
+  { path: '**', redirectTo: 'home' },
 ];
