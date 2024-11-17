@@ -5,16 +5,13 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class LoggingService {
+export class ConfigurationService {
   private apiUrl = 'https://'; 
 
   constructor(private http: HttpClient) {}
 
-  logEvent(eventData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/log`, eventData);
+  setConfiguration(cashDesks: any[], entrances: any[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/set`, { cashDesks, entrances });
   }
 
-  getLogs(): Observable<any> {
-    return this.http.get(`${this.apiUrl}`);
-  }
 }

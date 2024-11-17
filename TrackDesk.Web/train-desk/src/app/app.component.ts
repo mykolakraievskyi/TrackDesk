@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { WebSocketService } from './shared/services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -8,6 +9,16 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'train-desk';
+
+  constructor(private readonly websocketService: WebSocketService) {}
+
+  ngOnInit(): void {
+    this.websocketService.connect('ws://localhost:8080');
+  }
+
+  ngOnDestroy(): void {
+    this.websocketService.disconnect();
+  }
 }
