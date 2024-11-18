@@ -8,11 +8,13 @@ export class MovementService {
     client.targetCashDeskId = cashDesk.id; 
     const moveInterval = setInterval(() => {
       const deltaX = cashDesk.position.x - client.position.x;
-      const deltaY = cashDesk.position.y - client.position.y;
+      const deltaY = (cashDesk.position.y + (cashDesk.clients.indexOf(client.id)+1)*40) - client.position.y;
+      console.log(cashDesk.clients.indexOf(client.id))
+      console.log(cashDesk)
 
       if (Math.abs(deltaX) <= this.speed && Math.abs(deltaY) <= this.speed) {
         client.position.x = cashDesk.position.x;
-        client.position.y = cashDesk.position.y;
+        client.position.y = cashDesk.position.y + (cashDesk.clients.indexOf(client.id)+1)*40;
         clearInterval(moveInterval);
         return;
       }
@@ -26,15 +28,10 @@ export class MovementService {
 
   findCashDeskWithFewestClients(
     cashDesks: CashDesk[],
-    clients: Client[]
   ): CashDesk {
     return cashDesks.reduce((minDesk, currentDesk) => {
-      const minDeskClientCount = clients.filter(
-        client => client.targetCashDeskId === minDesk.id
-      ).length;
-      const currentDeskClientCount = clients.filter(
-        client => client.targetCashDeskId === currentDesk.id
-      ).length;
+      const minDeskClientCount = minDesk.clients.length;
+      const currentDeskClientCount = currentDesk.clients.length;
 
       return currentDeskClientCount < minDeskClientCount
         ? currentDesk
@@ -45,9 +42,9 @@ export class MovementService {
   assignClientToBestCashDesk(
     client: Client,
     cashDesks: CashDesk[],
-    clients: Client[]
   ): void {
-    const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks, clients);
+    const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks);
+    bestCashDesk.clients.push(client.id);
     this.moveClientToCashDesk(client, bestCashDesk);
   }
 }
