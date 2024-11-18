@@ -4,18 +4,19 @@ import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
 import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { BaseEntry, Entry } from '../../features/models/entry.model';
+import { LogComponent } from '../../shared/components/log/log.component';
 
 @Component({
   selector: 'app-station',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LogComponent],
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
 export class StationComponent implements OnInit {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
-  entry: Entry[] = [];
+  entries: Entry[] = [];
   movementService: MovementService;
 
   constructor() {
@@ -25,15 +26,14 @@ export class StationComponent implements OnInit {
   ngOnInit(): void {
     this.initializeCashDesks();
     this.initializeEntries();
-
     this.generateClientsPeriodically();
   }
 
   generateClientsPeriodically(): void {
     setInterval(() => {
       this.generateClient();
-      this.moveClientsToCashDesks(); 
-    }, 3000); 
+      this.moveClientsToCashDesks();
+    }, 3000);
   }
 
   generateClient(): void {
@@ -41,45 +41,57 @@ export class StationComponent implements OnInit {
     const randomType: 'regular' | 'privileged' =
       clientTypes[Math.floor(Math.random() * clientTypes.length)];
 
-    const xCoordinates = [10, 20, 30];
-    const randomX =
-      xCoordinates[Math.floor(Math.random() * xCoordinates.length)];
+    const randomDoor =
+      this.doorCoordinates[
+        Math.floor(Math.random() * this.doorCoordinates.length)
+      ];
 
     const newClient = new BaseClient(
-      Math.floor(Math.random() * 1000), 
-      { x: randomX, y: 0 },
-      randomType 
+      Math.floor(Math.random() * 1000),
+      { x: randomDoor.x, y: randomDoor.y },
+      randomType
     );
 
     this.clients.push(newClient);
-    console.log(
-      `Generated client: ${newClient.id}, type: ${newClient.type}, position: (${newClient.position.x}, ${newClient.position.y})`
-    );
   }
 
+  doorCoordinates = [
+    { x: 250, y: 580 },
+    { x: 410, y: 580 },
+    { x: 590, y: 580 },
+    { x: 770, y: 580 },
+    { x: 940, y: 580 },
+    { x: 1170, y: 300 },
+    { x: 1170, y: 410 },
+    { x: 1170, y: 520 },
+  ];
   initializeCashDesks(): void {
-    this.cashDesks.push(new BaseCashDesk(1, { x: 300, y: 200 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(1, { x: 400, y: 200 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(1, { x: 500, y: 200 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(1, { x: 600, y: 200 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(1, { x: 300, y: 400 }, 'ticket-box'));
-    this.cashDesks.push(new BaseCashDesk(2, { x: 400, y: 250 }, 'ticket-box'));
+    this.cashDesks.push(new BaseCashDesk(0, { x: 800, y: 20 }, 'cash-desk')); //reserve cash-desk
+    this.cashDesks.push(new BaseCashDesk(1, { x: 360, y: 20 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(2, { x: 470, y: 20 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(3, { x: 700, y: 400 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(4, { x: 810, y: 400 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(5, { x: 920, y: 400 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(6, { x: 600, y: 200 }, 'ticket-box'));
+    this.cashDesks.push(new BaseCashDesk(7, { x: 680, y: 200 }, 'ticket-box'));
+    this.cashDesks.push(new BaseCashDesk(8, { x: 220, y: 310 }, 'ticket-box'));
+    this.cashDesks.push(new BaseCashDesk(9, { x: 310, y: 310 }, 'ticket-box'));
   }
 
   initializeEntries(): void {
-    this.entry.push(new BaseEntry(1, { x: 0, y: 0 }, 'entry-door'));
-    this.entry.push(new BaseEntry(1, { x: 0, y: 0 }, 'entry-door'));
-    this.entry.push(new BaseEntry(1, { x: 0, y: 0 }, 'entry-door'));
-    this.entry.push(new BaseEntry(1, { x: 0, y: 0 }, 'entry-door'));
-    this.entry.push(new BaseEntry(1, { x: 0, y: 0 }, 'entry-door'));
+    this.entries.push(new BaseEntry(1, { x: 250, y: 580 }, 'entry-door'));
+    this.entries.push(new BaseEntry(2, { x: 410, y: 580 }, 'entry-door'));
+    this.entries.push(new BaseEntry(3, { x: 590, y: 580 }, 'entry-door'));
+    this.entries.push(new BaseEntry(4, { x: 770, y: 580 }, 'entry-door'));
+    this.entries.push(new BaseEntry(5, { x: 940, y: 580 }, 'entry-door'));
+    this.entries.push(new BaseEntry(6, { x: 1170, y: 300 }, 'entry'));
+    this.entries.push(new BaseEntry(7, { x: 1170, y: 410 }, 'entry'));
+    this.entries.push(new BaseEntry(8, { x: 1170, y: 520 }, 'entry'));
   }
 
   moveClientsToCashDesks(): void {
     this.clients.forEach((client, index) => {
       const targetCashDesk = this.cashDesks[index % this.cashDesks.length];
-      console.log(
-        `Starting to move client ${client.id} to cash desk ${targetCashDesk.id}`
-      );
       this.movementService.moveClientToCashDesk(client, targetCashDesk);
     });
   }
@@ -89,20 +101,36 @@ export class StationComponent implements OnInit {
       position: 'absolute',
       left: `${client.position.x}px`,
       top: `${client.position.y}px`,
-      width: '50px',
-      height: '50px',
+      width: '60px',
+      height: '60px',
       backgroundImage: `url(${client.image})`,
       backgroundSize: 'cover',
     };
   }
 
+  getEntryStyle(entry: Entry): any {
+    const isDoor = entry.type === 'entry-door';
+
+    return {
+      position: 'absolute',
+      left: `${entry.position.x}px`,
+      top: `${entry.position.y}px`,
+      width: isDoor ? '97px' : '52px',
+      height: isDoor ? '97px' : '80px',
+      backgroundImage: `url(${entry.image})`,
+      backgroundSize: 'cover',
+    };
+  }
+
   getCashDeskStyle(cashDesk: CashDesk): any {
+    const isTicketBox = cashDesk.type === 'ticket-box';
+
     return {
       position: 'absolute',
       left: `${cashDesk.position.x}px`,
       top: `${cashDesk.position.y}px`,
-      width: '60px',
-      height: '60px',
+      width: isTicketBox ? '85px' : '110px',
+      height: isTicketBox ? '85px' : '110px',
       backgroundImage: `url(${cashDesk.image})`,
       backgroundSize: 'cover',
     };
