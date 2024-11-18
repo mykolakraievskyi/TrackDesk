@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { BaseEntry, Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
+import { ConfigurationService } from '../../shared/services/configuration.service';
+import { ConfResponse } from '../../features/models/conf-response.model';
 
 @Component({
   selector: 'app-station',
@@ -17,15 +19,23 @@ export class StationComponent implements OnInit {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
   entries: Entry[] = [];
+  activeEntries: Entry[] = [];
+  activeCashDesks: CashDesk[] = [];
+  reserveCashDesk: CashDesk = new BaseCashDesk(
+    0,
+    { x: 800, y: 20 },
+    'cash-desk'
+  );
   movementService: MovementService;
 
-  constructor() {
+  constructor(private confService: ConfigurationService) {
     this.movementService = new MovementService();
   }
 
   ngOnInit(): void {
     this.initializeCashDesks();
     this.initializeEntries();
+    this.applyConfig();
     this.generateClientsPeriodically();
   }
 
@@ -36,37 +46,36 @@ export class StationComponent implements OnInit {
     }, 3000);
   }
 
+  applyConfig(): void {
+    this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
+      this.activeCashDesks = response.cashRegisters.map(
+        index => this.cashDesks[index]
+      );
+      this.activeEntries = response.cashRegisters.map(
+        index => this.entries[index]
+      );
+    });
+  }
+
   generateClient(): void {
     const clientTypes: ('regular' | 'privileged')[] = ['regular', 'privileged'];
     const randomType: 'regular' | 'privileged' =
       clientTypes[Math.floor(Math.random() * clientTypes.length)];
 
-    const randomDoor =
-      this.doorCoordinates[
-        Math.floor(Math.random() * this.doorCoordinates.length)
-      ];
+    const randomEntry =
+      this.activeEntries[Math.floor(Math.random() * this.activeEntries.length)];
 
     const newClient = new BaseClient(
       Math.floor(Math.random() * 1000),
-      { x: randomDoor.x, y: randomDoor.y },
+      { x: randomEntry.position.x, y: randomEntry.position.y },
       randomType
     );
 
     this.clients.push(newClient);
   }
 
-  doorCoordinates = [
-    { x: 250, y: 580 },
-    { x: 410, y: 580 },
-    { x: 590, y: 580 },
-    { x: 770, y: 580 },
-    { x: 940, y: 580 },
-    { x: 1170, y: 300 },
-    { x: 1170, y: 410 },
-    { x: 1170, y: 520 },
-  ];
   initializeCashDesks(): void {
-    this.cashDesks.push(new BaseCashDesk(0, { x: 800, y: 20 }, 'cash-desk')); //reserve cash-desk
+    //this.cashDesks.push(new BaseCashDesk(0, { x: 800, y: 20 }, 'cash-desk')); //reserve cash-desk
     this.cashDesks.push(new BaseCashDesk(1, { x: 360, y: 20 }, 'cash-desk'));
     this.cashDesks.push(new BaseCashDesk(2, { x: 470, y: 20 }, 'cash-desk'));
     this.cashDesks.push(new BaseCashDesk(3, { x: 700, y: 400 }, 'cash-desk'));
@@ -91,8 +100,14 @@ export class StationComponent implements OnInit {
 
   moveClientsToCashDesks(): void {
     this.clients.forEach((client, index) => {
-      const targetCashDesk = this.cashDesks[index % this.cashDesks.length];
-      this.movementService.moveClientToCashDesk(client, targetCashDesk);
+      const targetCashDesk =
+        this.activeCashDesks[index % this.activeCashDesks.length];
+      this.movementService.moveClientToCashDesk(
+        client,
+        targetCashDesk,
+        this.clients,
+        this.activeCashDesks
+      );
     });
   }
 
@@ -105,6 +120,7 @@ export class StationComponent implements OnInit {
       height: '60px',
       backgroundImage: `url(${client.image})`,
       backgroundSize: 'cover',
+      zIndex: 1,
     };
   }
 
