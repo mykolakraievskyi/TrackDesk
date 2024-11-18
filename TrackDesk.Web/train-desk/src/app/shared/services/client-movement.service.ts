@@ -23,9 +23,6 @@ export class MovementService {
         y: lastClientPosition.y + QUEUE_OFFSET,
       };
 
-      // console.log(targetPosition);
-      // console.log(cashDesk.clientQueue);
-
       const deltaX = targetPosition.x - client.position.x;
       const deltaY = targetPosition.y - client.position.y;
 
@@ -49,12 +46,8 @@ export class MovementService {
     clients: Client[]
   ): CashDesk {
     return cashDesks.reduce((minDesk, currentDesk) => {
-      const minDeskClientCount = clients.filter(
-        client => client.targetCashDeskId === minDesk.id
-      ).length;
-      const currentDeskClientCount = clients.filter(
-        client => client.targetCashDeskId === currentDesk.id
-      ).length;
+      const minDeskClientCount = minDesk.clientQueue.length;
+      const currentDeskClientCount = currentDesk.clientQueue.length;
 
       return currentDeskClientCount < minDeskClientCount
         ? currentDesk
@@ -75,10 +68,7 @@ export class MovementService {
 
   // )))))))
   serveClient(client: Client, cashDesk: CashDesk): void {
-    console.log('serving');
     if (!cashDesk.clientQueue.includes(client)) {
-      console.log('inserting');
-
       cashDesk.addClient(client);
     }
 
