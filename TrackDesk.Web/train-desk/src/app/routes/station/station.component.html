@@ -1,4 +1,20 @@
 <main class="body">
+  <div class="playground">
+    <div
+      *ngFor="let client of clients"
+      [ngStyle]="getClientStyle(client)"
+      class="client"></div>
+    <div [ngStyle]="getCashDeskStyle(reserveCashDesk)" class="cash-desk"></div>
+    <div
+      *ngFor="let cashDesk of activeCashDesks"
+      [ngStyle]="getCashDeskStyle(cashDesk)"
+      class="cash-desk"></div>
+    <div
+      *ngFor="let entry of activeEntries"
+      [ngStyle]="getEntryStyle(entry)"
+      class="entries"></div>
+  </div>
+
   <div class="train-container">
     <div class="platform">
       <div class="clock clock-top"></div>
@@ -14,4 +30,13 @@
       <div class="traffic-light traffic-light-bottom"></div>
     </div>
   </div>
+
+  <div class="decorative-elements">
+    <img class="bottom" src="../../../assets/images/bottom.png" alt="" />
+    <img class="luggage" src="../../../assets/images/luggage.png" alt="" />
+    <img class="cafe" src="../../../assets/images/cafe.png" alt="" />
+    <img class="taxi" src="../../../assets/images/taxi.png" alt="" />
+  </div>
+
+  <app-log></app-log>
 </main>

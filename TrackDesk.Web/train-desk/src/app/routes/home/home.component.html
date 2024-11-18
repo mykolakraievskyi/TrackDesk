@@ -9,41 +9,80 @@
       <input
         type="number"
         id="exit-doors"
-        placeholder="(2-9 sec)"
-        min="2"
-        max="9" />
+        placeholder="(1-8)"
+        [min]="entryExitMin"
+        [max]="entryExitMax"
+        [(ngModel)]="Exit"
+        name="Exit" />
 
       <label for="entry-doors">Num of entry doors:</label>
       <input
         type="number"
         id="entry-doors"
-        placeholder="(2-9 sec)"
-        min="2"
-        max="9" />
+        placeholder="(1-8)"
+        [min]="entryExitMin"
+        [max]="entryExitMax"
+        [(ngModel)]="Entry"
+        name="Entry" />
 
       <label for="cash-registers">Num of cash registers:</label>
       <input
         type="number"
         id="cash-registers"
-        placeholder="(1-11 sec)"
-        min="1"
-        max="11" />
+        placeholder="(2-9)"
+        [min]="registerMin"
+        [max]="registerMax"
+        [(ngModel)]="CashRegisters"
+        name="CashRegisters" />
 
       <label>Service time per customer:</label>
       <div class="radio-group">
         <label class="custom-radio">
-          <input type="radio" name="time-option" id="static-time" />
+          <input
+            type="radio"
+            name="time-option"
+            id="static-time"
+            [(ngModel)]="timeOption"
+            value="static" />
           <span class="checkmark"></span>Static time per customer:
         </label>
         <label class="custom-radio">
-          <input type="radio" name="time-option" id="random-time" checked />
+          <input
+            type="radio"
+            name="time-option"
+            id="random-time"
+            checked
+            [(ngModel)]="timeOption"
+            value="random" />
           <span class="checkmark"></span>Random time per customer:
         </label>
       </div>
 
-      <input type="text" id="time-range" placeholder="(Enter range 2-10 sec)" />
+      @if(timeOption === 'static'){
+      <input
+        type="number"
+        id="static-time-input"
+        placeholder="(2-10 sec)"
+        [(ngModel)]="secondsStart"
+        name="secondsStart" />
+      } @if(timeOption === 'random'){
+      <input
+        type="number"
+        id="start-time"
+        placeholder="Start time (2-10 sec)"
+        [(ngModel)]="secondsStart"
+        name="secondsStart" />
+      <input
+        type="number"
+        id="end-time"
+        placeholder="End time (2-10 sec)"
+        [(ngModel)]="secondsEnd"
+        name="secondsEnd" />
+      }
       <div class="center-button">
-        <button type="button" class="start-button">Start</button>
+        <button type="button" class="start-button" (click)="onStartClick()">
+          Start
+        </button>
       </div>
     </form>
   </div>

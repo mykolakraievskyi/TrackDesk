@@ -5,7 +5,7 @@ export interface Client {
   position: Position;
   image: string;
   type: 'regular' | 'privileged';
-
+  targetCashDeskId?: number;
   move(): void;
 }
 
@@ -19,12 +19,11 @@ export class BaseClient implements Client {
   ) {
     this.image = this.getImagePath();
   }
-
   private getImagePath(): string {
     const randomImageNumber = this.getRandomNumber(1, 7);
     return this.type === 'regular'
-      ? `assets/images/regular/regular-client-${randomImageNumber}.png`
-      : `assets/images/privileged/privileged-client-${randomImageNumber}.png`;
+      ? `../../../assets/images/people/privileged/${randomImageNumber}.png`
+      : `../../../assets/images/people/regular/${randomImageNumber}.png`;
   }
 
   private getRandomNumber(min: number, max: number): number {
