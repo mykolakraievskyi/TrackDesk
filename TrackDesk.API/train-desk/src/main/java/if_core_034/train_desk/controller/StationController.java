@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Random;
+
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
@@ -21,8 +23,21 @@ public class StationController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     @Autowired(required = false)
-    private F2B conf;
+    private B2F b2f;
+    @Autowired(required = false)
+    private F2B f2b;
 
+    private static Integer[] generateRandomNumbers(int count, int min, int max) {
+        Random random = new Random();
+        Integer[] numbers = new Integer[count];
+
+        // Генерація випадкових чисел у заданому діапазоні
+        for (int i = 0; i < count; i++) {
+            numbers[i] = random.nextInt((max - min) + 1) + min; // Генерація числа від min до max
+        }
+
+        return numbers;
+    }
 
     @MessageMapping("/message")
     public void processMessage(@Payload String message) {
@@ -34,18 +49,20 @@ public class StationController {
         simpMessagingTemplate.convertAndSendToUser(String.valueOf(1), "/open/message", "Open station");
     }
 
-        @PostMapping("/conf")
+    @PostMapping("/conf")
     public ResponseEntity<B2F> createCustomer(@RequestBody F2B conf) {
-//        if (this.conf != null) {
+//        if (this.f2b != null) {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
-        this.conf = conf;
+        this.f2b = conf;
         System.out.println(conf);
-        Integer[] cashRegisters = {2, 3, 4};
-        Integer[] entryPoints = {4, 5};
-        Integer[] exitPoints = {6, 7, 8};
+        Integer[] cashRegisters = generateRandomNumbers(conf.getCashRegisters(), 2, 9);
+        Integer[] entryPoints = generateRandomNumbers(conf.getEntry(), 1, 8);
+        Integer[] exitPoints = generateRandomNumbers(conf.getExit(), 1, 8);
 
         B2F b2f = new B2F(cashRegisters, entryPoints, exitPoints);
+        this.b2f = b2f;
+
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(b2f);
