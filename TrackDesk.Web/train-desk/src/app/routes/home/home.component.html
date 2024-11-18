@@ -10,8 +10,8 @@
         type="number"
         id="exit-doors"
         placeholder="(1-8)"
-        min="1"
-        max="8"
+        [min]="entryExitMin"
+        [max]="entryExitMax"
         [(ngModel)]="Exit"
         name="Exit" />
 
@@ -20,8 +20,8 @@
         type="number"
         id="entry-doors"
         placeholder="(1-8)"
-        min="2"
-        max="8"
+        [min]="entryExitMin"
+        [max]="entryExitMax"
         [(ngModel)]="Entry"
         name="Entry" />
 
@@ -30,8 +30,8 @@
         type="number"
         id="cash-registers"
         placeholder="(2-9)"
-        min="2"
-        max="9"
+        [min]="registerMin"
+        [max]="registerMax"
         [(ngModel)]="CashRegisters"
         name="CashRegisters" />
 

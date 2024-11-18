@@ -3,6 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 
+const ENTRY_EXIT_MIN = 1;
+const ENTRY_EXIT_MAX = 8;
+const REGISTER_MIN = 2;
+const REGISTER_MAX = 9;
+const TIME_MIN = 2;
+const TIME_MAX = 10;
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -16,71 +23,79 @@ export class HomeComponent {
     private configurationService: ConfigurationService
   ) {}
 
-  Exit = '';
-  Entry = '';
-  CashRegisters = '';
-  secondsStart = '';
-  secondsEnd = '';
-  timeOption = 'random';
+  entryExitMin = ENTRY_EXIT_MIN;
+  entryExitMax = ENTRY_EXIT_MAX;
+  registerMin = REGISTER_MIN;
+  registerMax = REGISTER_MAX;
+  timeMin = TIME_MIN;
+  timeMax = TIME_MAX;
+
+  Exit: number = 1;
+  Entry: number = 1;
+  CashRegisters: number = 2;
+  secondsStart: number = 2;
+  secondsEnd: number = 2;
+  timeOption: 'random' | 'static' = 'random';
 
   onStartClick() {
     if (this.validateData() === true) {
-      if (this.timeOption === 'random') {
-        this.configurationService
-          .setConfiguration(
-            +this.CashRegisters,
-            +this.Entry,
-            +this.Exit,
-            +this.secondsStart,
-            +this.secondsEnd
-          )
-          .subscribe({
-            next: response => console.log('Запит успішний:', response),
-            error: error => console.error('Помилка:', error),
-          });
-      } else if (this.timeOption === 'static') {
-        this.configurationService
-          .setConfiguration(
-            +this.CashRegisters,
-            +this.Entry,
-            +this.Exit,
-            +this.secondsStart,
-            +this.secondsStart
-          )
-          .subscribe({
-            next: response => console.log('Запит успішний:', response),
-            error: error => console.error('Помилка:', error),
-          });
+      if (this.timeOption === 'static') {
+        this.secondsEnd = this.secondsStart;
       }
-      this.router.navigate(['station']);
+      this.configurationService
+        .setConfiguration(
+          this.CashRegisters,
+          this.Entry,
+          this.Exit,
+          this.secondsStart,
+          this.secondsEnd
+        )
+        .subscribe({
+          next: response => {
+            this.router.navigate(['station']);
+          },
+          error: error => console.error('Помилка:', error),
+        });
+    } else {
+      alert('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
     }
   }
 
   validateData(): boolean {
-    if (+this.Exit < 2 || +this.Exit > 9) {
-      return false;
+    var result: boolean = true;
+    if (this.Exit < this.entryExitMin || this.Exit > this.entryExitMax) {
+      result = false;
     }
-    if (+this.Entry < 2 || +this.Entry > 9) {
-      return false;
+    if (this.Entry < this.entryExitMin || this.Entry > this.entryExitMax) {
+      result = false;
     }
-    if (+this.CashRegisters < 1 || +this.CashRegisters > 11) {
-      return false;
+    if (
+      this.CashRegisters < this.registerMin ||
+      this.CashRegisters > this.registerMax
+    ) {
+      result = false;
     }
     if (this.timeOption === 'static') {
-      if (+this.secondsStart < 2 || +this.secondsStart > 10) {
-        return false;
+      if (
+        this.secondsStart < this.timeMin ||
+        this.secondsStart > this.timeMax
+      ) {
+        result = false;
       }
     } else if (this.timeOption === 'random') {
-      if (+this.secondsStart < 2 || +this.secondsStart > 10) {
-        return false;
+      if (
+        this.secondsStart < this.timeMin ||
+        this.secondsStart > this.timeMax
+      ) {
+        result = false;
       }
-      if (+this.secondsEnd < 2 || +this.secondsEnd > 10) {
-        return false;
+      if (this.secondsEnd < this.timeMin || this.secondsEnd > this.timeMax) {
+        result = false;
       }
-      if (+this.secondsStart > +this.secondsEnd) {
-        return false;
+      if (this.secondsStart > this.secondsEnd) {
+        result = false;
       }
     }
-    return true;
+    return result;
   }
 }
