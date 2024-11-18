@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HomeComponent } from './home.component';
-import { Router } from '@angular/router';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { ConfigurationService } from '../../shared/services/configuration.service';
-import { FormsModule } from '@angular/forms';
+import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -14,21 +15,26 @@ describe('HomeComponent', () => {
   beforeEach(async () => {
     // Mock ConfigurationService
     configurationServiceMock = {
-      setConfiguration: jasmine.createSpy('setConfiguration').and.returnValue(of(true))
+      setConfiguration: jasmine
+        .createSpy('setConfiguration')
+        .and.returnValue(of(true)),
     };
 
     // Mock Router
     routerMock = {
-      navigate: jasmine.createSpy('navigate')
+      navigate: jasmine.createSpy('navigate'),
     };
 
     await TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [HomeComponent],
+      imports: [
+        HomeComponent, // Standalone component
+        FormsModule, // FormsModule is required for ngModel usage
+      ],
       providers: [
         { provide: ConfigurationService, useValue: configurationServiceMock },
-        { provide: Router, useValue: routerMock }
-      ]
+        provideRouter([{ path: 'station', component: HomeComponent }]),
+        provideHttpClient(),
+      ],
     }).compileComponents();
   });
 
@@ -93,7 +99,7 @@ describe('HomeComponent', () => {
     it('should navigate to station if data is valid', () => {
       spyOn(component, 'validateData').and.returnValue(true);
       component.onStartClick();
-      
+
       expect(configurationServiceMock.setConfiguration).toHaveBeenCalled();
       expect(routerMock.navigate).toHaveBeenCalledWith(['station']);
     });
@@ -104,7 +110,7 @@ describe('HomeComponent', () => {
       spyOn(component, 'validateData').and.returnValue(true);
 
       component.onStartClick();
-      
+
       expect(component.secondsEnd).toBe(5);
     });
 
@@ -113,19 +119,26 @@ describe('HomeComponent', () => {
       spyOn(window, 'alert');
 
       component.onStartClick();
-      
+
       expect(configurationServiceMock.setConfiguration).not.toHaveBeenCalled();
-      expect(window.alert).toHaveBeenCalledWith('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
+      expect(window.alert).toHaveBeenCalledWith(
+        'Перегляньте коректність даних та спробуйте, будь ласка, знову)'
+      );
     });
 
     it('should log an error if configurationService returns an error', () => {
       spyOn(component, 'validateData').and.returnValue(true);
-      configurationServiceMock.setConfiguration.and.returnValue(throwError(() => new Error('Service error')));
+      configurationServiceMock.setConfiguration.and.returnValue(
+        throwError(() => new Error('Service error'))
+      );
       spyOn(console, 'error');
 
       component.onStartClick();
 
-      expect(console.error).toHaveBeenCalledWith('Помилка:', jasmine.any(Error));
+      expect(console.error).toHaveBeenCalledWith(
+        'Помилка:',
+        jasmine.any(Error)
+      );
     });
   });
 });
