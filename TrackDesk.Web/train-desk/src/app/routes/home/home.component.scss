@@ -1,0 +1,134 @@
+.body {
+  display: flex;
+  justify-content: space-around;
+  background-color: #dff6fd;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  .ticket-icon {
+    padding-top: 100px;
+    padding-left: 200px;
+    img {
+      width: 280px;
+      height: auto;
+    }
+  }
+
+  .form-container {
+    padding-top: 90px;
+    width: 600px;
+    padding-inline: 150px 200px;
+    h2 {
+      font-size: 35px;
+      background-color: #8ac6dd;
+      border: black solid 3.5px;
+      border-radius: 40px;
+      padding-top: 3px;
+      width: 600px;
+      height: 53px;
+      text-align: center;
+    }
+
+    form {
+      margin: 20px;
+      margin-left: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    input[type='number'],
+    input[type='text'] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: none;
+      background-color: #d4eaff;
+      border-radius: 5px;
+      font-size: 23px;
+      height: 25px;
+      width: 530px;
+      outline: none;
+    }
+
+    input[type='number']:focus,
+    input[type='text']:focus {
+      border: none;
+      background-color: #c1ddf0;
+      transform: translateY(-2px);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+
+      label {
+        display: flex;
+        align-items: center;
+        font-size: 22px;
+
+        input[type='checkbox'] {
+          margin-right: 8px;
+        }
+      }
+    }
+
+    .start-button {
+      font-size: 33px;
+      background-color: #d7e057;
+      border: black solid 3.5px;
+      border-radius: 40px;
+      width: 130px;
+      height: 50px;
+      text-align: center;
+      cursor: pointer;
+      margin-top: 20px;
+      margin: 20px auto;
+      display: block;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 6px 6px 0px 0px black;
+      }
+    }
+  }
+  .custom-radio input[type='radio'] {
+    display: none;
+  }
+
+  .custom-radio {
+    display: inline-block;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .checkmark {
+    width: 19px;
+    height: 19px;
+    background-color: #d4eaff;
+    border: 2.5px solid #000;
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    margin-right: 10px;
+  }
+
+  .custom-radio input[type='radio']:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    bottom: 2px;
+    width: 8px;
+    height: 16px;
+    border: solid #000;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+}
