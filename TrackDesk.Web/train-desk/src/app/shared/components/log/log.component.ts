@@ -12,11 +12,11 @@ export class LogComponent {
    logsArray = [
     {
       name: 'Oleh',
-      status: 'Gey',
+      description: 'student',
     },
     {
       name: 'Nastya',
-      status: 'adult',
+      description: 'adult',
     }
   ];
 
