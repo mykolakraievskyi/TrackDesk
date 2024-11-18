@@ -10,6 +10,38 @@
   position: relative;
 }
 
+.playground {
+  position: absolute;
+  left: 0;
+  width: 70rem;
+  height: 100vh;
+  display: flex;
+}
+
+// .entries-bottom {
+//   position: absolute;
+//   bottom: 0;
+//   width: 100%;
+//   display: flex;
+//   justify-content: space-between;
+// }
+
+// .cash-desk-container{
+//   position: absolute;
+// display: flex;
+// }
+
+// .cash-1, .cash-2{
+//   position: relative;
+//   left:200px;
+// }
+
+// .cash-3, .cash-4{
+//   position: relative;
+//   top:300px;
+//   left:400px;
+// }
+
 .train-container {
   position: absolute;
   right: 0;

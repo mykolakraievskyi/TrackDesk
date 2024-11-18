@@ -15,17 +15,19 @@ export class BaseCashDesk implements CashDesk {
     public position: Position,
     public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box'
   ) {
-    this.image = this.getImagePath();
+    //this.image = this.getImagePath();
+        this.image = '../../../assets/images/1.png';
+
   }
 
   private getImagePath(): string {
     switch (this.type) {
       case 'cash-desk':
-        return 'assets/images/cash-desk/cash-desk.png';
+        return '../../../assets/images/cash-desk/cash-desk.png';
       case 'closed-cash-desk':
-        return 'assets/images/closed-cash-desk/closed-cash-desk.png';
+        return '../../../assets/images/closed-cash-desk/closed-cash-desk.png';
       case 'ticket-box':
-        return 'assets/images/ticket-box/ticket-box.png';
+        return '../../../assets/images/ticket-box/ticket-box.png';
       default:
         return '';
     }
