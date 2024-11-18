@@ -49,11 +49,9 @@ export class StationComponent implements OnInit {
   applyConfig(): void {
     this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
       this.activeCashDesks = response.cashRegisters.map(
-        index => this.cashDesks[index]
+        index => this.cashDesks[index - 1]
       );
-      this.activeEntries = response.cashRegisters.map(
-        index => this.entries[index]
-      );
+      this.activeEntries = response.entry.map(index => this.entries[index - 1]);
     });
   }
 

@@ -39,7 +39,7 @@ public class StationController {
         Integer[] numbers = new Integer[count];
 
         while (uniqueNumbers.size() < count) {
-            int newInt = random.nextInt((max - min) + 1) + min;
+            int newInt = random.nextInt(min, max + 1);
             uniqueNumbers.add(newInt); // Ensures uniqueness
         }
 
@@ -63,7 +63,7 @@ public class StationController {
 //        }
         this.f2b = conf;
         System.out.println(conf);
-        Integer[] cashRegisters = generateUniqueRandomNumbers(conf.getCashRegisters(), 2, 9);
+        Integer[] cashRegisters = generateUniqueRandomNumbers(conf.getCashRegisters(), 1, 9);
         Integer[] entryPoints = generateUniqueRandomNumbers(conf.getEntry(), 1, 8);
         Integer[] exitPoints = generateUniqueRandomNumbers(conf.getExit(), 1, 8);
 
