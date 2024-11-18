@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  </head>
+  <body>
+    <h1>WebSocket Test</h1>
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+    <button onclick="sendMessage()">Send Message</button>
+    <p id="status">Status: Disconnected</p>
+    <div id="messages"></div>
+
+    <script>
+      let stompClient = null;
+
+      function connect() {
+        const socket = new SockJS("http://localhost:8080/ws");
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+          document.getElementById("status").innerText = "Status: Connected";
+
+          // Subscribe to the /station topic
+          stompClient.subscribe("/station/1/open/message", function (message) {
+            showMessage(message.body);
+          });
+
+          console.log("Connected: " + frame);
+        });
+      }
+
+      function disconnect() {
+        if (stompClient !== null) {
+          stompClient.disconnect();
+        }
+        document.getElementById("status").innerText = "Status: Disconnected";
+        console.log("Disconnected");
+      }
+
+      function sendMessage() {
+        if (stompClient && stompClient.connected) {
+          // Send a message to /traindesk/message
+          stompClient.send(
+            "/traindesk/message",
+            {},
+            JSON.stringify({ content: "Hello, WebSocket!" })
+          );
+          console.log("Message sent");
+        }
+      }
+
+      function showMessage(message) {
+        const messagesDiv = document.getElementById("messages");
+        const newMessage = document.createElement("p");
+        newMessage.innerText = message;
+        messagesDiv.appendChild(newMessage);
+      }
+    </script>
+  </body>
+</html>

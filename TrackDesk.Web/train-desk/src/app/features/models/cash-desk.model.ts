@@ -3,35 +3,34 @@ import { Position } from './position.model';
 export interface CashDesk {
   id: number;
   position: Position;
+  clients: number[];
   image: string;
   type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box';
 }
 
 export class BaseCashDesk implements CashDesk {
-  id: number;
-  position: Position;
   image: string;
-  type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box';
+  clients: number[];
 
   constructor(
-    id: number,
-    position: Position,
-    type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box'
+    public id: number,
+    public position: Position,
+    public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box'
   ) {
-    this.id = id;
-    this.position = position;
     this.image = this.getImagePath();
-    this.type = type;
+    this.clients = [];
   }
 
   private getImagePath(): string {
     switch (this.type) {
       case 'cash-desk':
-        return `assets/images/cash-desk/cash-desk.png`;
+        return '../../../assets/images/cash-desks/cash-desk.png';
       case 'closed-cash-desk':
-        return `assets/images/closed-cash-desk/closed-cash-desk.png`;
+        return '../../../assets/images/cash-desks/closed-cash-desk.png';
       case 'ticket-box':
-        return `assets/images/ticket-box/ticket-box.png`;
+        return '../../../assets/images/cash-desks/ticket-box.png';
+      default:
+        return '../../../assets/images/cash-desks/cash-desk.png';
     }
   }
 }
