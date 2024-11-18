@@ -1,54 +1,58 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import * as Stomp from 'stompjs';
+import SockJS from 'sockjs-client';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebSocketService {
-  private socket!: WebSocket;
-  private messages$: Subject<any> = new Subject();
+  private stompClient: Stomp.Client | null = null;
+  private connected: boolean = false;
 
-  connect(url: string): void {
-    this.socket = new WebSocket(url);
+  connect(): void {
+    const socket = new SockJS('http://localhost:8080/ws');
+    this.stompClient = Stomp.over(socket);
 
-    this.socket.onmessage = event => {
-      const data = JSON.parse(event.data);
-      this.messages$.next(data);
-    };
+    this.stompClient.connect(
+      {},
+      frame => {
+        console.log('Connected: ', frame);
 
-    this.socket.onerror = event => {
-      console.error('WebSocket error:', event);
-    };
-
-    this.socket.onclose = event => {
-      console.log('WebSocket closed:', event);
-    };
-  }
-
-  emit(eventName: string, data: any): void {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({ event: eventName, data });
-      this.socket.send(message);
-    } else {
-      console.error('WebSocket is not open.');
-    }
-  }
-
-  listen(eventName: string): Observable<any> {
-    return new Observable(observer => {
-      const subscription = this.messages$.subscribe(message => {
-        if (message.event === eventName) {
-          observer.next(message.data);
-        }
-      });
-
-      return () => subscription.unsubscribe();
-    });
+        this.subscribe('/station/1/open/message', message => {
+          console.log('Received message: ', message);
+        });
+      },
+      error => {
+        console.error('Error connecting: ', error);
+      }
+    );
   }
 
   disconnect(): void {
-    if (this.socket) {
-      this.socket.close();
+    if (this.stompClient) {
+      this.stompClient.disconnect(() => {
+        console.log('Disconnected');
+        this.connected = false;
+      });
     }
+  }
+
+  subscribe(topic: string, callback: (message: string) => void): void {
+    if (this.stompClient && this.connected) {
+      this.stompClient.subscribe(topic, message => {
+        callback(message.body);
+      });
+    }
+  }
+
+  send(destination: string, body: any): void {
+    if (this.stompClient && this.connected) {
+      this.stompClient.send(destination, {}, JSON.stringify(body));
+      console.log('Message sent:', body);
+    }
+  }
+
+  isConnected(): boolean {
+    return this.connected;
   }
 }
