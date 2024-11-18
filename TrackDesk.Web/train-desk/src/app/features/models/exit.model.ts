@@ -22,8 +22,8 @@ export class BaseExit implements Exit {
 
   private getImagePath(): string {
     return this.type === 'exit'
-      ? 'assets/images/entries/exit.png'
-      : 'assets/images/entries/exit-door.png';
+      ? '../../../assets/images/entries/exit.png'
+      : '../../../assets/images/entries/exit-door.png';
   }
 
   handleCharacterExit(characterId: number): void {
