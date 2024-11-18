@@ -1,5 +1,6 @@
 package if_core_034.train_desk.controller;
 
+import if_core_034.train_desk.dto.ClientDto;
 import if_core_034.train_desk.entity.Client;
 import if_core_034.train_desk.service.ClientService;
 
@@ -20,6 +21,8 @@ public class ClientController {
 
     @Scheduled(fixedRate = 5000)
     public void generateClient() {
-        simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientService.generateClient());
+        Client client = clientService.generateClient();
+        ClientDto clientDto = new ClientDto(client.getId(), client.getEntrance().getId());
+        simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
     }
 }
