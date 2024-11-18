@@ -1,6 +1,6 @@
 package if_core_034.train_desk.controller;
 
-import if_core_034.train_desk.dto.B2F;
+import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.dto.F2B;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class StationController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     @Autowired(required = false)
-    private B2F b2f;
+    private StationConfigurationDto b2f;
     @Autowired(required = false)
     private F2B f2b;
 
@@ -50,7 +50,7 @@ public class StationController {
     }
 
     @PostMapping("/conf")
-    public ResponseEntity<B2F> createCustomer(@RequestBody F2B conf) {
+    public ResponseEntity<StationConfigurationDto> createCustomer(@RequestBody F2B conf) {
 //        if (this.f2b != null) {
 //            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 //        }
@@ -60,7 +60,7 @@ public class StationController {
         Integer[] entryPoints = generateRandomNumbers(conf.getEntry(), 1, 8);
         Integer[] exitPoints = generateRandomNumbers(conf.getExit(), 1, 8);
 
-        B2F b2f = new B2F(cashRegisters, entryPoints, exitPoints);
+        StationConfigurationDto b2f = new StationConfigurationDto(cashRegisters, entryPoints, exitPoints);
         this.b2f = b2f;
 
         return ResponseEntity.status(HttpStatus.OK)
