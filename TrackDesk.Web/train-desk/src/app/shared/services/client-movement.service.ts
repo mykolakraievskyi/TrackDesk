@@ -9,14 +9,20 @@ export class MovementService {
   private readonly staticObstacles: StaticObstacle[] = [];
 
   constructor() {
-    // this.staticObstacles.push(
-    //   new StaticObstacle(
-    //     { x: 100, y: 100 },
-    //     { x: 100, y: 100 },
-    //     { x: 100, y: 100 },
-    //     { x: 100, y: 100 }
-    //   )
-    // );
+    this.staticObstacles.push(
+      new StaticObstacle(
+        { x: 1000, y: 300 },
+        { x: 1350, y: 300 },
+        { x: 1000, y: 0 },
+        { x: 1350, y: 0 }
+      ),
+      new StaticObstacle(
+        { x: 0, y: 560 },
+        { x: 200, y: 560 },
+        { x: 0, y: 290 },
+        { x: 200, y: 290 }
+      )
+    );
   }
 
   detectCollisions(): void {}

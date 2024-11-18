@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Random;
 
 @RestController
@@ -27,16 +28,22 @@ public class StationController {
     @Autowired(required = false)
     private F2B f2b;
 
-    private static Integer[] generateRandomNumbers(int count, int min, int max) {
+    private static Integer[] generateUniqueRandomNumbers(int count, int min, int max) {
         Random random = new Random();
-        Integer[] numbers = new Integer[count];
+        HashSet<Integer> uniqueNumbers = new HashSet<>();
 
-        // Генерація випадкових чисел у заданому діапазоні
-        for (int i = 0; i < count; i++) {
-            numbers[i] = random.nextInt((max - min) + 1) + min; // Генерація числа від min до max
+        if (max - min + 1 < count) {
+            count = max - min + 1;
         }
 
-        return numbers;
+        Integer[] numbers = new Integer[count];
+
+        while (uniqueNumbers.size() < count) {
+            int newInt = random.nextInt((max - min) + 1) + min;
+            uniqueNumbers.add(newInt); // Ensures uniqueness
+        }
+
+        return uniqueNumbers.toArray(numbers);
     }
 
     @MessageMapping("/message")
@@ -56,9 +63,9 @@ public class StationController {
 //        }
         this.f2b = conf;
         System.out.println(conf);
-        Integer[] cashRegisters = generateRandomNumbers(conf.getCashRegisters(), 2, 9);
-        Integer[] entryPoints = generateRandomNumbers(conf.getEntry(), 1, 8);
-        Integer[] exitPoints = generateRandomNumbers(conf.getExit(), 1, 8);
+        Integer[] cashRegisters = generateUniqueRandomNumbers(conf.getCashRegisters(), 2, 9);
+        Integer[] entryPoints = generateUniqueRandomNumbers(conf.getEntry(), 1, 8);
+        Integer[] exitPoints = generateUniqueRandomNumbers(conf.getExit(), 1, 8);
 
         B2F b2f = new B2F(cashRegisters, entryPoints, exitPoints);
         this.b2f = b2f;
