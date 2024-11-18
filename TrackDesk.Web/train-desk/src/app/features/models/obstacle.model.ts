@@ -8,6 +8,24 @@ export interface BaseObstacle {
   topRight: Position;
   recalculate(): void;
 }
+export class StaticObstacle implements BaseObstacle {
+  bottomLeft: Position;
+  bottobRigth: Position;
+  topLeft: Position;
+  topRight: Position;
+
+  constructor(bl: Position, br: Position, tl: Position, tr: Position) {
+    this.bottobRigth = br;
+    this.topLeft = tl;
+    this.bottomLeft = bl;
+    this.topRight = tr;
+  }
+
+  recalculate(): void {
+    return;
+  }
+}
+
 export const CLIENT_WIDTH_PX = 5;
 export const CLIENT_HEIGHT_PX = 10;
 

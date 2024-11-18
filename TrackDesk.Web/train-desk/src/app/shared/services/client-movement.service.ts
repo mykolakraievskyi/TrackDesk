@@ -1,11 +1,23 @@
-import { transition } from '@angular/animations';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
-import { CLIENT_WIDTH_PX } from '../../features/models/obstacle.model';
+import { StaticObstacle } from '../../features/models/obstacle.model';
+import { Position } from '../../features/models/position.model';
 
 const QUEUE_OFFSET = 32;
 export class MovementService {
   private readonly speed: number = 5;
+  private readonly staticObstacles: StaticObstacle[] = [];
+
+  constructor() {
+    // this.staticObstacles.push(
+    //   new StaticObstacle(
+    //     { x: 100, y: 100 },
+    //     { x: 100, y: 100 },
+    //     { x: 100, y: 100 },
+    //     { x: 100, y: 100 }
+    //   )
+    // );
+  }
 
   detectCollisions(): void {}
 
@@ -34,11 +46,45 @@ export class MovementService {
         return;
       }
 
-      client.position.x +=
-        Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX));
-      client.position.y +=
-        Math.sign(deltaY) * Math.min(this.speed, Math.abs(deltaY));
+      let newPosition = {
+        x:
+          client.position.x +
+          Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX)),
+        y:
+          client.position.y +
+          Math.sign(deltaY) * Math.min(this.speed, Math.abs(deltaY)),
+      };
+
+      client.position = this.correctPosition(client.position, newPosition);
     }, 100);
+  }
+
+  correctPosition(oldPosition: Position, newPosition: Position): Position {
+    let position: Position = newPosition;
+    for (let obstacle of this.staticObstacles) {
+      if (
+        newPosition.x > obstacle.topLeft.x &&
+        newPosition.x < obstacle.bottobRigth.x &&
+        newPosition.y > obstacle.topLeft.y &&
+        newPosition.y < obstacle.bottobRigth.y
+      ) {
+        //correction
+        if (oldPosition.x < obstacle.topLeft.x) {
+          position.x = obstacle.topLeft.x;
+        }
+        if (oldPosition.x > obstacle.bottobRigth.x) {
+          position.x = obstacle.bottobRigth.x;
+        }
+        if (oldPosition.y < obstacle.topLeft.y) {
+          position.y = obstacle.topLeft.y;
+        }
+        if (newPosition.y > obstacle.bottobRigth.y) {
+          position.y = obstacle.bottobRigth.y;
+        }
+      }
+    }
+
+    return newPosition;
   }
 
   findCashDeskWithFewestClients(
@@ -89,4 +135,6 @@ export class MovementService {
     //   // похуй
     // }
   }
+
+  relocateClients(currentDesk: CashDesk, newDsk: CashDesk) {}
 }
