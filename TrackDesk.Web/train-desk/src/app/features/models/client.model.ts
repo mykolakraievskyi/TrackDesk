@@ -5,7 +5,7 @@ export interface Client {
   position: Position;
   image: string;
   type: 'regular' | 'privileged';
-
+  targetCashDeskId?: number;
   move(): void;
 }
 

@@ -1,46 +1,15 @@
  <main class="body">
   <div class="playground">
-  <!-- Відображення клієнтів -->
   <div
     *ngFor="let client of clients"
     [ngStyle]="getClientStyle(client)"
     class="client"
   ></div>
-
-  <!-- Відображення кас -->
   <div
     *ngFor="let cashDesk of cashDesks"
     [ngStyle]="getCashDeskStyle(cashDesk)"
     class="cash-desk"
-  ></div>
-
-
-
-
-   <div class="entry-container">
-    <div class="entries-bottom">
-      <div class="entry entry-1">
-        <img src="../../../assets/images/entries/entry-door.png" alt="" />
-      </div>
-      <div class="entry entry-2">
-        <img src="../../../assets/images/entries/entry-door.png" alt="" />
-      </div>
-      <div class="entry entry-3">
-        <img src="../../../assets/images/entries/entry-door.png" alt="" />
-      </div>
-      <div class="entry entry-4">
-        <img src="../../../assets/images/entries/entry-door.png" alt="" />
-      </div>
-      <div class="entry entry-5">
-        <img src="../../../assets/images/entries/entry-door.png" alt="" />
-      </div>
-    </div>
-    <div class="entries-right"></div></div>
-</div>
-    
- 
-  
-
+  ></div></div>
 
   <div class="train-container">
     <div class="platform">
