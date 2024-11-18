@@ -17,17 +17,14 @@ export class BaseClient implements Client {
     public position: Position,
     public type: 'regular' | 'privileged'
   ) {
-    //this.image = this.getImagePath();
-    this.image = '../../../assets/images/1.png';
+    this.image = this.getImagePath();
   }
-  // private getImagePath(): string {
-  //   //const randomImageNumber = this.getRandomNumber(1, 7);
-  //   return this.type === 'regular'
-  //     // ? `../../../assets/images/regular/${randomImageNumber}.png`
-  //     ? `./1.png`
-  //     : `./1.png`;
-  //     //: `../../../assets/images/privileged/${randomImageNumber}.png`;
-  // }
+  private getImagePath(): string {
+    const randomImageNumber = this.getRandomNumber(1, 7);
+    return this.type === 'regular'
+      ? `../../../assets/images/people/privileged/${randomImageNumber}.png`
+      : `../../../assets/images/people/regular/${randomImageNumber}.png`;
+  }
 
   private getRandomNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;

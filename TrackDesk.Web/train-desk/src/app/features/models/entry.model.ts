@@ -18,14 +18,13 @@ export class BaseEntry implements Entry {
     charactersInside: number[] = []
   ) {
     this.charactersInside = charactersInside;
-    //this.image = this.getImagePath();
-    this.image = '../../../assets/images/entries/entry-door.png'; 
+    this.image = this.getImagePath();
   }
 
   private getImagePath(): string {
     return this.type === 'entry'
       ? '../../../assets/images/entries/entry.png'
-      : '../../../assets/images/entries/entry-door.png';
+      : '../../../assets/images/entries/exit-door.png';
   }
 
   handleCharacterEntry(characterId: number): void {
