@@ -21,13 +21,13 @@ export class BaseCashDesk implements CashDesk {
   private getImagePath(): string {
     switch (this.type) {
       case 'cash-desk':
-        return 'assets/images/cash-desk/cash-desk.png';
+        return '../../../assets/images/cash-desks/cash-desk.png';
       case 'closed-cash-desk':
-        return 'assets/images/closed-cash-desk/closed-cash-desk.png';
+        return '../../../assets/images/cash-desks/closed-cash-desk.png';
       case 'ticket-box':
-        return 'assets/images/ticket-box/ticket-box.png';
+        return '../../../assets/images/cash-desks/ticket-box.png';
       default:
-        return '';
+        return '../../../assets/images/cash-desks/cash-desk.png';
     }
   }
 }
