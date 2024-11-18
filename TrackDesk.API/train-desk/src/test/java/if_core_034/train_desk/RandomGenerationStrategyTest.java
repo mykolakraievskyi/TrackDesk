@@ -3,21 +3,15 @@ package if_core_034.train_desk;
 import if_core_034.train_desk.entity.TimeRange;
 import if_core_034.train_desk.strategy.RandomGenerationStrategy;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//@SpringBootTest
-class TrainDeskApplicationTests {
+class RandomGenerationStrategyTest {
 
 	private RandomGenerationStrategy strategy;
 	private TimeRange timeRange;
-
-	@Test
-	void contextLoads() {
-	}
 
 	@Test
 	void testGetNextArrivalTime_ValidRange() {
