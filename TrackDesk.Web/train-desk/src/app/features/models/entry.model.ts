@@ -24,7 +24,7 @@ export class BaseEntry implements Entry {
   private getImagePath(): string {
     return this.type === 'entry'
       ? '../../../assets/images/entries/entry.png'
-      : '../../../assets/images/entries/exit-door.png';
+      : '../../../assets/images/entries/entry-door.png';
   }
 
   handleCharacterEntry(characterId: number): void {
