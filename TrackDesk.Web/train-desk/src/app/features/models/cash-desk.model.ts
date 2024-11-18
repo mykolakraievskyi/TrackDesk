@@ -3,14 +3,12 @@ import { Position } from './position.model';
 export interface CashDesk {
   id: number;
   position: Position;
-  clients: number[];
   image: string;
   type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box';
 }
 
 export class BaseCashDesk implements CashDesk {
   image: string;
-  clients: number[];
 
   constructor(
     public id: number,
@@ -18,7 +16,6 @@ export class BaseCashDesk implements CashDesk {
     public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box'
   ) {
     this.image = this.getImagePath();
-    this.clients = [];
   }
 
   private getImagePath(): string {

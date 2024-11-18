@@ -90,15 +90,8 @@ export class StationComponent implements OnInit {
   }
 
   moveClientsToCashDesks(): void {
-    this.clients.forEach((client) => {
-      let targetCashDesk;
-      if(client.targetCashDeskId == undefined){
-      targetCashDesk = this.movementService.findCashDeskWithFewestClients(this.cashDesks)
-      targetCashDesk.clients.push(client.id);
-      client.targetCashDeskId = targetCashDesk.id; 
-      }else{
-        targetCashDesk = this.cashDesks.filter(c => c.id == client.targetCashDeskId)[0];
-      }
+    this.clients.forEach((client, index) => {
+      const targetCashDesk = this.cashDesks[index % this.cashDesks.length];
       this.movementService.moveClientToCashDesk(client, targetCashDesk);
     });
   }
@@ -112,7 +105,6 @@ export class StationComponent implements OnInit {
       height: '60px',
       backgroundImage: `url(${client.image})`,
       backgroundSize: 'cover',
-      zIndex: '100'
     };
   }
 
