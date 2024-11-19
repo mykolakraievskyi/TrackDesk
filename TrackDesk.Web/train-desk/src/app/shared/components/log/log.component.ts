@@ -9,4 +9,15 @@ import { Component } from '@angular/core';
 })
 export class LogComponent {
 
+   logsArray = [
+    {
+      name: 'Oleh',
+      status: 'Gey',
+    },
+    {
+      name: 'Nastya',
+      status: 'adult',
+    }
+  ];
+
 }
