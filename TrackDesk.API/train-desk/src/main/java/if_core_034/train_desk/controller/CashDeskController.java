@@ -18,17 +18,17 @@ public class CashDeskController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final CashDeskService cashDeskService;
 
-    @Scheduled(fixedRate = 30000)
-    public void closeRandomCashDesk() {
-        int cashDeskId = cashDeskService.closeRandomCashDesk();
-        CashDeskOpenCloseDto cashDeskOpenCloseDto = new CashDeskOpenCloseDto(cashDeskId, true);
-        simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        cashDeskOpenCloseDto.setClosed(false);
-        scheduledExecutorService.schedule(() -> {
-            cashDeskService.openCashDesk();
-            simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-            }, 15, TimeUnit.SECONDS);
-    }
+//    @Scheduled(fixedRate = 30000)
+//    public void closeRandomCashDesk() {
+//        int cashDeskId = cashDeskService.closeRandomCashDesk();
+//        CashDeskOpenCloseDto cashDeskOpenCloseDto = new CashDeskOpenCloseDto(cashDeskId, true);
+//        simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
+//
+//        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+//        cashDeskOpenCloseDto.setClosed(false);
+//        scheduledExecutorService.schedule(() -> {
+//            cashDeskService.openCashDesk();
+//            simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
+//            }, 15, TimeUnit.SECONDS);
+//    }
 }

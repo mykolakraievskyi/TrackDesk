@@ -17,6 +17,10 @@ import java.time.LocalTime;
 @Service
 public class StationService {
 
+    private Station station;
+
+
+
     public void createStationInstance(StationConfigurationDto stationConfigurationDto) {
         List<Entrance> entrances = stationConfigurationDto.getEntrances();
         List<CashDesk> cashDesks = new ArrayList<>();
@@ -27,11 +31,11 @@ public class StationService {
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
         int maxClientCapacity = (int) (30 + Math.random() * 50);
-        Station.getInstance(entrances, cashDesks, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
+        station = Station.getInstance(entrances, cashDesks, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
     }
 
     public Station getStationInstance() {
-        return Station.getInstance(null, null, null, null, 0, 0);
+        return station;
     }
 
 }

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 @Getter
@@ -18,17 +20,10 @@ public class ClientService {
     private ClientFactory clientFactory;
 
     public ClientService(@Autowired StationService stationService, @Autowired TicketGenerator ticketGenerator) {
-        Station station = stationService.getStationInstance();
-        if(station.getServiceTimeRange().getMinTime() == station.getServiceTimeRange().getMaxTime()) {
-            clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(station.getServiceTimeRange().getMaxTime()),
-                                                  stationService,
-                                                  ticketGenerator);
+        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(LocalTime.ofSecondOfDay(5L)),
+                                              stationService,
+                                              ticketGenerator);
 
-        } else {
-            clientFactory = new ClientFactoryImpl(new RandomGenerationStrategy(station.getServiceTimeRange()),
-                                                  stationService,
-                                                  ticketGenerator);
-        }
     }
 
 
