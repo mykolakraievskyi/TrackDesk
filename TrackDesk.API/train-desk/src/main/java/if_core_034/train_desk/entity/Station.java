@@ -13,6 +13,7 @@ public class Station {
     private TimeRange serviceTimeRange;
     private int currClientNumber;
     private int maxClientCapacity;
+    private volatile boolean isClosed;
 
     private Station(List<Entrance> entrances,
                     List<CashDesk> cashDesks,
@@ -26,6 +27,7 @@ public class Station {
         this.serviceTimeRange = serviceTimeRange;
         this.currClientNumber = currClientNumber;
         this.maxClientCapacity = maxClientCapacity;
+        this.isClosed = false;
     }
 
     public static Station getInstance(List<Entrance> entrances,
@@ -43,7 +45,6 @@ public class Station {
 
             }
         }
-
         return instance;
     }
 }

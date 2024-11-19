@@ -14,13 +14,4 @@ public class CashDesk {
     private boolean isReserve;
     private boolean isOperational;
 
-    boolean serveClient(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
-    }
-    void open(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
-    }
-    void close(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
-    }
 }
