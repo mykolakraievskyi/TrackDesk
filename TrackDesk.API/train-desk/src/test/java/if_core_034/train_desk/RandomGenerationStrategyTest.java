@@ -49,4 +49,13 @@ class RandomGenerationStrategyTest {
 		assertEquals("minTime cannot be after maxTime", exception.getMessage());
 	}
 
+	@Test
+	void testGetNextArrivalTime_NullTimeRange() {
+		strategy = new RandomGenerationStrategy(null);
+
+		Exception exception = assertThrows(NullPointerException.class, strategy::getNextArrivalTime,
+				"Should throw NullPointerException when range is not set");
+		assertEquals("Range is not set", exception.getMessage());
+	}
+
 }
