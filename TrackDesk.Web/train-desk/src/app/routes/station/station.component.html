@@ -5,6 +5,11 @@
       [ngStyle]="getClientStyle(client)"
       class="client"></div>
     <div [ngStyle]="getCashDeskStyle(reserveCashDesk)" class="cash-desk"></div>
+<div *ngFor="let place of deskPlaces" [ngStyle]="getCashPlaceStyle(place)" (click)="onPlaceClick(place.id)">
+
+  Place {{ place.id }}
+
+</div>
     <div
       *ngFor="let cashDesk of activeCashDesks"
       [ngStyle]="getCashDeskStyle(cashDesk)"

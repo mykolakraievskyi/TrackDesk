@@ -7,6 +7,12 @@ import { BaseEntry, Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 import { ConfResponse } from '../../features/models/conf-response.model';
+import { Position } from '../../features/models/position.model';
+
+interface deskPlace {
+  id: number;
+  position: Position;
+}
 
 @Component({
   selector: 'app-station',
@@ -21,6 +27,9 @@ export class StationComponent implements OnInit {
   entries: Entry[] = [];
   activeEntries: Entry[] = [];
   activeCashDesks: CashDesk[] = [];
+  deskPlaces: deskPlace[] = [];
+  selectedPlaces: number[] = [];
+  requiredPlacesNum: number = 0;
   reserveCashDesk: CashDesk = new BaseCashDesk(
     0,
     { x: 800, y: 20 },
@@ -33,6 +42,9 @@ export class StationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initializePlaces();
+    console.log('Desk Places:', this.deskPlaces);
+
     this.initializeCashDesks();
     this.initializeEntries();
     this.applyConfig();
@@ -48,10 +60,43 @@ export class StationComponent implements OnInit {
 
   applyConfig(): void {
     this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.activeCashDesks = response.cashRegisters.map(
-        index => this.cashDesks[index - 1]
-      );
-      this.activeEntries = response.entry.map(index => this.entries[index - 1]);
+      this.requiredPlacesNum = response.cashRegisters.length; 
+
+      console.log(this.requiredPlacesNum);
+
+      // .map(     
+      //   index => this.cashDesks[index - 1]
+      // );
+
+      if (response?.entry?.length > 0) {
+        this.activeEntries = response.entry.map(
+          index => this.entries[index - 1]
+        );
+      } else {
+        console.warn('No entries available in the response.');
+        this.activeEntries = []; 
+      }
+    });
+  }
+
+  onPlaceClick(id: number): void {
+  
+
+        if (this.selectedPlaces.length < this.requiredPlacesNum) {
+          this.selectedPlaces.push(id);
+          console.log(`Place ${id} clicked!`);
+          this.activateCashDesks();
+        }
+  
+  }
+
+  activateCashDesks(): void {
+    this.selectedPlaces.forEach(id => {
+      const desk = this.cashDesks.find(d => d.id === id);
+      if (desk && !this.activeCashDesks.includes(desk)) {
+        this.activeCashDesks.push(desk);
+        console.log(`CashDesk ${id} activated!`);
+      }
     });
   }
 
@@ -70,6 +115,24 @@ export class StationComponent implements OnInit {
     );
 
     this.clients.push(newClient);
+  }
+
+  addPlaceOfDesk(id: number): void {
+    while (this.activeCashDesks.length < this.requiredPlacesNum) {
+      this.activeCashDesks.push(this.cashDesks[id + 1]);
+    }
+  }
+
+  initializePlaces(): void {
+    this.deskPlaces.push({ id: 1, position: { x: 360, y: 20 } });
+    this.deskPlaces.push({ id: 2, position: { x: 470, y: 20 } });
+    this.deskPlaces.push({ id: 3, position: { x: 700, y: 400 } });
+    this.deskPlaces.push({ id: 4, position: { x: 810, y: 400 } });
+    this.deskPlaces.push({ id: 5, position: { x: 920, y: 400 } });
+    this.deskPlaces.push({ id: 6, position: { x: 600, y: 200 } });
+    this.deskPlaces.push({ id: 7, position: { x: 680, y: 200 } });
+    this.deskPlaces.push({ id: 8, position: { x: 220, y: 310 } });
+    this.deskPlaces.push({ id: 9, position: { x: 310, y: 310 } });
   }
 
   initializeCashDesks(): void {
@@ -107,6 +170,20 @@ export class StationComponent implements OnInit {
         this.activeCashDesks
       );
     });
+  }
+
+  getCashPlaceStyle(place: deskPlace): any {
+    return {
+      position: 'absolute',
+      left: `${place.position.x}px`,
+      top: `${place.position.y}px`,
+      width: '110px',
+      height: '110px',
+      backgroundColor: 'rgba(0, 255, 0, 0.5)',
+      cursor: 'pointer', 
+      border: '2px dashed #000',
+      zIndex: 10, 
+    };
   }
 
   getClientStyle(client: Client): any {
