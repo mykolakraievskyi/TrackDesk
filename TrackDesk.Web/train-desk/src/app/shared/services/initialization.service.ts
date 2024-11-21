@@ -7,12 +7,19 @@ import { Client } from '../../features/models/client.model';
 export interface DeskPlace {
   id: number;
   position: Position;
+  isSelected?: boolean;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class InitService {
+  private selectedPlace: DeskPlace | null = null;
+
+  selectPlace(place: DeskPlace): void {
+    place.isSelected = true; 
+  }
+
   initializeCashDesks(): CashDesk[] {
     return [
       new BaseCashDesk(1, { x: 420, y: 20 }, 'cash-desk'),
@@ -61,7 +68,7 @@ export class InitService {
       top: `${place.position.y}px`,
       width: '80px',
       height: '80px',
-      backgroundColor: '#C3D3DD68',
+      backgroundColor: place.isSelected ? '#227CB168' : '#C3D3DD68',
       cursor: 'pointer',
       border: '3px dashed #00000098',
       borderRadius: '10px',

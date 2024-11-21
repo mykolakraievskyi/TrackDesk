@@ -12,7 +12,7 @@ export class LogComponent {
    logsArray = [
     {
       name: 'Oleh',
-      description: 'student',
+      description: 'gay',
     },
     {
       name: 'Nastya',

@@ -91,6 +91,7 @@
       margin-top: 20px;
       margin: 20px auto;
       display: block;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
 
       &:hover {
         transform: translateY(-5px);
@@ -131,4 +132,9 @@
     border-width: 0 3px 3px 0;
     transform: rotate(45deg);
   }
+}
+
+.rand-time {
+  width: 43% !important;
+  margin-right: 20px;
 }
