@@ -52,6 +52,7 @@ export class StationComponent implements OnInit {
   }
 
   generateClientsPeriodically(): void {
+
     setInterval(() => {
       this.generateClient();
       this.moveClientsToCashDesks();
@@ -60,11 +61,11 @@ export class StationComponent implements OnInit {
 
   applyConfig(): void {
     this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.requiredPlacesNum = response.cashRegisters.length; 
+      this.requiredPlacesNum = response.cashRegisters.length;
 
       console.log(this.requiredPlacesNum);
 
-      // .map(     
+      // .map(
       //   index => this.cashDesks[index - 1]
       // );
 
@@ -74,20 +75,17 @@ export class StationComponent implements OnInit {
         );
       } else {
         console.warn('No entries available in the response.');
-        this.activeEntries = []; 
+        this.activeEntries = [];
       }
     });
   }
 
   onPlaceClick(id: number): void {
-  
-
-        if (this.selectedPlaces.length < this.requiredPlacesNum) {
-          this.selectedPlaces.push(id);
-          console.log(`Place ${id} clicked!`);
-          this.activateCashDesks();
-        }
-  
+    if (this.selectedPlaces.length < this.requiredPlacesNum) {
+      this.selectedPlaces.push(id);
+      console.log(`Place ${id} clicked!`);
+      this.activateCashDesks();
+    }
   }
 
   activateCashDesks(): void {
@@ -114,13 +112,13 @@ export class StationComponent implements OnInit {
       randomType
     );
 
-    this.clients.push(newClient);
-  }
+     if (this.selectedPlaces.length == this.requiredPlacesNum) {
+       console.log('All places are already selected!');
+       //this.generateClientsPeriodically();
+             this.clients.push(newClient);
 
-  addPlaceOfDesk(id: number): void {
-    while (this.activeCashDesks.length < this.requiredPlacesNum) {
-      this.activeCashDesks.push(this.cashDesks[id + 1]);
-    }
+     }
+    
   }
 
   initializePlaces(): void {
