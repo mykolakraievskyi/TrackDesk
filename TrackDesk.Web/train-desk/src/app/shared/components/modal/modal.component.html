@@ -1,0 +1,25 @@
+<div *ngIf="isOpen" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Welcome to Train Station Simulator!</h2>
+    </div>
+    <div class="modal-body">
+      <p>
+       - To start the simulation, you need to set up the positions of the cash desks on the available spots.
+      </p>
+      <p>
+       - You have <strong>{{deskNum}} available cash desks</strong> to place on the blue dashed squares shown on the screen.
+        <strong>Click on any square to place a cash desk.</strong>
+      </p>
+      <p>
+        - Once all {{deskNum}} cash desks are placed, the simulation will begin.
+      </p>
+      <p>
+        <a routerLink="/station" (click)="openModal()">Start Game</a>
+      </p>
+      <p class="light">
+        *If you want to return to the settings, click the "Menu" button in the top left corner.
+      </p>
+    </div>
+  </div>
+</div>

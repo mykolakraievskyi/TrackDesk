@@ -203,3 +203,13 @@
   width: 140px;
   height: auto;
 }
+
+.menu{
+  cursor: pointer;
+  height: 30px;
+  width: 70px;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 10;
+}

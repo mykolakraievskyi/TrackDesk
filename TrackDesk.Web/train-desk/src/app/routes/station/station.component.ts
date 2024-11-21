@@ -12,11 +12,13 @@ import {
   InitService,
 } from '../../shared/services/initialization.service';
 import { ClientService } from '../../features/components/client/client.service';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-station',
   standalone: true,
-  imports: [CommonModule, LogComponent],
+  imports: [CommonModule, LogComponent, ModalComponent, RouterModule],
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
@@ -76,7 +78,6 @@ export class StationComponent implements OnInit {
           index => this.entries[index - 1]
         );
       } else {
-        console.warn('No entries available in the response.');
         this.activeEntries = [];
       }
     });
@@ -86,6 +87,13 @@ export class StationComponent implements OnInit {
     if (this.selectedPlaces.length < this.requiredPlacesNum) {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
+      this.selectPlace(this.deskPlaces[id - 1]);
+    }
+  }
+
+  selectPlace(place: DeskPlace): void {
+    if (!place.isSelected) {
+      this.initService.selectPlace(place);
     }
   }
 
