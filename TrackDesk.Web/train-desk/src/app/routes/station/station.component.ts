@@ -124,21 +124,21 @@ export class StationComponent implements OnInit {
   }
 
   initializePlaces(): void {
-    this.deskPlaces.push({ id: 1, position: { x: 360, y: 20 } });
-    this.deskPlaces.push({ id: 2, position: { x: 470, y: 20 } });
+    this.deskPlaces.push({ id: 1, position: { x: 420, y: 40 } });
+    this.deskPlaces.push({ id: 2, position: { x: 520, y: 40 } });
     this.deskPlaces.push({ id: 3, position: { x: 700, y: 400 } });
     this.deskPlaces.push({ id: 4, position: { x: 810, y: 400 } });
     this.deskPlaces.push({ id: 5, position: { x: 920, y: 400 } });
     this.deskPlaces.push({ id: 6, position: { x: 600, y: 200 } });
-    this.deskPlaces.push({ id: 7, position: { x: 680, y: 200 } });
+    this.deskPlaces.push({ id: 7, position: { x: 700, y: 200 } });
     this.deskPlaces.push({ id: 8, position: { x: 220, y: 310 } });
     this.deskPlaces.push({ id: 9, position: { x: 310, y: 310 } });
   }
 
   initializeCashDesks(): void {
     //this.cashDesks.push(new BaseCashDesk(0, { x: 800, y: 20 }, 'cash-desk')); //reserve cash-desk
-    this.cashDesks.push(new BaseCashDesk(1, { x: 360, y: 20 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(2, { x: 470, y: 20 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(1, { x: 420, y: 20 }, 'cash-desk'));
+    this.cashDesks.push(new BaseCashDesk(2, { x: 520, y: 20 }, 'cash-desk'));
     this.cashDesks.push(new BaseCashDesk(3, { x: 700, y: 400 }, 'cash-desk'));
     this.cashDesks.push(new BaseCashDesk(4, { x: 810, y: 400 }, 'cash-desk'));
     this.cashDesks.push(new BaseCashDesk(5, { x: 920, y: 400 }, 'cash-desk'));
@@ -177,12 +177,13 @@ export class StationComponent implements OnInit {
       position: 'absolute',
       left: `${place.position.x}px`,
       top: `${place.position.y}px`,
-      width: '110px',
-      height: '110px',
-      backgroundColor: 'rgba(0, 255, 0, 0.5)',
-      cursor: 'pointer', 
-      border: '2px dashed #000',
-      zIndex: 10, 
+      width: '80px',
+      height: '80px',
+      backgroundColor: '#C3D3DD68',
+      cursor: 'pointer',
+      border: '3px dashed #00000098',
+      borderRadius: '10px',
+      zIndex: 10,
     };
   }
 
