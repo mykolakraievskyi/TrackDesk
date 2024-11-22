@@ -12,4 +12,5 @@ public class ClientDto {
     private ClientStatus clientStatus;
     private int cashDeskId;
     private int entranceId;
+    private int CashRegisterId;
 }

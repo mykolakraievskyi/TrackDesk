@@ -14,4 +14,9 @@ public class CashDesk {
     private boolean isReserve;
     private boolean isOperational;
 
+    public long getPotentialQueuePosition(Client client) {
+        return queue.stream().
+                filter(c -> c.getStatus().compareTo(client.getStatus()) >= 0)
+                .count();
+    }
 }
