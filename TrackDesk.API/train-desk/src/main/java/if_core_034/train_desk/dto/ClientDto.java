@@ -10,5 +10,6 @@ import lombok.Data;
 public class ClientDto {
     private int id;
     private ClientStatus clientStatus;
+    private int cashDeskId;
     private int entranceId;
 }
