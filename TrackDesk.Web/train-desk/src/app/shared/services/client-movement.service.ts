@@ -52,7 +52,7 @@ export class MovementService {
         return;
       }
 
-      let newPosition = {
+      const newPosition = {
         x:
           client.position.x +
           Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX)),
@@ -66,8 +66,8 @@ export class MovementService {
   }
 
   correctPosition(oldPosition: Position, newPosition: Position): Position {
-    let position: Position = newPosition;
-    for (let obstacle of this.staticObstacles) {
+    const position: Position = newPosition;
+    for (const obstacle of this.staticObstacles) {
       if (
         newPosition.x > obstacle.topLeft.x &&
         newPosition.x < obstacle.bottobRigth.x &&

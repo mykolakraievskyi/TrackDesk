@@ -19,7 +19,7 @@
       @for (log of logsArray; track $index; let i = $index) {
         <div class="table-row">
             <div class="cell">{{i+1}}</div>
-            <div class="cell">{{log.name + "(" + log.description + ")"}}</div>
+            <div class="cell">{{log.description}}</div>
           </div>
       }
     </div>

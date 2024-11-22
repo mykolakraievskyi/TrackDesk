@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit} from '@angular/core';
 import { BaseClient, Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
@@ -7,6 +7,7 @@ import { BaseEntry, Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 import { ConfResponse } from '../../features/models/conf-response.model';
+import { StompService } from '../../shared/services/websocket.service';
 
 @Component({
   selector: 'app-station',
@@ -15,7 +16,7 @@ import { ConfResponse } from '../../features/models/conf-response.model';
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
-export class StationComponent implements OnInit {
+export class StationComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
   entries: Entry[] = [];
@@ -28,7 +29,7 @@ export class StationComponent implements OnInit {
   );
   movementService: MovementService;
 
-  constructor(private confService: ConfigurationService) {
+  constructor(private confService: ConfigurationService, private socketService: StompService) {
     this.movementService = new MovementService();
   }
 
@@ -37,10 +38,17 @@ export class StationComponent implements OnInit {
     this.initializeEntries();
     this.applyConfig();
     this.generateClientsPeriodically();
+    this.socketService.connect("http://localhost:8080/ws")
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.unsubscribe("/client/generate");
+    this.socketService.disconnect();
   }
 
   generateClientsPeriodically(): void {
     setInterval(() => {
+      this.socketService.listen("/client/generate").subscribe(message => console.log("Client:", message));
       this.generateClient();
       this.moveClientsToCashDesks();
     }, 3000);
