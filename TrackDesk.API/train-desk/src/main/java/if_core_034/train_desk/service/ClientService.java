@@ -19,15 +19,15 @@ import java.time.LocalTime;
 public class ClientService {
     private ClientFactory clientFactory;
 
-    public ClientService(@Autowired StationService stationService, @Autowired TicketGenerator ticketGenerator) {
+    public ClientService(@Autowired TicketGenerator ticketGenerator) {
         this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(LocalTime.ofSecondOfDay(5L)),
-                                              stationService,
                                               ticketGenerator);
 
     }
 
 
     public Client generateClient() {
+        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(LocalTime.ofSecondOfDay(5L)), new TicketGenerator());
         return this.clientFactory.generateClient();
     }
 

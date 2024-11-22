@@ -18,7 +18,7 @@ public class ClientController {
     private final ClientService clientService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @Scheduled(fixedRate = 5000, initialDelay = 150000)
+    @Scheduled(fixedRate = 5000, initialDelay = 5000)
     public void generateClient() {
         Client client = clientService.generateClient();
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), client.getEntrance().getId());

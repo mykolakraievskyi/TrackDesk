@@ -2,6 +2,7 @@ package if_core_034.train_desk.controller;
 
 import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.service.StationService;
+import if_core_034.train_desk.dto.StationOpenCloseDto;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,7 +42,7 @@ public class StationController {
 
     @Scheduled(fixedRate = 5000)
     public void sendCloseMessage() {
-        simpMessagingTemplate.convertAndSendToUser("standardUser", "/station/close/message", true);
+        simpMessagingTemplate.convertAndSendToUser("standardUser", "/close/message", new StationOpenCloseDto(true));
     }
 
 

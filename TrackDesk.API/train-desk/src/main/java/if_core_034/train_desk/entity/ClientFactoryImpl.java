@@ -14,12 +14,11 @@ import java.util.Random;
 public class ClientFactoryImpl implements ClientFactory {
     @Getter
     private final ClientGenerationStrategy clientGenerationStrategy;
-    private final StationService stationService;
     private final TicketGenerator ticketGenerator;
 
-    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy, @Autowired StationService stationService, @Autowired TicketGenerator ticketGenerator) {
+    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy, @Autowired TicketGenerator ticketGenerator) {
         this.clientGenerationStrategy = clientGenerationStrategy;
-        this.stationService = stationService;
+
         this.ticketGenerator = ticketGenerator;
     }
 
@@ -28,8 +27,9 @@ public class ClientFactoryImpl implements ClientFactory {
     public Client generateClient() {
         Random random = new Random();
         ClientStatus[] clientStatusesArr = ClientStatus.values();
-        Station station = stationService.getStationInstance();
-        Entrance entrance = station.getEntrances().get(random.nextInt(station.getEntrances().size()));
+//        Station station = stationService.getStationInstance();
+//        Entrance entrance = station.getEntrances().get(random.nextInt(station.getEntrances().size()));
+        Entrance entrance = new Entrance(1, new Position(10, 10));
         return new Client(random.nextInt(), clientStatusesArr[random.nextInt(clientStatusesArr.length)],
                           generateTickets(), entrance, entrance.getPosition());
     }
