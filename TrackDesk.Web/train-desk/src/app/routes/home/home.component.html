@@ -67,12 +67,14 @@
         name="secondsStart" />
       } @if(timeOption === 'random'){
       <input
+        class="rand-time"
         type="number"
         id="start-time"
         placeholder="Start time (2-10 sec)"
         [(ngModel)]="secondsStart"
         name="secondsStart" />
       <input
+        class="rand-time"
         type="number"
         id="end-time"
         placeholder="End time (2-10 sec)"
