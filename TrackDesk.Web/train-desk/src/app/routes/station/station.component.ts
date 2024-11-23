@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
@@ -6,7 +6,6 @@ import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
-import { ConfResponse } from '../../features/models/conf-response.model';
 import {
   DeskPlace,
   InitService,
@@ -14,6 +13,7 @@ import {
 import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { RouterModule } from '@angular/router';
+import { StompService } from '../../shared/services/websocket.service';
 
 @Component({
   selector: 'app-station',
@@ -22,79 +22,69 @@ import { RouterModule } from '@angular/router';
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
-export class StationComponent implements OnInit {
+export class StationComponent implements OnInit , OnDestroy{
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
-  entries: Entry[] = [];
   activeEntries: Entry[] = [];
   activeCashDesks: CashDesk[] = [];
   deskPlaces: DeskPlace[] = [];
   selectedPlaces: number[] = [];
-  requiredPlacesNum: number = 0;
   reserveCashDesk: CashDesk = new BaseCashDesk(
     0,
     { x: 800, y: 20 },
     'cash-desk'
   );
-  movementService: MovementService;
+  movementService = inject(MovementService);
+  confService = inject(ConfigurationService);
+  private clientService = inject(ClientService);
+  private initService = inject(InitService);
+  private socketService = inject(StompService);
 
-  constructor(
-    private clientService: ClientService,
-    private initService: InitService,
-    private entryService: InitService,
-    private confService: ConfigurationService
-  ) {
-    this.movementService = new MovementService();
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
-    this.entries = this.entryService.initializeEntries();
-    this.applyConfig();
+    this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
     this.generateClientsPeriodically();
   }
 
+  ngOnDestroy(): void {
+    this.socketService.unsubscribe("/station/standardUser/client/generate");
+    this.socketService.disconnect();
+  }
+
   generateClientsPeriodically(): void {
-    setInterval(() => {
-      const newClient = this.clientService.generateClient(
-        this.activeEntries,
-        this.selectedPlaces,
-        this.requiredPlacesNum
-      );
+    this.socketService.listen("/station/standardUser/client/generate").subscribe((data)=>
+    {
+      const entryPosition = this.activeEntries.filter(e => e.id === data.entranceId)[0].position;
+      console.log(data)
+      const newClient = this.clientService.generateClient(data.id, entryPosition, data.cashDeskId, data.clientStatus)
       if (newClient) this.clients.push(newClient);
+      console.log(newClient);
       this.clientService.moveClientsToCashDesks(
         this.clients,
         this.activeCashDesks
       );
-    }, 3000);
-  }
-
-  applyConfig(): void {
-    this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.requiredPlacesNum = response.cashRegisters.length;
-      if (response?.entry?.length > 0) {
-        this.activeEntries = response.entry.map(
-          index => this.entries[index - 1]
-        );
-      } else {
-        this.activeEntries = [];
-      }
     });
   }
 
   onPlaceClick(id: number): void {
-    if (this.selectedPlaces.length < this.requiredPlacesNum) {
+    if (this.selectedPlaces.length < this.confService.CashRegisters) {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);
+    }
+    if(this.selectedPlaces.length === this.confService.CashRegisters){
+      this.confService.configEntiesAndCashDesks(this.activeEntries, this.activeCashDesks);
+      this.confService.setConfiguration();
     }
   }
 
   selectPlace(place: DeskPlace): void {
     if (!place.isSelected) {
       this.initService.selectPlace(place);
-    }
+  }
   }
 
   activateCashDesks(): void {

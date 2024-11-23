@@ -15,7 +15,8 @@ export class BaseClient implements Client {
   constructor(
     public id: number,
     public position: Position,
-    public type: 'regular' | 'privileged'
+    public type: 'regular' | 'privileged',
+    public targetCashDeskId: number
   ) {
     this.image = this.getImagePath();
   }

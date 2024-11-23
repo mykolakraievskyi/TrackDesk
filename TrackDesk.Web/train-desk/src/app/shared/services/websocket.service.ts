@@ -1,54 +1,82 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Client, Message, StompSubscription } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
+import { Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class WebSocketService {
-  private socket!: WebSocket;
-  private messages$: Subject<any> = new Subject();
+export class StompService {
+  private client!: Client;
+  private subscriptions: Map<string, StompSubscription> = new Map();
 
   connect(url: string): void {
-    this.socket = new WebSocket(url);
+    this.client = new Client({
+      brokerURL: url,
+      webSocketFactory: () => new SockJS(url),
+      reconnectDelay: 5000,
+      debug: (str) => console.log('STOMP Debug:', str),
+    });
 
-    this.socket.onmessage = event => {
-      const data = JSON.parse(event.data);
-      this.messages$.next(data);
+    this.client.onConnect = () => {
+      console.log('STOMP connected');
     };
 
-    this.socket.onerror = event => {
-      console.error('WebSocket error:', event);
+    this.client.onStompError = (frame) => {
+      console.error('STOMP Error:', frame.headers['message']);
+      console.error('Details:', frame.body);
     };
 
-    this.socket.onclose = event => {
-      console.log('WebSocket closed:', event);
-    };
+    this.client.activate();
   }
 
-  emit(eventName: string, data: any): void {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({ event: eventName, data });
-      this.socket.send(message);
-    } else {
-      console.error('WebSocket is not open.');
-    }
-  }
+  listen(topic: string): Observable<any> {
+    return new Observable((observer) => {
+      if (this.subscriptions.has(topic)) {
+        console.warn(`Not subscribed to topic: ${topic}`);
+        return;
+      }
 
-  listen(eventName: string): Observable<any> {
-    return new Observable(observer => {
-      const subscription = this.messages$.subscribe(message => {
-        if (message.event === eventName) {
-          observer.next(message.data);
-        }
+      const subscription = this.client.subscribe(topic, (message: Message) => {
+        const data = JSON.parse(message.body);
+        observer.next(data);
       });
 
-      return () => subscription.unsubscribe();
+      this.subscriptions.set(topic, subscription);
+
+      return () => {
+        this.unsubscribe(topic);
+      };
     });
   }
 
+  emit(destination: string, body: any): void {
+    if (this.client && this.client.connected) {
+      this.client.publish({
+        destination: destination,
+        body: JSON.stringify(body),
+      });
+    } else {
+      console.error('STOMP Client is not connected.');
+    }
+  }
+
+  unsubscribe(topic: string): void {
+    const subscription = this.subscriptions.get(topic);
+    if (subscription) {
+      subscription.unsubscribe();
+      this.subscriptions.delete(topic);
+      console.log(`Unsubscribed from topic: ${topic}`);
+    } else {
+      console.warn(`No subscription found for topic: ${topic}`);
+    }
+  }
+
   disconnect(): void {
-    if (this.socket) {
-      this.socket.close();
+    if (this.client) {
+      this.client.deactivate();
+      this.subscriptions.clear();
+      console.log('STOMP disconnected');
     }
   }
 }

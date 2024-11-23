@@ -37,7 +37,7 @@ export class BaseCashDesk implements CashDesk {
   }
 
   peekClient(): Client | null {
-    if ((this.clientQueue.length = 0)) {
+    if ((this.clientQueue.length == 0)) {
       return null;
     } else {
       return this.clientQueue[0];
