@@ -24,10 +24,20 @@
         stompClient.connect({}, function (frame) {
           document.getElementById("status").innerText = "Status: Connected";
 
+          stompClient.subscribe(
+            "/station/standardUser/client/generate",
+            function (message) {
+              showMessage(message.body);
+            }
+          );
+
           // Subscribe to the /station topic
-          stompClient.subscribe("/station/1/open/message", function (message) {
-            showMessage(message.body);
-          });
+          stompClient.subscribe(
+            "/station/standardUser/close/message",
+            function (message) {
+              showMessage(message.body);
+            }
+          );
 
           console.log("Connected: " + frame);
         });

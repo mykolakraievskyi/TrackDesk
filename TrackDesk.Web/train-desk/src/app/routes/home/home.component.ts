@@ -30,27 +30,26 @@ export class HomeComponent {
   timeMin = TIME_MIN;
   timeMax = TIME_MAX;
 
-  Exit: number = 1;
-  Entry: number = 1;
+  exits: number = 1;
+  entrances: number = 1;
   CashRegisters: number = 2;
   secondsStart: number = 2;
   secondsEnd: number = 2;
   timeOption: 'random' | 'static' = 'random';
 
   onStartClick() {
-    if (this.validateData() === true) {
+    if (this.validateData()) {
       if (this.timeOption === 'static') {
         this.secondsEnd = this.secondsStart;
       }
-      this.configurationService
-        .setBaseConfiguration(
-          this.CashRegisters,
-          this.Entry,
-          this.Exit,
-          this.secondsStart,
-          this.secondsEnd
-        );
-        this.router.navigate(['station']);
+      this.configurationService.setBaseConfiguration(
+        this.CashRegisters,
+        this.entrances,
+        this.exits,
+        this.secondsStart,
+        this.secondsEnd
+      );
+      this.router.navigate(['station']);
     } else {
       alert('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
     }
@@ -58,10 +57,13 @@ export class HomeComponent {
 
   validateData(): boolean {
     let result: boolean = true;
-    if (this.Exit < this.entryExitMin || this.Exit > this.entryExitMax) {
+    if (this.exits < this.entryExitMin || this.exits > this.entryExitMax) {
       result = false;
     }
-    if (this.Entry < this.entryExitMin || this.Entry > this.entryExitMax) {
+    if (
+      this.entrances < this.entryExitMin ||
+      this.entrances > this.entryExitMax
+    ) {
       result = false;
     }
     if (

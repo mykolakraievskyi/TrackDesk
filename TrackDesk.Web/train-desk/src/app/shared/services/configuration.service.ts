@@ -8,7 +8,7 @@ import { CashDesk } from '../../features/models/cash-desk.model';
   providedIn: 'root',
 })
 export class ConfigurationService {
-  private apiUrl = 'https://'; 
+  private apiUrl = 'https://';
 
   constructor(private http: HttpClient) {}
 
@@ -54,8 +54,8 @@ export class ConfigurationService {
     }));
 
     console.log(formattedCashDesks);
-    
-    
+
+
     this.configuration = this.http.post(`http://127.0.0.1:8080/api/v1/configuration`, {
       cashDeskDtos: formattedCashDesks,
       entrances: formatedEntries,
@@ -70,7 +70,7 @@ export class ConfigurationService {
       }
     });
   }
-  
+
   getConfiguration(): Observable<any> | null {
     if (!this.configuration) {
       console.warn('Configuration has not been set.');

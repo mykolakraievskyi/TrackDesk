@@ -16,5 +16,5 @@ public class Ticket {
     private String arrivalStation;
     private LocalTime departureTime;
     private LocalTime arrivalTime;
-    private BigDecimal price;
+    private double price;
 }

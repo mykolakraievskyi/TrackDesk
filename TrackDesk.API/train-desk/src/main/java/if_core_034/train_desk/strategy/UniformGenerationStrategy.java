@@ -1,15 +1,27 @@
 package if_core_034.train_desk.strategy;
 
-import lombok.AllArgsConstructor;
+import if_core_034.train_desk.entity.TimeRange;
+
+import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Primary;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
+@Component
+@Primary
 public class UniformGenerationStrategy implements ClientGenerationStrategy {
     private LocalTime interval;
+
     public LocalTime getNextArrivalTime() {
         return this.interval;
+    }
+
+    public void updateTimeRange(TimeRange timeRange) {
+        this.interval = timeRange.getMaxTime();
     }
 }
