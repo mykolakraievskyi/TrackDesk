@@ -42,7 +42,9 @@ public class ClientController {
     public void generateClient() {
         Client client = clientService.generateClient();
         int cashDeskId = clientService.getBestCashRegisterId(client);
-        stationService.getStationInstance().getCashDesks().get(cashDeskId).getQueue().add(client);
+        stationService.getStationInstance().getCashDesks().stream()
+                                                          .filter(cashDesk -> cashDesk.getId() == cashDeskId)
+                                                          .findFirst().get().getQueue().add(client);
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId, client.getEntrance().getId());
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
