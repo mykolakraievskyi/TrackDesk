@@ -43,26 +43,21 @@ export class HomeComponent {
         this.secondsEnd = this.secondsStart;
       }
       this.configurationService
-        .setConfiguration(
+        .setBaseConfiguration(
           this.CashRegisters,
           this.Entry,
           this.Exit,
           this.secondsStart,
           this.secondsEnd
-        )
-        .subscribe({
-          next: response => {
-            this.router.navigate(['station']);
-          },
-          error: error => console.error('Помилка:', error),
-        });
+        );
+        this.router.navigate(['station']);
     } else {
       alert('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
     }
   }
 
   validateData(): boolean {
-    var result: boolean = true;
+    let result: boolean = true;
     if (this.Exit < this.entryExitMin || this.Exit > this.entryExitMax) {
       result = false;
     }

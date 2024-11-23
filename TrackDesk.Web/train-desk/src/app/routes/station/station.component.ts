@@ -76,7 +76,7 @@ export class StationComponent implements OnInit {
       if (response?.entry?.length > 0) {
         this.activeEntries = response.entry.map(
           index => this.entries[index - 1]
-        );
+      );
       } else {
         this.activeEntries = [];
       }
@@ -94,7 +94,7 @@ export class StationComponent implements OnInit {
   selectPlace(place: DeskPlace): void {
     if (!place.isSelected) {
       this.initService.selectPlace(place);
-    }
+  }
   }
 
   activateCashDesks(): void {

@@ -11,20 +11,34 @@ export class ConfigurationService {
   constructor(private http: HttpClient) {}
 
   configuration:Observable<any>|null = null;
+  CashRegisters!: number;
+  Entry!: number;
+  Exit!: number;
+  secondsStart!: number;
+  secondsEnd?: number;
 
-  setConfiguration(
+  setBaseConfiguration(
     CashRegisters: number,
     Entry: number,
     Exit: number,
     secondsStart: number,
     secondsEnd: number
-  ): Observable<any> {
+  ):void{
+    this.CashRegisters = CashRegisters;
+    this.Entry = Entry;
+    this.Exit =Exit;
+    this.secondsStart = secondsStart;
+    this.secondsEnd = secondsEnd;
+  }
+
+
+  setConfiguration(): Observable<any> {
     return this.configuration = this.http.post(`http://127.0.0.1:8080/conf`, {
-      CashRegisters,
-      Entry,
-      Exit,
-      secondsStart,
-      secondsEnd,
+      CashRegisters:this.CashRegisters,
+      Entry:this.Entry,
+      Exit:this.Exit,
+      secondsStart:this.secondsStart,
+      secondsEnd:this.secondsEnd,
     });
   }
   

@@ -11,7 +11,7 @@
 
     <div *ngIf="activeCashDesks.length < requiredPlacesNum">
       <div
-        *ngFor="let place of deskPlaces"
+        *ngFor="let place of deskPlaces" 
         [ngStyle]="getCashPlaceStyle(place)"
         (click)="onPlaceClick(place.id)"></div>
     </div>
