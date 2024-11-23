@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,7 @@ import {
 import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { RouterModule } from '@angular/router';
+import { StompService } from '../../shared/services/websocket.service';
 
 @Component({
   selector: 'app-station',
@@ -21,7 +22,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
-export class StationComponent implements OnInit {
+export class StationComponent implements OnInit , OnDestroy{
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
   activeEntries: Entry[] = [];
@@ -37,6 +38,7 @@ export class StationComponent implements OnInit {
   confService = inject(ConfigurationService);
   private clientService = inject(ClientService);
   private initService = inject(InitService);
+  private socketService = inject(StompService);
 
   constructor() {}
 
@@ -44,11 +46,18 @@ export class StationComponent implements OnInit {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
     this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
+    this.socketService.connect("http://localhost:8080/ws");
     this.generateClientsPeriodically();
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.unsubscribe("/station/standardUser/client/generate");
+    this.socketService.disconnect();
   }
 
   generateClientsPeriodically(): void {
     setInterval(() => {
+      this.socketService.listen("/station/standardUser/client/generate");
       const newClient = this.clientService.generateClient(
         this.activeEntries,
         this.selectedPlaces,
