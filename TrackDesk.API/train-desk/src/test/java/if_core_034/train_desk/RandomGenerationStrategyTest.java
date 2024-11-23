@@ -16,7 +16,8 @@ class RandomGenerationStrategyTest {
 	@Test
 	void testGetNextArrivalTime_ValidRange() {
 		timeRange = new TimeRange(LocalTime.of(10, 0), LocalTime.of(12, 0));
-		strategy = new RandomGenerationStrategy(timeRange);
+		strategy = new RandomGenerationStrategy();
+		strategy.updateTimeRange(timeRange);
 
 		for (int i = 0; i < 100; i++) {
 			LocalTime result = strategy.getNextArrivalTime();
@@ -31,7 +32,8 @@ class RandomGenerationStrategyTest {
 	void testGetNextArrivalTime_SameMinAndMaxTime() {
 		LocalTime fixedTime = LocalTime.of(15, 30);
 		timeRange = new TimeRange(fixedTime, fixedTime);
-		strategy = new RandomGenerationStrategy(timeRange);
+		strategy = new RandomGenerationStrategy();
+		strategy.updateTimeRange(timeRange);
 
 		for (int i = 0; i < 10; i++) { // Test multiple times to ensure consistency
 			LocalTime result = strategy.getNextArrivalTime();
@@ -42,7 +44,8 @@ class RandomGenerationStrategyTest {
 	@Test
 	void testGetNextArrivalTime_InvalidTimeRange() {
 		timeRange = new TimeRange(LocalTime.of(18, 0), LocalTime.of(16, 0));
-		strategy = new RandomGenerationStrategy(timeRange);
+		strategy = new RandomGenerationStrategy();
+		strategy.updateTimeRange(timeRange);
 
 		Exception exception = assertThrows(IllegalArgumentException.class, strategy::getNextArrivalTime,
 				"Should throw IllegalArgumentException for invalid time range");
@@ -51,7 +54,8 @@ class RandomGenerationStrategyTest {
 
 	@Test
 	void testGetNextArrivalTime_NullTimeRange() {
-		strategy = new RandomGenerationStrategy(null);
+		strategy = new RandomGenerationStrategy();
+		strategy.updateTimeRange(null);
 
 		Exception exception = assertThrows(NullPointerException.class, strategy::getNextArrivalTime,
 				"Should throw NullPointerException when range is not set");
