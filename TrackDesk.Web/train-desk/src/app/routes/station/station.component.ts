@@ -12,7 +12,7 @@ import {
 } from '../../shared/services/initialization.service';
 import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { StompService } from '../../shared/services/websocket.service';
 
 @Component({
@@ -22,7 +22,7 @@ import { StompService } from '../../shared/services/websocket.service';
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
-export class StationComponent implements OnInit , OnDestroy{
+export class StationComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
   activeEntries: Entry[] = [];
@@ -40,43 +40,59 @@ export class StationComponent implements OnInit , OnDestroy{
   private initService = inject(InitService);
   private socketService = inject(StompService);
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
-    this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
+    if (this.confService.cashDeskNumber === 0) {
+      this.router.navigate(['home']);
+    }
+    this.activeEntries = this.initService.generateRandomEntries(
+      this.confService.entranceNumber
+    );
     this.generateClientsPeriodically();
   }
 
   ngOnDestroy(): void {
-    this.socketService.unsubscribe("/station/standardUser/client/generate");
+    this.socketService.unsubscribe('/station/standardUser/client/generate');
     this.socketService.disconnect();
   }
 
   generateClientsPeriodically(): void {
-    this.socketService.listen("/station/standardUser/client/generate").subscribe((data)=>
-    {
-      const entryPosition = this.activeEntries.filter(e => e.id === data.entranceId)[0].position;
-      console.log(data)
-      const newClient = this.clientService.generateClient(data.id, entryPosition, data.cashDeskId, data.clientStatus)
-      if (newClient) this.clients.push(newClient);
-      console.log(newClient);
-      this.clientService.moveClientsToCashDesks(
-        this.clients,
-        this.activeCashDesks
-      );
-    });
+    this.socketService
+      .listen('/station/standardUser/client/generate')
+      .subscribe(data => {
+        const entryPosition = this.activeEntries.filter(
+          e => e.id === data.entranceId
+        )[0].position;
+        console.log(data);
+        const newClient = this.clientService.generateClient(
+          data.id,
+          entryPosition,
+          data.cashDeskId,
+          data.clientStatus
+        );
+        if (newClient) this.clients.push(newClient);
+        console.log(newClient);
+        this.clientService.moveClientsToCashDesks(
+          this.clients,
+          this.activeCashDesks
+        );
+      });
   }
 
   onPlaceClick(id: number): void {
-    if (this.selectedPlaces.length < this.confService.CashRegisters) {
+    if (this.selectedPlaces.length < this.confService.cashDeskNumber) {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);
     }
-    if(this.selectedPlaces.length === this.confService.CashRegisters){
-      this.confService.configEntiesAndCashDesks(this.activeEntries, this.activeCashDesks);
+    if (this.selectedPlaces.length === this.confService.cashDeskNumber) {
+      this.confService.configEntiesAndCashDesks(
+        this.activeEntries,
+        this.activeCashDesks
+      );
       this.confService.setConfiguration();
     }
   }
@@ -84,7 +100,7 @@ export class StationComponent implements OnInit , OnDestroy{
   selectPlace(place: DeskPlace): void {
     if (!place.isSelected) {
       this.initService.selectPlace(place);
-  }
+    }
   }
 
   activateCashDesks(): void {

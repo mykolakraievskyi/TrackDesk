@@ -52,7 +52,7 @@ describe('HomeComponent', () => {
     it('should return true for valid data', () => {
       component.entrances = 2;
       component.exits = 2;
-      component.CashRegisters = 3;
+      component.cashRegisters = 3;
       component.secondsStart = 3;
       component.secondsEnd = 5;
       component.timeOption = 'random';
@@ -71,7 +71,7 @@ describe('HomeComponent', () => {
     });
 
     it('should return false if CashRegisters is out of range', () => {
-      component.CashRegisters = 1; // Out of range
+      component.cashRegisters = 1; // Out of range
       expect(component.validateData()).toBeFalse();
     });
 
