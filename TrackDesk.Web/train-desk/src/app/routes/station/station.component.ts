@@ -45,7 +45,7 @@ export class StationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
-    if (this.confService.cashDeskNumber === 0) {
+    if (!this.confService.cashDeskNumber) {
       this.router.navigate(['home']);
     }
     this.activeEntries = this.initService.generateRandomEntries(
