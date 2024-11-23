@@ -20,9 +20,10 @@ import java.util.List;
 @Getter
 public class ClientService {
     private final ClientFactory clientFactory;
+    private final StationService stationService;
+
 
     public Client generateClient() {
-//        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(), new TicketGenerator());
         return this.clientFactory.generateClient();
     }
 
@@ -32,16 +33,15 @@ public class ClientService {
                 5000L;
     }
 
-
-//    public int getBestCashRegisterId(Client client) {
-//        List<CashDesk> cashDesks = station.getCashDesks();
-//        Comparator<CashDesk> cc = Comparator.comparing((CashDesk cashDesk) -> cashDesk.getPotentialQueuePosition(client))
-//                .thenComparingDouble(cashDesk -> calculateDistance(client.getPosition(), cashDesk.getPosition()));
-//        CashDesk bestCashDesk = cashDesks.stream()
-//                .min(cc)
-//                .orElseThrow();
-//        return bestCashDesk.getId();
-//    }
+    public int getBestCashRegisterId(Client client) {
+        List<CashDesk> cashDesks = stationService.getStationInstance().getCashDesks();
+        Comparator<CashDesk> cc = Comparator.comparing((CashDesk cashDesk) -> cashDesk.getPotentialQueuePosition(client))
+                .thenComparingDouble(cashDesk -> calculateDistance(client.getPosition(), cashDesk.getPosition()));
+        CashDesk bestCashDesk = cashDesks.stream()
+                .min(cc)
+                .orElseThrow();
+        return bestCashDesk.getId();
+    }
 
     private double calculateDistance(Position p1, Position p2) {
         double deltaX = p1.getX() - p2.getX();

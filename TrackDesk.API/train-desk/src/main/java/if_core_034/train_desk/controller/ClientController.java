@@ -41,7 +41,8 @@ public class ClientController {
 //    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
     public void generateClient() {
         Client client = clientService.generateClient();
-        ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), 1, client.getEntrance().getId());
+        int cashDeskId = clientService.getBestCashRegisterId(client);
+        ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId, client.getEntrance().getId());
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
         station.setCurrClientNumber(station.getCurrClientNumber() + 1);

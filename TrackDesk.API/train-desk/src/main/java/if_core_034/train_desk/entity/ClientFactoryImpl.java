@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,21 +19,26 @@ public class ClientFactoryImpl implements ClientFactory {
     @Getter
     private final ClientGenerationStrategy clientGenerationStrategy;
     private final TicketGenerator ticketGenerator;
+    private final StationService stationService;
+    private int clientCounter;
 
-    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy,
-                             @Autowired TicketGenerator ticketGenerator) {
+    @Autowired
+    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy, TicketGenerator ticketGenerator, StationService stationService) {
         this.clientGenerationStrategy = clientGenerationStrategy;
         this.ticketGenerator = ticketGenerator;
+        this.stationService = stationService;
+        this.clientCounter = 0;
     }
 
 
     public Client generateClient() {
         Random random = new Random();
         ClientStatus[] clientStatusesArr = ClientStatus.values();
-//        Station station = stationService.getStationInstance();
-//        Entrance entrance = station.getEntrances().get(random.nextInt(station.getEntrances().size()));
-        Entrance entrance = new Entrance(1, new Position(10, 10));
-        return new Client(random.nextInt(), clientStatusesArr[random.nextInt(clientStatusesArr.length)],
+        Entrance entrance = stationService.getStationInstance().getEntrances()
+                                                               .get(random.nextInt(stationService.getStationInstance()
+                                                                                                 .getEntrances().size()));
+        this.clientCounter++;
+        return new Client(this.clientCounter, clientStatusesArr[random.nextInt(clientStatusesArr.length)],
                           generateTickets(), entrance, entrance.getPosition());
     }
 
