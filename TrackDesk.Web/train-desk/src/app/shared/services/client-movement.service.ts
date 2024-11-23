@@ -1,9 +1,14 @@
+import { Injectable } from '@angular/core';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
 import { StaticObstacle } from '../../features/models/obstacle.model';
 import { Position } from '../../features/models/position.model';
 
 const QUEUE_OFFSET = 32;
+
+@Injectable({
+  providedIn: 'root',
+})
 export class MovementService {
   private readonly speed: number = 5;
   private readonly staticObstacles: StaticObstacle[] = [];

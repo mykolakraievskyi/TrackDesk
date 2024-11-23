@@ -1,17 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseClient, Client } from '../../features/models/client.model';
+import { Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
 import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
-import { BaseEntry, Entry } from '../../features/models/entry.model';
+import { Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 import { ConfResponse } from '../../features/models/conf-response.model';
+import {
+  DeskPlace,
+  InitService,
+} from '../../shared/services/initialization.service';
+import { ClientService } from '../../features/components/client/client.service';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-station',
   standalone: true,
-  imports: [CommonModule, LogComponent],
+  imports: [CommonModule, LogComponent, ModalComponent, RouterModule],
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
@@ -21,6 +28,9 @@ export class StationComponent implements OnInit {
   entries: Entry[] = [];
   activeEntries: Entry[] = [];
   activeCashDesks: CashDesk[] = [];
+  deskPlaces: DeskPlace[] = [];
+  selectedPlaces: number[] = [];
+  requiredPlacesNum: number = 0;
   reserveCashDesk: CashDesk = new BaseCashDesk(
     0,
     { x: 800, y: 20 },
@@ -28,125 +38,87 @@ export class StationComponent implements OnInit {
   );
   movementService: MovementService;
 
-  constructor(private confService: ConfigurationService) {
+  constructor(
+    private clientService: ClientService,
+    private initService: InitService,
+    private entryService: InitService,
+    private confService: ConfigurationService
+  ) {
     this.movementService = new MovementService();
   }
 
   ngOnInit(): void {
-    this.initializeCashDesks();
-    this.initializeEntries();
+    this.deskPlaces = this.initService.initializeDeskPlaces();
+    this.cashDesks = this.initService.initializeCashDesks();
+    this.entries = this.entryService.initializeEntries();
     this.applyConfig();
     this.generateClientsPeriodically();
   }
 
   generateClientsPeriodically(): void {
     setInterval(() => {
-      this.generateClient();
-      this.moveClientsToCashDesks();
+      const newClient = this.clientService.generateClient(
+        this.activeEntries,
+        this.selectedPlaces,
+        this.requiredPlacesNum
+      );
+      if (newClient) this.clients.push(newClient);
+      this.clientService.moveClientsToCashDesks(
+        this.clients,
+        this.activeCashDesks
+      );
     }, 3000);
   }
 
   applyConfig(): void {
     this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.activeCashDesks = response.cashRegisters.map(
-        index => this.cashDesks[index - 1]
-      );
-      this.activeEntries = response.entry.map(index => this.entries[index - 1]);
+      this.requiredPlacesNum = response.cashRegisters.length;
+      if (response?.entry?.length > 0) {
+        this.activeEntries = response.entry.map(
+          index => this.entries[index - 1]
+        );
+      } else {
+        this.activeEntries = [];
+      }
     });
   }
 
-  generateClient(): void {
-    const clientTypes: ('regular' | 'privileged')[] = ['regular', 'privileged'];
-    const randomType: 'regular' | 'privileged' =
-      clientTypes[Math.floor(Math.random() * clientTypes.length)];
-
-    const randomEntry =
-      this.activeEntries[Math.floor(Math.random() * this.activeEntries.length)];
-
-    const newClient = new BaseClient(
-      Math.floor(Math.random() * 1000),
-      { x: randomEntry.position.x, y: randomEntry.position.y },
-      randomType
-    );
-
-    this.clients.push(newClient);
+  onPlaceClick(id: number): void {
+    if (this.selectedPlaces.length < this.requiredPlacesNum) {
+      this.selectedPlaces.push(id);
+      this.activateCashDesks();
+      this.selectPlace(this.deskPlaces[id - 1]);
+    }
   }
 
-  initializeCashDesks(): void {
-    //this.cashDesks.push(new BaseCashDesk(0, { x: 800, y: 20 }, 'cash-desk')); //reserve cash-desk
-    this.cashDesks.push(new BaseCashDesk(1, { x: 360, y: 20 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(2, { x: 470, y: 20 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(3, { x: 700, y: 400 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(4, { x: 810, y: 400 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(5, { x: 920, y: 400 }, 'cash-desk'));
-    this.cashDesks.push(new BaseCashDesk(6, { x: 600, y: 200 }, 'ticket-box'));
-    this.cashDesks.push(new BaseCashDesk(7, { x: 680, y: 200 }, 'ticket-box'));
-    this.cashDesks.push(new BaseCashDesk(8, { x: 220, y: 310 }, 'ticket-box'));
-    this.cashDesks.push(new BaseCashDesk(9, { x: 310, y: 310 }, 'ticket-box'));
+  selectPlace(place: DeskPlace): void {
+    if (!place.isSelected) {
+      this.initService.selectPlace(place);
+    }
   }
 
-  initializeEntries(): void {
-    this.entries.push(new BaseEntry(1, { x: 250, y: 580 }, 'entry-door'));
-    this.entries.push(new BaseEntry(2, { x: 410, y: 580 }, 'entry-door'));
-    this.entries.push(new BaseEntry(3, { x: 590, y: 580 }, 'entry-door'));
-    this.entries.push(new BaseEntry(4, { x: 770, y: 580 }, 'entry-door'));
-    this.entries.push(new BaseEntry(5, { x: 940, y: 580 }, 'entry-door'));
-    this.entries.push(new BaseEntry(6, { x: 1170, y: 300 }, 'entry'));
-    this.entries.push(new BaseEntry(7, { x: 1170, y: 410 }, 'entry'));
-    this.entries.push(new BaseEntry(8, { x: 1170, y: 520 }, 'entry'));
-  }
-
-  moveClientsToCashDesks(): void {
-    this.clients.forEach((client, index) => {
-      const targetCashDesk =
-        this.activeCashDesks[index % this.activeCashDesks.length];
-      this.movementService.moveClientToCashDesk(
-        client,
-        targetCashDesk,
-        this.clients,
-        this.activeCashDesks
-      );
+  activateCashDesks(): void {
+    this.selectedPlaces.forEach(id => {
+      const desk = this.cashDesks.find(d => d.id === id);
+      if (desk && !this.activeCashDesks.includes(desk)) {
+        this.activeCashDesks.push(desk);
+      }
     });
+  }
+
+  getCashPlaceStyle(place: DeskPlace): any {
+    return this.initService.getCashPlaceStyle(place);
   }
 
   getClientStyle(client: Client): any {
-    return {
-      position: 'absolute',
-      left: `${client.position.x}px`,
-      top: `${client.position.y}px`,
-      width: '60px',
-      height: '60px',
-      backgroundImage: `url(${client.image})`,
-      backgroundSize: 'cover',
-      zIndex: 1,
-    };
+    return this.initService.getClientStyle(client);
   }
 
   getEntryStyle(entry: Entry): any {
-    const isDoor = entry.type === 'entry-door';
-
-    return {
-      position: 'absolute',
-      left: `${entry.position.x}px`,
-      top: `${entry.position.y}px`,
-      width: isDoor ? '97px' : '52px',
-      height: isDoor ? '97px' : '80px',
-      backgroundImage: `url(${entry.image})`,
-      backgroundSize: 'cover',
-    };
+    return this.initService.getEntryStyle(entry);
   }
 
   getCashDeskStyle(cashDesk: CashDesk): any {
-    const isTicketBox = cashDesk.type === 'ticket-box';
-
-    return {
-      position: 'absolute',
-      left: `${cashDesk.position.x}px`,
-      top: `${cashDesk.position.y}px`,
-      width: isTicketBox ? '85px' : '110px',
-      height: isTicketBox ? '85px' : '110px',
-      backgroundImage: `url(${cashDesk.image})`,
-      backgroundSize: 'cover',
-    };
+    return this.initService.getCashDeskStyle(cashDesk);
   }
 }
