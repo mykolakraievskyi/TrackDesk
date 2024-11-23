@@ -25,7 +25,7 @@ class ClientFactoryImplTest {
         ticketGeneratorMock = mock(TicketGenerator.class);
         generationStrategyMock = mock(ClientGenerationStrategy.class);
 
-        clientFactory = new ClientFactoryImpl(generationStrategyMock, stationServiceMock, ticketGeneratorMock);
+        clientFactory = new ClientFactoryImpl(generationStrategyMock, ticketGeneratorMock);
     }
 
     @Test
