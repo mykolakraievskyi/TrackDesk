@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
@@ -30,22 +30,18 @@ export class StationComponent implements OnInit {
   activeCashDesks: CashDesk[] = [];
   deskPlaces: DeskPlace[] = [];
   selectedPlaces: number[] = [];
-  requiredPlacesNum: number = 0;
   reserveCashDesk: CashDesk = new BaseCashDesk(
     0,
     { x: 800, y: 20 },
     'cash-desk'
   );
-  movementService: MovementService;
+  movementService = inject(MovementService);
+  confService = inject(ConfigurationService);
+  private clientService = inject(ClientService);
+  private initService = inject(InitService);
+  private entryService = inject(InitService)
 
-  constructor(
-    private clientService: ClientService,
-    private initService: InitService,
-    private entryService: InitService,
-    private confService: ConfigurationService
-  ) {
-    this.movementService = new MovementService();
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
@@ -60,7 +56,7 @@ export class StationComponent implements OnInit {
       const newClient = this.clientService.generateClient(
         this.activeEntries,
         this.selectedPlaces,
-        this.requiredPlacesNum
+        this.confService.CashRegisters
       );
       if (newClient) this.clients.push(newClient);
       this.clientService.moveClientsToCashDesks(
@@ -72,7 +68,6 @@ export class StationComponent implements OnInit {
 
   applyConfig(): void {
     this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.requiredPlacesNum = response.cashRegisters.length;
       if (response?.entry?.length > 0) {
         this.activeEntries = response.entry.map(
           index => this.entries[index - 1]
@@ -84,7 +79,7 @@ export class StationComponent implements OnInit {
   }
 
   onPlaceClick(id: number): void {
-    if (this.selectedPlaces.length < this.requiredPlacesNum) {
+    if (this.selectedPlaces.length < this.confService.CashRegisters) {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);

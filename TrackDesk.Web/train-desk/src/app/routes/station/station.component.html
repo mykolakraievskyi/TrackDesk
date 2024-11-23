@@ -1,4 +1,4 @@
-<app-modal [deskNum]="requiredPlacesNum"></app-modal>
+<app-modal [deskNum]="confService.CashRegisters"></app-modal>
 <a routerLink="/home" class="menu"></a>
 <main class="body">
   <div class="playground">
@@ -9,14 +9,14 @@
 
     <div [ngStyle]="getCashDeskStyle(reserveCashDesk)" class="cash-desk"></div>
 
-    <div *ngIf="activeCashDesks.length < requiredPlacesNum">
+    <div *ngIf="activeCashDesks.length < confService.CashRegisters">
       <div
         *ngFor="let place of deskPlaces" 
         [ngStyle]="getCashPlaceStyle(place)"
         (click)="onPlaceClick(place.id)"></div>
     </div>
 
-    <div *ngIf="activeCashDesks.length >= requiredPlacesNum">
+    <div *ngIf="activeCashDesks.length >= confService.CashRegisters">
       <div
         *ngFor="let cashDesk of activeCashDesks"
         [ngStyle]="getCashDeskStyle(cashDesk)"
