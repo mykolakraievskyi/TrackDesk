@@ -5,6 +5,7 @@ import { Entry } from '../../models/entry.model';
 import { BaseClient, Client } from '../../models/client.model';
 import { CashDesk } from '../../models/cash-desk.model';
 import { MovementService } from '../../../shared/services/client-movement.service';
+import { Position } from '../../models/position.model';
 
 @Injectable({
   providedIn: 'root',
@@ -26,25 +27,18 @@ export class ClientService {
   }
 
   generateClient(
-    activeEntries: Entry[],
-    selectedPlaces: number[],
-    requiredPlacesNum: number
+    id: number,
+    entryPosition: Position,
+    cashDeskId: number,
+    status: 'regular' | 'privileged',
+
   ): Client | null {
-    if (selectedPlaces.length !== requiredPlacesNum) return null;
-
-    const clientTypes: ('regular' | 'privileged')[] = ['regular', 'privileged'];
-    const randomType: 'regular' | 'privileged' =
-      clientTypes[Math.floor(Math.random() * clientTypes.length)];
-
-    const randomEntry =
-      activeEntries[Math.floor(Math.random() * activeEntries.length)];
-
     const newClient = new BaseClient(
-      Math.floor(Math.random() * 1000),
-      { x: randomEntry.position.x, y: randomEntry.position.y },
-      randomType
+      id,
+      entryPosition,
+      status,
+      cashDeskId
     );
-
     return newClient;
   }
 

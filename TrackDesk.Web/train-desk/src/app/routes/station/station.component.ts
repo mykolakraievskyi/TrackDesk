@@ -46,7 +46,6 @@ export class StationComponent implements OnInit , OnDestroy{
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
     this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
-    this.socketService.connect("http://localhost:8080/ws");
     this.generateClientsPeriodically();
   }
 
@@ -56,19 +55,16 @@ export class StationComponent implements OnInit , OnDestroy{
   }
 
   generateClientsPeriodically(): void {
-    setInterval(() => {
-      this.socketService.listen("/station/standardUser/client/generate");
-      const newClient = this.clientService.generateClient(
-        this.activeEntries,
-        this.selectedPlaces,
-        this.confService.CashRegisters
-      );
+    this.socketService.listen("/station/standardUser/client/generate").subscribe((data)=>
+    {
+      const entryPosition = this.activeEntries.filter(e => e.id === data.entranceId)[0].position;
+      const newClient = this.clientService.generateClient(data.id, entryPosition, data.cashDeskId, data.clientStatus)
       if (newClient) this.clients.push(newClient);
       this.clientService.moveClientsToCashDesks(
         this.clients,
         this.activeCashDesks
       );
-    }, 3000);
+    });
   }
 
   onPlaceClick(id: number): void {

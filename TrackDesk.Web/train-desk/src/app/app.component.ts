@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { WebSocketService } from './shared/services/websocket.service';
+import { StompService } from './shared/services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +12,13 @@ import { WebSocketService } from './shared/services/websocket.service';
 export class AppComponent implements OnInit, OnDestroy {
   title = 'train-desk';
 
-  constructor(private readonly websocketService: WebSocketService) {}
+  constructor(private readonly socketService: StompService) {}
 
   ngOnInit(): void {
-    this.websocketService.connect('ws://localhost:8080');
+    this.socketService.connect("http://localhost:8080/ws");
   }
 
   ngOnDestroy(): void {
-    this.websocketService.disconnect();
+    this.socketService.disconnect();
   }
 }

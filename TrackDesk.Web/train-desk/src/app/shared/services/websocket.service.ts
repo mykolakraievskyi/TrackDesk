@@ -33,7 +33,7 @@ export class StompService {
   listen(topic: string): Observable<any> {
     return new Observable((observer) => {
       if (this.subscriptions.has(topic)) {
-        console.warn(`Already subscribed to topic: ${topic}`);
+        console.warn(`Not subscribed to topic: ${topic}`);
         return;
       }
 
