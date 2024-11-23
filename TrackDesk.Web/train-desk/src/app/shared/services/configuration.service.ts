@@ -36,18 +36,38 @@ export class ConfigurationService {
   }
 
   configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[]): void{
+    console.log(cashDesk);
     this.CashDesks = cashDesk;
     this.Entries = entries;
   }
 
 
-  setConfiguration(): Observable<any> {
-    return this.configuration = this.http.post(`http://127.0.0.1:8080/conf`, {
-      CashRegisters:this.CashRegisters,
-      Entry:this.Entry,
-      Exit:this.Exit,
+  setConfiguration(): void {
+    const formattedCashDesks = this.CashDesks.map(c => ({
+      id: c.id,
+      position: c.position
+    }));
+
+    const formatedEntries = this.Entries.map(e => ({
+      id: e.id,
+      position: e.position
+    }));
+
+    console.log(formattedCashDesks);
+    
+    
+    this.configuration = this.http.post(`http://127.0.0.1:8080/api/v1/configuration`, {
+      cashDeskDtos: formattedCashDesks,
+      entrances: formatedEntries,
       secondsStart:this.secondsStart,
       secondsEnd:this.secondsEnd,
+    });
+    this.configuration.subscribe((response) => {
+      if (response) {
+        console.log('Configuration set successfully:', response);
+      } else {
+        console.error('Failed to set configuration.');
+      }
     });
   }
   

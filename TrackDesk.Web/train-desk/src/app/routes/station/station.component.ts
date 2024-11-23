@@ -44,9 +44,6 @@ export class StationComponent implements OnInit {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
     this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
-    this.confService.configEntiesAndCashDesks(this.activeEntries, this.activeCashDesks)
-    this.confService.setConfiguration();
-    console.log(this.activeCashDesks);
     this.generateClientsPeriodically();
   }
 
@@ -70,6 +67,10 @@ export class StationComponent implements OnInit {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);
+    }
+    if(this.selectedPlaces.length === this.confService.CashRegisters){
+      this.confService.configEntiesAndCashDesks(this.activeEntries, this.activeCashDesks);
+      this.confService.setConfiguration();
     }
   }
 
