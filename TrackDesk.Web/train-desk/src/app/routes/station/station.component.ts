@@ -58,8 +58,10 @@ export class StationComponent implements OnInit , OnDestroy{
     this.socketService.listen("/station/standardUser/client/generate").subscribe((data)=>
     {
       const entryPosition = this.activeEntries.filter(e => e.id === data.entranceId)[0].position;
+      console.log(data)
       const newClient = this.clientService.generateClient(data.id, entryPosition, data.cashDeskId, data.clientStatus)
       if (newClient) this.clients.push(newClient);
+      console.log(newClient);
       this.clientService.moveClientsToCashDesks(
         this.clients,
         this.activeCashDesks

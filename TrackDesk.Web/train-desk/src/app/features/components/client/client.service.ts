@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Entry } from '../../models/entry.model';
 import { BaseClient, Client } from '../../models/client.model';
 import { CashDesk } from '../../models/cash-desk.model';
 import { MovementService } from '../../../shared/services/client-movement.service';
@@ -43,8 +42,8 @@ export class ClientService {
   }
 
   moveClientsToCashDesks(clients: Client[], activeCashDesks: CashDesk[]): void {
-    clients.forEach((client, index) => {
-      const targetCashDesk = activeCashDesks[index % activeCashDesks.length];
+    clients.forEach((client) => {
+      const targetCashDesk = activeCashDesks.filter(c => c.id === client.targetCashDeskId)[0];
       this.movementService.moveClientToCashDesk(
         client,
         targetCashDesk,
