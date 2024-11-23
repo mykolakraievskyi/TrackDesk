@@ -40,32 +40,33 @@ public class ClientController {
 
 //    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
     public void generateClient() {
-        if(stationService.isInitialized().get()) {
-            Client client = clientService.generateClient();
-            ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), 1, client.getEntrance().getId());
-            simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
-            Station station = stationService.getStationInstance();
-            station.setCurrClientNumber(station.getCurrClientNumber() + 1);
+        Client client = clientService.generateClient();
+        ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), 1, client.getEntrance().getId());
+        simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
+        Station station = stationService.getStationInstance();
+        station.setCurrClientNumber(station.getCurrClientNumber() + 1);
 
-        } else {
-            List<CashDeskDto> cashDeskDtos = new ArrayList<>();
-            List<Entrance> entrances = new ArrayList<>();
-            for(int i = 1; i <= 3; i++) {
-                cashDeskDtos.add(new CashDeskDto(i, new Position(i * 10, i * 10)));
-                entrances.add(new Entrance(i, new Position(i * 10, i * 10)));
-            }
-            StationConfigurationDto stationConfigurationDto = new StationConfigurationDto(cashDeskDtos, entrances, 15, 15);
-            stationService.createStationInstance(stationConfigurationDto);
-        }
+//        } else {
+//            List<CashDeskDto> cashDeskDtos = new ArrayList<>();
+//            List<Entrance> entrances = new ArrayList<>();
+//            for(int i = 1; i <= 3; i++) {
+//                cashDeskDtos.add(new CashDeskDto(i, new Position(i * 10, i * 10)));
+//                entrances.add(new Entrance(i, new Position(i * 10, i * 10)));
+//            }
+//            StationConfigurationDto stationConfigurationDto = new StationConfigurationDto(cashDeskDtos, entrances, 15, 15);
+//            stationService.createStationInstance(stationConfigurationDto);
+//        }
     }
 
     private class ClientGeneration extends TimerTask {
         @Override
         public void run() {
-            long delay = clientService.getNextArrivalTime();
-            Timer timer = new Timer();
-            generateClient();
-            timer.schedule(new ClientGeneration(), delay);
+            if(stationService.isInitialized().get()) {
+                long delay = clientService.getNextArrivalTime();
+                Timer timer = new Timer();
+                generateClient();
+                timer.schedule(new ClientGeneration(), delay);
+            }
         }
     }
 }
