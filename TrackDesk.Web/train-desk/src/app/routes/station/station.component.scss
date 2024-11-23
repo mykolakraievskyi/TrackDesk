@@ -1,59 +1,74 @@
+// .body {
+//   background-image: url('../../../assets/images/background.png');
+//   background-size: cover;
+//   background-repeat: no-repeat;
+//   background-position: center;
+//   width: 100%;
+//   height: 770px;
+//   overflow: auto;
+//   position: relative;
+// }
+
 .body {
   background-image: url('../../../assets/images/background.png');
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
-  width: 100%;
-  height: 100vh;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
+  width: 1558px;
+  height: 726px;
+  overflow: auto;
+  position: absolute;
+  margin: 0 auto;
 }
+
+// .playground {
+//   position: absolute;
+//   left: 0;
+//   display: flex;
+//   width: 1312px;
+//   height: 700px;
+//   overflow: hidden;
+//   margin: 0 auto;
+//   position: absolute;
+// }
+
+// .train-container {
+//   position: absolute;
+//   right: 0;
+//   width: 17rem;
+//   height: 100vh;
+//   display: flex;
+//     overflow: hidden;
+
+// }
 
 .playground {
   position: absolute;
+  top: 0;
   left: 0;
-  width: 70rem;
-  height: 100vh;
-  display: flex;
+  width: 1420px;
+  height: 726px;
 }
-
-// .entries-bottom {
-//   position: absolute;
-//   bottom: 0;
-//   width: 100%;
-//   display: flex;
-//   justify-content: space-between;
-// }
-
-// .cash-desk-container{
-//   position: absolute;
-// display: flex;
-// }
-
-// .cash-1, .cash-2{
-//   position: relative;
-//   left:200px;
-// }
-
-// .cash-3, .cash-4{
-//   position: relative;
-//   top:300px;
-//   left:400px;
-// }
 
 .train-container {
   position: absolute;
+  top: 0;
   right: 0;
-  width: 17rem;
-  height: 100vh;
+  width: 265px;
+  height: 726px;
+  overflow: hidden;
   display: flex;
+}
+
+.decorative-elements {
+  position: absolute;
+  width: 1550px;
+  height: 726px;
 }
 
 .platform {
   background-color: #8b8a8a;
-  width: 100%;
-  height: 100vh;
+  width: 150px;
+  height: 726px;
   flex: 1.5;
 }
 
@@ -62,7 +77,7 @@
   position: relative;
   padding: 0px 10px 0 10px;
   width: 100%;
-  height: 100vh;
+  height: 726px;
 }
 
 .train {
@@ -116,7 +131,7 @@
 
 .rails {
   background-size: contain;
-  height: 100%;
+  height: 726px;
   background-image: url('../../../../assets/images/train/rails.png');
   width: 30%;
   position: absolute;
@@ -166,16 +181,10 @@
   bottom: 30%;
 }
 
-.decorative-elements {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
 .bottom {
   position: absolute;
   bottom: 0;
-  width: 173vh;
+  width: 1280px;
   display: flex;
   justify-content: space-between;
 }
@@ -191,20 +200,20 @@
 .cafe {
   position: absolute;
   top: 0;
-  right: 36vh;
+  right: 250px;
   width: 350px;
-  height: auto;
+  height: 726px;
 }
 
 .taxi {
   position: absolute;
   bottom: 0;
-  right: 40vh;
+  right: 300px;
   width: 140px;
   height: auto;
 }
 
-.menu{
+.menu {
   cursor: pointer;
   height: 30px;
   width: 70px;
