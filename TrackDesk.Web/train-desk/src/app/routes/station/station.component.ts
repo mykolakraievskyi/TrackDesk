@@ -6,14 +6,13 @@ import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
-import { ConfResponse } from '../../features/models/conf-response.model';
 import {
   DeskPlace,
   InitService,
 } from '../../shared/services/initialization.service';
 import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-station',
@@ -42,7 +41,8 @@ export class StationComponent implements OnInit {
     private clientService: ClientService,
     private initService: InitService,
     private entryService: InitService,
-    private confService: ConfigurationService
+    private confService: ConfigurationService,
+    private router: Router
   ) {
     this.movementService = new MovementService();
   }
@@ -71,16 +71,14 @@ export class StationComponent implements OnInit {
   }
 
   applyConfig(): void {
-    this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      this.requiredPlacesNum = response.cashRegisters.length;
-      if (response?.entry?.length > 0) {
-        this.activeEntries = response.entry.map(
-          index => this.entries[index - 1]
-        );
-      } else {
-        this.activeEntries = [];
-      }
-    });
+    const currentConfig = this.confService.getConfigurationNumbers();
+
+    this.requiredPlacesNum = currentConfig.cashDesks;
+    if (this.requiredPlacesNum === 0) {
+      this.router.navigate(['home']);
+    }
+
+    this.activeEntries = this.entries.slice(0, currentConfig.entrances);
   }
 
   onPlaceClick(id: number): void {
@@ -88,6 +86,26 @@ export class StationComponent implements OnInit {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);
+    }
+    if (this.selectedPlaces.length === this.requiredPlacesNum) {
+      console.log('hello');
+      const currentConfig = this.confService.getConfigurationNumbers();
+      this.confService
+        .setConfiguration({
+          cashDesks: this.activeCashDesks.map(cashDesk => ({
+            id: cashDesk.id,
+            position: cashDesk.position,
+          })),
+          entrances: this.activeEntries.map(entrance => ({
+            id: entrance.id,
+            position: entrance.position,
+          })),
+          secondsStart: currentConfig.secondsStart,
+          secondsEnd: currentConfig.secondsEnd,
+        })
+        .subscribe(() => {
+          console.log('penis');
+        });
     }
   }
 

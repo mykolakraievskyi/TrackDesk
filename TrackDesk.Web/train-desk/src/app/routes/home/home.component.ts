@@ -30,43 +30,37 @@ export class HomeComponent {
   timeMin = TIME_MIN;
   timeMax = TIME_MAX;
 
-  Exit: number = 1;
-  Entry: number = 1;
+  exits: number = 1;
+  entrances: number = 1;
   CashRegisters: number = 2;
   secondsStart: number = 2;
   secondsEnd: number = 2;
   timeOption: 'random' | 'static' = 'random';
 
-  onStartClick() {
-    if (this.validateData() === true) {
+  onStartClick(): void {
+    if (this.validateData()) {
       if (this.timeOption === 'static') {
         this.secondsEnd = this.secondsStart;
       }
-      this.configurationService
-        .setConfiguration(
-          this.CashRegisters,
-          this.Entry,
-          this.Exit,
-          this.secondsStart,
-          this.secondsEnd
-        )
-        .subscribe({
-          next: response => {
-            this.router.navigate(['station']);
-          },
-          error: error => console.error('Помилка:', error),
-        });
+      this.configurationService.setConfigurationNumbers({
+        cashDesks: this.CashRegisters,
+        entrances: this.entrances,
+        exits: this.exits,
+        secondsStart: this.secondsStart,
+        secondsEnd: this.secondsEnd
+      });
+      this.router.navigate(['station']);
     } else {
       alert('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
     }
   }
 
   validateData(): boolean {
-    var result: boolean = true;
-    if (this.Exit < this.entryExitMin || this.Exit > this.entryExitMax) {
+    let result: boolean = true;
+    if (this.exits < this.entryExitMin || this.exits > this.entryExitMax) {
       result = false;
     }
-    if (this.Entry < this.entryExitMin || this.Entry > this.entryExitMax) {
+    if (this.entrances < this.entryExitMin || this.entrances > this.entryExitMax) {
       result = false;
     }
     if (

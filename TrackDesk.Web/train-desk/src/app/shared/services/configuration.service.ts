@@ -13,30 +13,46 @@ interface EntityDto {
   id: number;
   position: Position;
 }
+export interface ConfigurationNumbers {
+  cashDesks: number;
+  entrances: number;
+  exits?: number;
+  secondsStart: number;
+  secondsEnd: number;
+}
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigurationService {
   private apiUrl = 'https://';
+  private desiredNumbers: ConfigurationNumbers;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.desiredNumbers = {
+      cashDesks: 0,
+      entrances: 0,
+      exits: 0,
+      secondsStart: 0,
+      secondsEnd: 0,
+    };
+  }
 
   configuration: Observable<any> | null = null;
 
+  setConfigurationNumbers(confNumbers: ConfigurationNumbers): void {
+    this.desiredNumbers = confNumbers;
+  }
+  getConfigurationNumbers(): ConfigurationNumbers {
+    return this.desiredNumbers;
+  }
   setConfiguration(
-    CashRegisters: number,
-    Entry: number,
-    Exit: number,
-    secondsStart: number,
-    secondsEnd: number
+    configurationRequest: ConfigurationRequest
   ): Observable<any> {
-    return (this.configuration = this.http.post(`http://127.0.0.1:8080/conf`, {
-      CashRegisters,
-      Entry,
-      Exit,
-      secondsStart,
-      secondsEnd,
-    }));
+    console.log(configurationRequest);
+    return (this.configuration = this.http.post(
+      `http://127.0.0.1:8080/conf`,
+      configurationRequest
+    ));
   }
 
   getConfiguration(): Observable<any> | null {
