@@ -11,8 +11,8 @@ import java.util.Random;
 @Service
 public class TicketGenerator {
 
-    private String[] cities;
-    private String[] trains;
+    private final String[] cities;
+    private final String[] trains;
 
     public TicketGenerator() {
         this.cities = new String[] {

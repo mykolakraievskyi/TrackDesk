@@ -17,22 +17,17 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 @Getter
 public class ClientService {
-    private ClientFactory clientFactory;
-
-    public ClientService(@Autowired TicketGenerator ticketGenerator) {
-        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(LocalTime.ofSecondOfDay(5L)),
-                                              ticketGenerator);
-
-    }
-
+    private final ClientFactory clientFactory;
 
     public Client generateClient() {
-        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(LocalTime.ofSecondOfDay(5L)), new TicketGenerator());
+//        this.clientFactory = new ClientFactoryImpl(new UniformGenerationStrategy(), new TicketGenerator());
         return this.clientFactory.generateClient();
     }
 
-    public String getNextArrivalTime() {
-        return String.valueOf(this.clientFactory.getClientGenerationStrategy().getNextArrivalTime().toSecondOfDay());
+    public Long getNextArrivalTime() {
+        return clientFactory.getClientGenerationStrategy().getNextArrivalTime() != null ?
+                this.clientFactory.getClientGenerationStrategy().getNextArrivalTime().toSecondOfDay() * 1000L :
+                5000L;
     }
 
 
