@@ -9,7 +9,11 @@ export class WebSocketService {
   private messages$: Subject<any> = new Subject();
 
   connect(url: string): void {
-    this.socket = new WebSocket(url);
+    try {
+      this.socket = new WebSocket(url);
+    } catch (error) {
+      console.error(error);
+    }
 
     this.socket.onmessage = event => {
       const data = JSON.parse(event.data);
