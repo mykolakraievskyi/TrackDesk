@@ -3,7 +3,9 @@ package if_core_034.train_desk.entity;
 import if_core_034.train_desk.service.StationService;
 import if_core_034.train_desk.service.TicketGenerator;
 import if_core_034.train_desk.strategy.ClientGenerationStrategy;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import lombok.Getter;
 
@@ -11,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Component
 public class ClientFactoryImpl implements ClientFactory {
     @Getter
     private final ClientGenerationStrategy clientGenerationStrategy;
     private final TicketGenerator ticketGenerator;
 
-    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy, @Autowired TicketGenerator ticketGenerator) {
+    public ClientFactoryImpl(ClientGenerationStrategy clientGenerationStrategy,
+                             @Autowired TicketGenerator ticketGenerator) {
         this.clientGenerationStrategy = clientGenerationStrategy;
-
         this.ticketGenerator = ticketGenerator;
     }
-
 
 
     public Client generateClient() {
