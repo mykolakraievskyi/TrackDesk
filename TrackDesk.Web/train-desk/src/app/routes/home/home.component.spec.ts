@@ -50,9 +50,9 @@ describe('HomeComponent', () => {
 
   describe('validateData', () => {
     it('should return true for valid data', () => {
-      component.Entry = 2;
-      component.Exit = 2;
-      component.CashRegisters = 3;
+      component.entrances = 2;
+      component.exits = 2;
+      component.cashRegisters = 3;
       component.secondsStart = 3;
       component.secondsEnd = 5;
       component.timeOption = 'random';
@@ -61,17 +61,17 @@ describe('HomeComponent', () => {
     });
 
     it('should return false if Entry is out of range', () => {
-      component.Entry = 0; // Out of range
+      component.entrances = 0; // Out of range
       expect(component.validateData()).toBeFalse();
     });
 
     it('should return false if Exit is out of range', () => {
-      component.Exit = 9; // Out of range
+      component.exits = 9; // Out of range
       expect(component.validateData()).toBeFalse();
     });
 
     it('should return false if CashRegisters is out of range', () => {
-      component.CashRegisters = 1; // Out of range
+      component.cashRegisters = 1; // Out of range
       expect(component.validateData()).toBeFalse();
     });
 

@@ -10,9 +10,9 @@
         type="number"
         id="exit-doors"
         placeholder="(1-8)"
-        [min]="entryExitMin"
-        [max]="entryExitMax"
-        [(ngModel)]="Exit"
+        [min]="entranceExitMin"
+        [max]="entranceExitMax"
+        [(ngModel)]="exits"
         name="Exit" />
 
       <label for="entry-doors">Num of entry doors:</label>
@@ -20,9 +20,9 @@
         type="number"
         id="entry-doors"
         placeholder="(1-8)"
-        [min]="entryExitMin"
-        [max]="entryExitMax"
-        [(ngModel)]="Entry"
+        [min]="entranceExitMin"
+        [max]="entranceExitMax"
+        [(ngModel)]="entrances"
         name="Entry" />
 
       <label for="cash-registers">Num of cash registers:</label>
@@ -32,7 +32,7 @@
         placeholder="(2-9)"
         [min]="registerMin"
         [max]="registerMax"
-        [(ngModel)]="CashRegisters"
+        [(ngModel)]="cashRegisters"
         name="CashRegisters" />
 
       <label>Service time per customer:</label>

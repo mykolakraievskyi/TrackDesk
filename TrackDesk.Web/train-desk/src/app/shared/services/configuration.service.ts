@@ -8,61 +8,59 @@ import { CashDesk } from '../../features/models/cash-desk.model';
   providedIn: 'root',
 })
 export class ConfigurationService {
-  private apiUrl = 'https://'; 
+  private apiUrl = 'https://';
 
   constructor(private http: HttpClient) {}
 
-  configuration:Observable<any>|null = null;
-  CashRegisters!: number;
-  CashDesks!: CashDesk[];
-  Entry!: number;
-  Entries!: Entry[];
-  Exit!: number;
+  configuration: Observable<any> | null = null;
+  cashDeskNumber!: number;
+  cashDesks!: CashDesk[];
+  entranceNumber!: number;
+  entrances!: Entry[];
+  exitsNumber!: number;
   secondsStart!: number;
   secondsEnd?: number;
 
   setBaseConfiguration(
-    CashRegisters: number,
-    Entry: number,
-    Exit: number,
+    cashRegisters: number,
+    entrances: number,
+    exits: number,
     secondsStart: number,
     secondsEnd: number
-  ):void{
-    this.CashRegisters = CashRegisters;
-    this.Entry = Entry;
-    this.Exit = Exit;
+  ): void {
+    this.cashDeskNumber = cashRegisters;
+    this.entranceNumber = entrances;
+    this.exitsNumber = exits;
     this.secondsStart = secondsStart;
     this.secondsEnd = secondsEnd;
   }
 
-  configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[]): void{
-    console.log(cashDesk);
-    this.CashDesks = cashDesk;
-    this.Entries = entries;
+  configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[]): void {
+    this.cashDesks = cashDesk;
+    this.entrances = entries;
   }
 
-
   setConfiguration(): void {
-    const formattedCashDesks = this.CashDesks.map(c => ({
+    const formattedCashDesks = this.cashDesks.map(c => ({
       id: c.id,
-      position: c.position
+      position: c.position,
     }));
 
-    const formatedEntries = this.Entries.map(e => ({
+    const formatedEntries = this.entrances.map(e => ({
       id: e.id,
-      position: e.position
+      position: e.position,
     }));
 
-    console.log(formattedCashDesks);
-    
-    
-    this.configuration = this.http.post(`http://127.0.0.1:8080/api/v1/configuration`, {
-      cashDeskDtos: formattedCashDesks,
-      entrances: formatedEntries,
-      secondsStart:this.secondsStart,
-      secondsEnd:this.secondsEnd,
-    });
-    this.configuration.subscribe((response) => {
+    this.configuration = this.http.post(
+      `http://127.0.0.1:8080/api/v1/configuration`,
+      {
+        cashDeskDtos: formattedCashDesks,
+        entrances: formatedEntries,
+        secondsStart: this.secondsStart,
+        secondsEnd: this.secondsEnd,
+      }
+    );
+    this.configuration.subscribe(response => {
       if (response) {
         console.log('Configuration set successfully:', response);
       } else {
@@ -70,14 +68,11 @@ export class ConfigurationService {
       }
     });
   }
-  
+
   getConfiguration(): Observable<any> | null {
     if (!this.configuration) {
       console.warn('Configuration has not been set.');
     }
     return this.configuration;
   }
-
-
-
 }

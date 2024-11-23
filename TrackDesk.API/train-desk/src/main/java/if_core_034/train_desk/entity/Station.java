@@ -1,18 +1,50 @@
 package if_core_034.train_desk.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 public class Station {
-    private Station instance;
+    private static volatile Station instance;
     private List<Entrance> entrances;
     private List<CashDesk> cashDesks;
     private CashDesk reserveCashDesk;
     private TimeRange serviceTimeRange;
     private int currClientNumber;
     private int maxClientCapacity;
+    private volatile boolean isClosed;
+
+    private Station(List<Entrance> entrances,
+                    List<CashDesk> cashDesks,
+                    CashDesk reserveCashDesk,
+                    TimeRange serviceTimeRange,
+                    int currClientNumber,
+                    int maxClientCapacity) {
+        this.entrances = entrances;
+        this.cashDesks = cashDesks;
+        this.reserveCashDesk = reserveCashDesk;
+        this.serviceTimeRange = serviceTimeRange;
+        this.currClientNumber = currClientNumber;
+        this.maxClientCapacity = maxClientCapacity;
+        this.isClosed = false;
+    }
+
+    public static Station getInstance(List<Entrance> entrances,
+                               List<CashDesk> cashDesks,
+                               CashDesk reserveCashDesk,
+                               TimeRange timeRange,
+                               int currClientNumber,
+                               int maxClientCapacity) {
+        if(instance == null) {
+            synchronized(Station.class) {
+                if(instance == null) {
+                    instance = new Station(entrances, cashDesks, reserveCashDesk, timeRange,
+                                           currClientNumber, maxClientCapacity);
+                }
+
+            }
+        }
+        return instance;
+    }
 }
