@@ -1,6 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../features/models/client.model';
-import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
 import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { Entry } from '../../features/models/entry.model';
@@ -34,7 +33,6 @@ export class StationComponent implements OnInit, OnDestroy {
     { x: 800, y: 20 },
     'cash-desk'
   );
-  movementService = inject(MovementService);
   confService = inject(ConfigurationService);
   private clientService = inject(ClientService);
   private initService = inject(InitService);
@@ -43,15 +41,11 @@ export class StationComponent implements OnInit, OnDestroy {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.deskPlaces = this.initService.initializeDeskPlaces();
-    this.cashDesks = this.initService.initializeCashDesks();
+    this.initData();
     if (!this.confService.cashDeskNumber) {
       this.router.navigate(['home']);
     }
-    this.activeEntries = this.initService.generateRandomEntries(
-      this.confService.entranceNumber
-    );
-    this.generateClientsPeriodically();
+    this.initSubscriptions();
   }
 
   ngOnDestroy(): void {
@@ -59,14 +53,26 @@ export class StationComponent implements OnInit, OnDestroy {
     this.socketService.disconnect();
   }
 
-  generateClientsPeriodically(): void {
+  initData(): void {
+    this.deskPlaces = this.initService.initializeDeskPlaces();
+    this.cashDesks = this.initService.initializeCashDesks();
+    this.activeEntries = this.initService.generateRandomEntries(
+      this.confService.entranceNumber
+    );
+  }
+  initSubscriptions(): void {
+    this.socketService
+      .listen('/station/standardUser/close/message')
+      .subscribe(data => {
+        console.log(data);
+      });
+
     this.socketService
       .listen('/station/standardUser/client/generate')
       .subscribe(data => {
         const entryPosition = this.activeEntries.filter(
           e => e.id === data.entranceId
         )[0].position;
-        console.log(data);
         const newClient = this.clientService.generateClient(
           data.id,
           entryPosition,
@@ -74,7 +80,6 @@ export class StationComponent implements OnInit, OnDestroy {
           data.clientStatus
         );
         if (newClient) this.clients.push(newClient);
-        console.log(newClient);
         this.clientService.moveClientsToCashDesks(
           this.clients,
           this.activeCashDesks

@@ -57,7 +57,7 @@ export class MovementService {
         return;
       }
 
-      let newPosition = {
+      const newPosition = {
         x:
           client.position.x +
           Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX)),
@@ -71,8 +71,8 @@ export class MovementService {
   }
 
   correctPosition(oldPosition: Position, newPosition: Position): Position {
-    let position: Position = newPosition;
-    for (let obstacle of this.staticObstacles) {
+    const position: Position = newPosition;
+    for (const obstacle of this.staticObstacles) {
       if (
         newPosition.x > obstacle.topLeft.x &&
         newPosition.x < obstacle.bottobRigth.x &&
@@ -98,32 +98,6 @@ export class MovementService {
     return newPosition;
   }
 
-  findCashDeskWithFewestClients(
-    cashDesks: CashDesk[],
-    clients: Client[]
-  ): CashDesk {
-    return cashDesks.reduce((minDesk, currentDesk) => {
-      const minDeskClientCount = minDesk.clientQueue.length;
-      const currentDeskClientCount = currentDesk.clientQueue.length;
-
-      return currentDeskClientCount < minDeskClientCount
-        ? currentDesk
-        : minDesk;
-    }, cashDesks[0]);
-  }
-
-  assignClientToBestCashDesk(
-    client: Client,
-    cashDesks: CashDesk[],
-    clients: Client[],
-    allClients: Client[],
-    allCashDesks: CashDesk[]
-  ): void {
-    const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks, clients);
-    this.moveClientToCashDesk(client, bestCashDesk, allClients, allCashDesks);
-  }
-
-  // )))))))
   serveClient(client: Client, cashDesk: CashDesk): void {
     if (!cashDesk.clientQueue.includes(client)) {
       cashDesk.addClient(client);
@@ -147,5 +121,14 @@ export class MovementService {
     // }
   }
 
-  relocateClients(currentDesk: CashDesk, newDsk: CashDesk) {}
+  relocateClients(
+    currentDesk: CashDesk,
+    newDesk: CashDesk,
+    clients: Client[],
+    cashDesks: CashDesk[]
+  ): void {
+    currentDesk.clientQueue.forEach(client => {
+      this.moveClientToCashDesk(client, newDesk, clients, cashDesks);
+    });
+  }
 }
