@@ -62,11 +62,11 @@ public class ClientController {
         @Override
         public void run() {
             if(stationService.isInitialized().get()) {
-                long delay = clientService.getNextArrivalTime();
-                Timer timer = new Timer();
                 generateClient();
-                timer.schedule(new ClientGeneration(), delay);
             }
+            long delay = clientService.getNextArrivalTime();
+            Timer timer = new Timer();
+            timer.schedule(new ClientGeneration(), delay);
         }
     }
 }
