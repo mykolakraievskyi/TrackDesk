@@ -6,7 +6,6 @@ import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { Entry } from '../../features/models/entry.model';
 import { LogComponent } from '../../shared/components/log/log.component';
 import { ConfigurationService } from '../../shared/services/configuration.service';
-import { ConfResponse } from '../../features/models/conf-response.model';
 import {
   DeskPlace,
   InitService,
@@ -25,7 +24,6 @@ import { RouterModule } from '@angular/router';
 export class StationComponent implements OnInit {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
-  entries: Entry[] = [];
   activeEntries: Entry[] = [];
   activeCashDesks: CashDesk[] = [];
   deskPlaces: DeskPlace[] = [];
@@ -39,15 +37,16 @@ export class StationComponent implements OnInit {
   confService = inject(ConfigurationService);
   private clientService = inject(ClientService);
   private initService = inject(InitService);
-  private entryService = inject(InitService)
 
   constructor() {}
 
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
-    this.entries = this.entryService.initializeEntries();
-    this.applyConfig();
+    this.activeEntries = this.initService.generateRandomEntries(this.confService.Entry);
+    this.confService.configEntiesAndCashDesks(this.activeEntries, this.activeCashDesks)
+    this.confService.setConfiguration();
+    console.log(this.activeCashDesks);
     this.generateClientsPeriodically();
   }
 
@@ -64,18 +63,6 @@ export class StationComponent implements OnInit {
         this.activeCashDesks
       );
     }, 3000);
-  }
-
-  applyConfig(): void {
-    this.confService.getConfiguration()?.subscribe((response: ConfResponse) => {
-      if (response?.entry?.length > 0) {
-        this.activeEntries = response.entry.map(
-          index => this.entries[index - 1]
-      );
-      } else {
-        this.activeEntries = [];
-      }
-    });
   }
 
   onPlaceClick(id: number): void {

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Entry } from '../../features/models/entry.model';
+import { CashDesk } from '../../features/models/cash-desk.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +14,9 @@ export class ConfigurationService {
 
   configuration:Observable<any>|null = null;
   CashRegisters!: number;
+  CashDesks!: CashDesk[];
   Entry!: number;
+  Entries!: Entry[];
   Exit!: number;
   secondsStart!: number;
   secondsEnd?: number;
@@ -26,9 +30,14 @@ export class ConfigurationService {
   ):void{
     this.CashRegisters = CashRegisters;
     this.Entry = Entry;
-    this.Exit =Exit;
+    this.Exit = Exit;
     this.secondsStart = secondsStart;
     this.secondsEnd = secondsEnd;
+  }
+
+  configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[]): void{
+    this.CashDesks = cashDesk;
+    this.Entries = entries;
   }
 
 

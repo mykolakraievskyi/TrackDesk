@@ -20,6 +20,19 @@ export class InitService {
     place.isSelected = true; 
   }
 
+  generateRandomEntries(amount: number): Entry[]{
+    const allEntries = this.initializeEntries();
+    const result: Entry[] = [];
+
+    for (let i = 0; i < amount; i++) {
+        const randomIndex = Math.floor(Math.random() * allEntries.length);
+        result.push(allEntries[randomIndex]);
+        allEntries.splice(randomIndex, 1);
+    }
+
+    return result;
+  }
+
   initializeCashDesks(): CashDesk[] {
     return [
       new BaseCashDesk(1, { x: 420, y: 20 }, 'cash-desk'),
