@@ -29,12 +29,14 @@ export class ClientService {
   generateClient(
     id: number,
     entryPosition: Position,
+    tickets: number,
     cashDeskId: number,
     status: EClientType
   ): Client | null {
     const newClient = new BaseClient(
       id,
       { x: entryPosition.x, y: entryPosition.y },
+      tickets,
       status,
       cashDeskId
     );

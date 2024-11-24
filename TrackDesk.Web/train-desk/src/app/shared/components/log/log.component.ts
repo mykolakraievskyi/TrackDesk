@@ -11,7 +11,7 @@ import { ILog } from '../../../types/log.types';
 export class LogComponent {
   logsArray: ILog[] = [];
 
-  constructor(private);
+  // constructor(private);
 
   addLog(log: ILog) {
     this.logsArray.push(log);

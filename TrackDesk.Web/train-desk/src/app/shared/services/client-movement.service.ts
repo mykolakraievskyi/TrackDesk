@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
 //import { getPlural } from 'astar-typescript';
 import * as AStar from 'astar-typescript';
 import { HttpClient } from '@angular/common/http';
+import { ConfigurationService } from './configuration.service';
 
 const CELL_SIZE = 31;
 
@@ -11,6 +12,7 @@ const CELL_SIZE = 31;
   providedIn: 'root',
 })
 export class MovementService {
+  private cofigurationService = inject(ConfigurationService);
   private readonly speed: number = 5;
   public stationMatrix: number[][] = [];
 
@@ -169,7 +171,6 @@ export class MovementService {
       const bestPathway = aStarInstance.findPath(clientPos, targetPosition);
 
       if (!bestPathway || bestPathway.length === 0) {
-        clearInterval(moveInterval);
         return;
       }
 
@@ -188,10 +189,14 @@ export class MovementService {
         client.position.y = nextstep[1] * CELL_SIZE;
 
         if (
+          targetPosition.x ===
+            Math.round(cashDesk.getFirstClientPosition().x / CELL_SIZE) &&
+          targetPosition.y ===
+            Math.round(cashDesk.getFirstClientPosition().y / CELL_SIZE) &&
           nextstep[0] === targetPosition.x &&
           nextstep[1] === targetPosition.y
         ) {
-          this.serveClient(client, cashDesk);
+          this.serveClient(client, cashDesk, allClients);
           clearInterval(moveInterval);
         }
       } else {
@@ -203,15 +208,28 @@ export class MovementService {
     }, 100);
   }
 
-  serveClient(client: Client, cashDesk: CashDesk): void {
+  serveClient(client: Client, cashDesk: CashDesk, allClients: Client[]): void {
     if (!cashDesk.clientQueue.includes(client)) {
       cashDesk.addClient(client);
     }
-    this.http
-      .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
-        clientId: client.id,
-        cashDeskId: cashDesk.id,
-      })
-      .subscribe(data => {});
+    const startTime = new Date().toLocaleTimeString();
+    setTimeout(() => {
+      this.deleteClient(client, cashDesk, allClients);
+      console.log('adsdadadadasdas');
+      this.http
+        .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
+          clientId: client.id,
+          cashDeskId: cashDesk.id,
+          startTime: startTime,
+          endTime: new Date().toLocaleTimeString(),
+        })
+        .subscribe(message => console.log(message));
+    }, this.cofigurationService.serveTime * 1000 * client.tickets);
+  }
+
+  deleteClient(Client: Client, CashDesk: CashDesk, allClients: Client[]) {
+    CashDesk.clientQueue.splice(CashDesk.clientQueue.indexOf(Client), 1);
+    Client.image = '';
+    allClients.splice(allClients.indexOf(Client), 1);
   }
 }
