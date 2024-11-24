@@ -9,8 +9,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './modal.component.scss',
 })
 export class ModalComponent {
-  @Input()deskNum: number = 0;
-
+  @Input() deskNum: number = 0;
 
   isOpen: boolean = true;
 

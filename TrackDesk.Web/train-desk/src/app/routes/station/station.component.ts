@@ -181,21 +181,20 @@ export class StationComponent implements OnInit, OnDestroy {
   }
 
   private reorderQueue() {
-    // Сортування: пільговики вперед, зберігаючи відносний порядок
     this.clients.sort((a, b) => {
       if (
         a.type === EClientType.PRIVILEGED &&
         b.type !== EClientType.PRIVILEGED
       ) {
-        return -1; // Пільговик перед звичайним
+        return -1;
       }
       if (
         a.type !== EClientType.PRIVILEGED &&
         b.type === EClientType.PRIVILEGED
       ) {
-        return 1; // Звичайний після пільговика
+        return 1;
       }
-      return 0; // В іншому випадку порядок зберігається
+      return 0;
     });
   }
 }
