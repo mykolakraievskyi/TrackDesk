@@ -85,14 +85,10 @@ public class CashDeskController {
                                                                clientNew.getId() == buyTicketDto.getClientId()).findFirst();
 
         if(client.isPresent()) {
-            LogEntity logEntity = new LogEntity(0, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
+            LogEntity logEntity = new LogEntity(1, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
                                                    client.get().getTickets(), buyTicketDto.getStartTime(), buyTicketDto.getEndTime());
-<<<<<<< HEAD
 
             logEntityService.saveLogEntity(logEntity);
-=======
-//            logEntityService.saveLogEntity(logEntity);
->>>>>>> d12d4ac04bbcbfb73c6a7cdf75ac2f727fa6127a
             return ResponseEntity.ok().body(logEntity);
         }
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
