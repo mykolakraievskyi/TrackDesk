@@ -3,6 +3,7 @@ package if_core_034.train_desk.controller;
 import if_core_034.train_desk.dto.BuyTicketDTO;
 import if_core_034.train_desk.dto.CashDeskOpenCloseDto;
 import if_core_034.train_desk.service.CashDeskService;
+import if_core_034.train_desk.service.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class CashDeskController {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final CashDeskService cashDeskService;
+    private final StationService stationService;
 
     /*    @Scheduled(fixedRate = 30000, initialDelay = 15000)
         public void closeRandomCashDesk() {
@@ -37,6 +39,9 @@ public class CashDeskController {
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> setStationConfiguration(@RequestBody BuyTicketDTO buyTicketDTO) {
+        stationService.getStationInstance().getCashDesks().stream()
+                .filter(cashDesk -> cashDesk.getId() == buyTicketDTO.getCashDeskId()).findFirst().get()
+                .getQueue().removeIf(client -> client.getId() == buyTicketDTO.getClientId());
         System.out.println(buyTicketDTO);
         return ResponseEntity.ok().build();
     }

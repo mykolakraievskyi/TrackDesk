@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BuyTicketDTO {
-    private String clientId;
-    private String cashDeskId;
+    private int clientId;
+    private int cashDeskId;
 }
