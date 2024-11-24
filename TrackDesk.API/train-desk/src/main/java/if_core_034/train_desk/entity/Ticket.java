@@ -1,14 +1,21 @@
 package if_core_034.train_desk.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
 public class Ticket {
+    @Id
     private int ticketId;
     private String train;
     private String carriage;
