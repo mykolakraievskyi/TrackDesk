@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BuyTicketDTO {
     private String clientId;
+    private String cashDeskId;
 }

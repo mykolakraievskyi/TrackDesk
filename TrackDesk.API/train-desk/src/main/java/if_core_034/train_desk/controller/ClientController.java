@@ -8,9 +8,6 @@ import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
@@ -36,13 +33,13 @@ public class ClientController {
     }
 
 
-//    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
+    //    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
     public void generateClient() {
         Client client = clientService.generateClient();
         int cashDeskId = clientService.getBestCashRegisterId(client);
         stationService.getStationInstance().getCashDesks().stream()
-                                                          .filter(cashDesk -> cashDesk.getId() == cashDeskId)
-                                                          .findFirst().get().getQueue().add(client);
+                .filter(cashDesk -> cashDesk.getId() == cashDeskId)
+                .findFirst().get().getQueue().add(client);
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId, client.getEntrance().getId());
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
@@ -63,18 +60,12 @@ public class ClientController {
     private class ClientGeneration extends TimerTask {
         @Override
         public void run() {
-            if(stationService.isInitialized().get()) {
+            if (stationService.isInitialized().get()) {
                 generateClient();
             }
             long delay = clientService.getNextArrivalTime();
             Timer timer = new Timer();
             timer.schedule(new ClientGeneration(), delay);
         }
-    }
-
-    @PostMapping("/api/v1/cashdesk/buy/ticket")
-    public ResponseEntity<Object> setStationConfiguration(@RequestBody BuyTicketDTO buyTicketDTO) {
-        System.out.println(buyTicketDTO);
-        return ResponseEntity.ok().build();
     }
 }
