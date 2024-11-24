@@ -44,7 +44,8 @@ public class StationService {
                     new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new PriorityQueue<>(), false, true);
             cashDeskMap.put(cashDeskDto.getId(), cashDesk);
         }
-        CashDesk reserveCashDesk = new CashDesk(0,  stationConfigurationDto.getReserveCashDeskDto().getPosition(),
+        //TODO якщо буде передаватись резевна каса з клінєта то витягувтаи дані з конфігурації
+        CashDesk reserveCashDesk = new CashDesk(0,  new Position(0,0),
                 new PriorityQueue<>(), true, false);
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
