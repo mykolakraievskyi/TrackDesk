@@ -87,7 +87,7 @@ describe('ConfigurationService', () => {
   it('should call the API and set the configuration correctly', () => {
     service.configEntiesAndCashDesks(mockEntries, mockCashDesks);
     service.setBaseConfiguration(5, 3, 2, 10, 20);
-
+  
     const expectedPayload = {
       cashDeskDtos: [
         { id: 1, position: { x: 10, y: 20 } },
@@ -100,30 +100,43 @@ describe('ConfigurationService', () => {
       secondsStart: 10,
       secondsEnd: 20,
     };
-
+  
+    // Mocking the HTTP call and returning a successful response
+    spyOn(console, 'log');  // Spying on console.log to verify successful call
     service.setConfiguration();
-
+  
     const req = httpMock.expectOne('http://127.0.0.1:8080/api/v1/configuration');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(expectedPayload);
-
-    req.flush({ success: true });
-    spyOn(console, 'log');
+  
+    req.flush({ success: true });  // Simulate the response from the server
+  
+    // Ensure that console.log was called with the correct response
     expect(console.log).toHaveBeenCalledWith('Configuration set successfully:', { success: true });
+  
+    // Ensure no other HTTP requests are pending
+    httpMock.verify();
   });
+  
 
   it('should handle error correctly when API call fails', () => {
     service.configEntiesAndCashDesks(mockEntries, mockCashDesks);
     service.setBaseConfiguration(5, 3, 2, 10, 20);
-
+  
+    // Simulate the error response from the API
+    spyOn(console, 'error');  // Spying on console.error to verify error handling
     service.setConfiguration();
-
+  
     const req = httpMock.expectOne('http://127.0.0.1:8080/api/v1/configuration');
-    req.flush('Error', { status: 500, statusText: 'Internal Server Error' });
-
-    spyOn(console, 'error');
+    req.flush('Error', { status: 500, statusText: 'Internal Server Error' });  // Simulate error response
+  
+    // Check that console.error was called with the expected message
     expect(console.error).toHaveBeenCalledWith('Failed to set configuration.');
+  
+    // Ensure no other HTTP requests are pending
+    httpMock.verify();
   });
+  
 
   it('should return configuration observable when requested', () => {
     service.configEntiesAndCashDesks(mockEntries, mockCashDesks);
