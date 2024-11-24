@@ -40,6 +40,7 @@ export class StationComponent implements OnInit, OnDestroy {
   private clientService = inject(ClientService);
   private initService = inject(InitService);
   private socketService = inject(StompService);
+  private anyDeskClosed: any = null;
 
   constructor(private router: Router) {}
 
@@ -155,11 +156,20 @@ export class StationComponent implements OnInit, OnDestroy {
   }
 
   toggleDeskClosing(cashDesk: CashDesk) {
-    cashDesk.isClosed = !cashDesk.isClosed;
-    this.socketService.emit('/cashdesk/action', {
-      isClosed: cashDesk.isClosed,
-      id: cashDesk.id,
-    });
-    return cashDesk.isClosed;
+    if (this.anyDeskClosed === cashDesk) {
+      this.anyDeskClosed = null;
+      cashDesk.isClosed = false;
+    } else {
+      if (!this.anyDeskClosed) {
+        this.anyDeskClosed = cashDesk;
+        cashDesk.isClosed = !cashDesk.isClosed;
+        this.socketService.emit('/cashdesk/action', {
+          isClosed: cashDesk.isClosed,
+          id: cashDesk.id,
+        });
+        return cashDesk.isClosed;
+      }
+    }
+    return false;
   }
 }
