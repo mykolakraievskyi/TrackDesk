@@ -36,7 +36,6 @@ public class StationService {
     }
 
     public void createStationInstance(StationConfigurationDto stationConfigurationDto) {
-
         List<Entrance> entrances = stationConfigurationDto.getEntrances();
         Map<Integer, CashDesk> cashDeskMap = new HashMap<>();
         for(var cashDeskDto : stationConfigurationDto.getCashDeskDtos()) {
@@ -54,7 +53,11 @@ public class StationService {
             createGenerationStrategy(timeRange);
             this.isInitialized.set(true);
         } else {
-
+            station.setEntrances(entrances);
+            station.setCashDeskMap(cashDeskMap);
+            station.setMaxClientCapacity(maxClientCapacity);
+            station.setReserveCashDesk(reserveCashDesk);
+            station.setServiceTimeRange(timeRange);
         }
     }
 
