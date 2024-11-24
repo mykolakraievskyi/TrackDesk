@@ -40,6 +40,7 @@ public class StationService {
         List<Entrance> entrances = stationConfigurationDto.getEntrances();
         Map<Integer, CashDesk> cashDeskMap = new HashMap<>();
         for(var cashDeskDto : stationConfigurationDto.getCashDeskDtos()) {
+            assert cashDeskDto.getId()!=0:"ID zero can only be at the reserve cash desk";
             CashDesk cashDesk =
                     new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new PriorityQueue<>(), false, true);
             cashDeskMap.put(cashDeskDto.getId(), cashDesk);
