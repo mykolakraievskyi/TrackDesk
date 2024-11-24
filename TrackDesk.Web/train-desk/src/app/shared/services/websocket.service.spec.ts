@@ -59,7 +59,7 @@ describe('StompService', () => {
 
       const observable = service.listen(topic);
 
-      observable.subscribe((data) => {
+      observable.subscribe((data: any) => {  
         expect(data).toEqual({ key: 'value' });
         done();
       });
