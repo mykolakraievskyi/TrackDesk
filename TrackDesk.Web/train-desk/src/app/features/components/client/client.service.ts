@@ -9,10 +9,7 @@ import { EClientType } from '../../../types/client.type';
   providedIn: 'root',
 })
 export class ClientService {
-
-  constructor(
-    private movementService: MovementService
-  ) {}
+  constructor(private movementService: MovementService) {}
 
   generateClient(
     id: number,

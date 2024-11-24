@@ -27,7 +27,7 @@ export class BaseCashDesk implements CashDesk {
     public position: Position,
     public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box',
     public isClosed: boolean = false,
-    private movementService: MovementService
+    private movementService?: MovementService
   ) {
     this.image = this.getImagePath();
   }
@@ -47,16 +47,15 @@ export class BaseCashDesk implements CashDesk {
 
   private updateClientPositions(): void {
     this.clientQueue.forEach((client, index) => {
-      client.position = {
+      const targetPosition = {
         x: this.position.x + 3,
         y: this.position.y + (index + 1) * QUEUE_OFFSET,
       };
-            this.movementService.moveClientToCashDesk(
-              client,
-              this,
-              this.clientQueue
-            );
-
+      this.movementService?.moveClientToPosition(
+        client,
+        targetPosition,
+        this.clientQueue
+      );
     });
   }
 

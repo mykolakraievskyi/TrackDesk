@@ -4,6 +4,7 @@ import { Client } from '../../features/models/client.model';
 //import { getPlural } from 'astar-typescript';
 import * as AStar from 'astar-typescript';
 import { HttpClient } from '@angular/common/http';
+import { Position } from '../../features/models/position.model';
 
 const CELL_SIZE = 31;
 
@@ -300,5 +301,52 @@ export class MovementService {
     // } else {
     //   // похуй
     // }
+  }
+
+  moveClientToPosition(
+    client: Client,
+    targetPosition: Position,
+    allClients: Client[]
+  ): void {
+    const moveInterval = setInterval(() => {
+      const targetPos = {
+        x: Math.round(targetPosition.x / CELL_SIZE),
+        y: Math.round(targetPosition.y / CELL_SIZE),
+      };
+
+      const matrix = this.initializeWithClients(allClients, client);
+
+      const aStarInstance = new AStar.AStarFinder({
+        grid: {
+          width: matrix[0].length,
+          height: matrix.length,
+          matrix: matrix,
+        },
+      });
+      const clientPos = {
+        x: Math.round(client.position.x / CELL_SIZE),
+        y: Math.round(client.position.y / CELL_SIZE),
+      };
+
+      const bestPathway = aStarInstance.findPath(clientPos, targetPos);
+
+      if (!bestPathway || bestPathway.length === 0) {
+        clearInterval(moveInterval);
+        return;
+      }
+
+      const nextStep = bestPathway[1];
+      if (nextStep) {
+        client.position.x = nextStep[0] * CELL_SIZE;
+        client.position.y = nextStep[1] * CELL_SIZE;
+      }
+
+      if (
+        client.position.x === targetPosition.x &&
+        client.position.y === targetPosition.y
+      ) {
+        clearInterval(moveInterval);
+      }
+    }, 100);
   }
 }
