@@ -1,6 +1,5 @@
 package if_core_034.train_desk.controller;
 
-import if_core_034.train_desk.dto.BuyTicketDTO;
 import if_core_034.train_desk.dto.ClientDto;
 import if_core_034.train_desk.entity.Client;
 import if_core_034.train_desk.entity.Station;
