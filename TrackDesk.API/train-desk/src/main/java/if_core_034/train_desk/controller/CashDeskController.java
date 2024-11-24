@@ -65,9 +65,4 @@ public class CashDeskController {
         System.out.println(buyTicketDTO);
         return ResponseEntity.ok().build();
     }
-    @PostMapping("/api/v1/cashdesk/close")
-    public ResponseEntity<Object> closeCashDesk(@RequestBody int cashDeskId) {
-        cashDeskService.closeCashDesk(cashDeskId);
-        return ResponseEntity.ok().build();
-    }
 }
