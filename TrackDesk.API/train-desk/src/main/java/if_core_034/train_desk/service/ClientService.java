@@ -38,7 +38,7 @@ public class ClientService {
         Map<Integer, CashDesk> cashDesks = stationService.getStationInstance().getCashDeskMap();
         Comparator<CashDesk> cc = Comparator.comparing((CashDesk cashDesk) -> cashDesk.getPotentialQueuePosition(client))
                 .thenComparingDouble(cashDesk -> calculateDistance(client.getPosition(), cashDesk.getPosition()));
-        CashDesk bestCashDesk = cashDesks.values().stream()
+        CashDesk bestCashDesk = cashDesks.values().stream().filter(CashDesk::isOperational)
                 .min(cc)
                 .orElseThrow();
         return bestCashDesk.getId();
