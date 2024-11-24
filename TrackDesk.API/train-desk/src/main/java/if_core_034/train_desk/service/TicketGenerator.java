@@ -30,6 +30,11 @@ public class TicketGenerator {
         Random random = new Random();
         this.ticketNumber++;
         return new Ticket(ticketNumber,
+
+    }
+    public Ticket generateTicket() {
+        Random random = new Random();
+        return new Ticket(ticketNumber,
                 this.trains[random.nextInt(trains.length)], random.nextInt(5),
                 this.cities[random.nextInt(cities.length)],
                 this.cities[random.nextInt(cities.length)],

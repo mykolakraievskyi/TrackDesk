@@ -59,16 +59,6 @@ public class ClientController {
                     station.getCurrClientNumber().get() <= station.getMaxClientCapacity() * 0.7) {
                 generateClient();
             }
-            if(!stationService.isInitialized().get()) {
-                List<CashDeskDto> cashDeskDtos = new ArrayList<>();
-                List<Entrance> entrances = new ArrayList<>();
-                for (int i = 1; i <= 3; i++) {
-                    cashDeskDtos.add(new CashDeskDto(i, new Position(i * 10, i * 10)));
-                    entrances.add(new Entrance(i, new Position(i * 10, i * 10)));
-                }
-                StationConfigurationDto stationConfigurationDto = new StationConfigurationDto(cashDeskDtos, cashDeskDtos.get(0), entrances, 1, 1);
-                stationService.createStationInstance(stationConfigurationDto);
-            }
             long delay = clientService.getNextArrivalTime();
             Timer timer = new Timer();
             timer.schedule(new ClientGeneration(), delay);
