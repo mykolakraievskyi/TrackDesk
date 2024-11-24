@@ -2,6 +2,7 @@ package if_core_034.train_desk.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "ticket")
 public class Ticket {
     @Id
     private int ticketId;
