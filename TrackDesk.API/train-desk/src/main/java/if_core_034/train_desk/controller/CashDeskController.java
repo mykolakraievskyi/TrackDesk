@@ -8,7 +8,6 @@ import if_core_034.train_desk.service.CashDeskService;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.LogEntityService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import if_core_034.train_desk.dto.BuyTicketDto;
 import if_core_034.train_desk.service.StationService;
 import org.springframework.http.ResponseEntity;
