@@ -29,8 +29,8 @@ public class CashDeskService {
         Station station = stationService.getStationInstance();
         CashDesk cashDesk = station.getCashDeskMap().get(cashDeskId);
         cashDesk.setOperational(true);
-        cashDesk.setQueue(station.getReserveCashDesk().getQueue());
-        station.getReserveCashDesk().setQueue(new ArrayList<>());
+//        cashDesk.setQueue(station.getReserveCashDesk().getQueue());
+//        station.getReserveCashDesk().setQueue(new ArrayList<>());
         station.getReserveCashDesk().setOperational(false);
     }
 

@@ -65,7 +65,6 @@ public class CashDeskController {
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
-        //TODO якщо 0 то забрати з резервної каси
         Station station = stationService.getStationInstance();
         CashDesk cashDesk;
         if(buyTicketDto.getCashDeskId() != 0) {
