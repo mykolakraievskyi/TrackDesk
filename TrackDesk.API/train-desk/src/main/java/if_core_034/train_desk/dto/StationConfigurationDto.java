@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class StationConfigurationDto {
     private List<CashDeskDto> cashDeskDtos;
+    private CashDeskDto reserveCashDeskDto;
     private List<Entrance> entrances;
     private long secondsStart;
     private long secondsEnd;
