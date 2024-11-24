@@ -14,6 +14,7 @@ import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { Router, RouterModule } from '@angular/router';
 import { StompService } from '../../shared/services/websocket.service';
+import { EClientType } from '../../types/client.type';
 
 @Component({
   selector: 'app-station',
@@ -52,9 +53,20 @@ export class StationComponent implements OnInit, OnDestroy {
       this.confService.entranceNumber
     );
     this.generateClientsPeriodically();
+    this.socketService.connect('http://your-server-url/websocket-endpoint');
+
+    this.socketService.listen('/cashdesk/info').subscribe({
+      next: data => {
+        console.log('Received cash desk info:', data);
+      },
+      error: error => {
+        console.error('Error in subscription:', error);
+      },
+    });
   }
 
   ngOnDestroy(): void {
+    this.socketService.unsubscribe('/cashdesk/info');
     this.socketService.unsubscribe('/station/standardUser/client/generate');
     this.socketService.disconnect();
   }
@@ -71,10 +83,23 @@ export class StationComponent implements OnInit, OnDestroy {
           data.id,
           entryPosition,
           data.cashDeskId,
-          data.clientStatus
+          data.clientStatus as EClientType
         );
-        if (newClient) this.clients.push(newClient);
-        console.log(newClient);
+        if (newClient) {
+          const tempClients = [...this.clients, newClient];
+
+          const regularClients = tempClients
+            .filter(client => client.type === EClientType.REGULAR)
+            .sort((a, b) => a.id - b.id);
+
+          const privilegedClients = tempClients
+            .filter(client => client.type === EClientType.PRIVILEGED)
+            .sort((a, b) => a.id - b.id);
+
+          this.clients = [...privilegedClients, ...regularClients];
+        }
+
+        console.log('---this.clients ', this.clients);
         this.clientService.moveClientsToCashDesks(
           this.clients,
           this.activeCashDesks
@@ -93,6 +118,7 @@ export class StationComponent implements OnInit, OnDestroy {
         this.activeEntries,
         this.activeCashDesks
       );
+      this.movementService.initializeCashDeskPositions(this.activeCashDesks);
       this.confService.setConfiguration();
     }
   }
@@ -126,5 +152,15 @@ export class StationComponent implements OnInit, OnDestroy {
 
   getCashDeskStyle(cashDesk: CashDesk): any {
     return this.initService.getCashDeskStyle(cashDesk);
+  }
+
+  toggleDeskClosing(cashDesk: CashDesk) {
+    cashDesk.isClosed = !cashDesk.isClosed;
+    console.log(1);
+    this.socketService.emit('/cashdesk/action', {
+      isClosed: cashDesk.isClosed,
+      id: cashDesk.id,
+    });
+    return cashDesk.isClosed;
   }
 }

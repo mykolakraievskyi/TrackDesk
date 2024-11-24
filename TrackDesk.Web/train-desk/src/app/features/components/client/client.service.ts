@@ -5,6 +5,7 @@ import { BaseClient, Client } from '../../models/client.model';
 import { CashDesk } from '../../models/cash-desk.model';
 import { MovementService } from '../../../shared/services/client-movement.service';
 import { Position } from '../../models/position.model';
+import { EClientType } from '../../../types/client.type';
 
 @Injectable({
   providedIn: 'root',
@@ -29,12 +30,11 @@ export class ClientService {
     id: number,
     entryPosition: Position,
     cashDeskId: number,
-    status: 'regular' | 'privileged',
-
+    status: EClientType
   ): Client | null {
     const newClient = new BaseClient(
       id,
-      entryPosition,
+      { x: entryPosition.x, y: entryPosition.y },
       status,
       cashDeskId
     );
@@ -42,13 +42,14 @@ export class ClientService {
   }
 
   moveClientsToCashDesks(clients: Client[], activeCashDesks: CashDesk[]): void {
-    clients.forEach((client) => {
-      const targetCashDesk = activeCashDesks.filter(c => c.id === client.targetCashDeskId)[0];
+    clients.forEach(client => {
+      const targetCashDesk = activeCashDesks.filter(
+        c => c.id === client.targetCashDeskId
+      )[0];
       this.movementService.moveClientToCashDesk(
         client,
         targetCashDesk,
-        clients,
-        activeCashDesks
+        clients
       );
     });
   }

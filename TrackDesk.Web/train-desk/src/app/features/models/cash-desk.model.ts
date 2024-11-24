@@ -1,11 +1,15 @@
 import { Position } from './position.model';
 import { Client } from './client.model';
+
+const QUEUE_OFFSET = 31;
+
 export interface CashDesk {
   id: number;
   position: Position;
   image: string;
   type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box';
   clientQueue: Client[];
+  isClosed: boolean;
   addClient(client: Client): void;
   popClient(): Client | undefined;
   peekClient(): Client | null;
@@ -19,7 +23,8 @@ export class BaseCashDesk implements CashDesk {
   constructor(
     public id: number,
     public position: Position,
-    public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box'
+    public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box',
+    public isClosed: boolean = false
   ) {
     this.image = this.getImagePath();
   }
@@ -37,7 +42,7 @@ export class BaseCashDesk implements CashDesk {
   }
 
   peekClient(): Client | null {
-    if ((this.clientQueue.length == 0)) {
+    if (this.clientQueue.length == 0) {
       return null;
     } else {
       return this.clientQueue[0];
@@ -45,20 +50,14 @@ export class BaseCashDesk implements CashDesk {
   }
 
   getClientPosition(client: Client): Position {
-    if (this.clientQueue.includes(client)) {
-      const index = this.clientQueue.indexOf(client);
-      if (index === 0) {
-        return this.position;
-      } else {
-        return this.clientQueue[index - 1].position;
-      }
-    } else {
-      if (this.clientQueue.length > 0) {
-        return this.clientQueue[this.clientQueue.length - 1].position;
-      } else {
-        return this.position;
-      }
+    if (!this.clientQueue.includes(client)) {
+      this.addClient(client);
     }
+    const index = this.clientQueue.indexOf(client);
+    return {
+      x: this.position.x + 3,
+      y: this.position.y + (index + 1) * QUEUE_OFFSET,
+    };
   }
 
   private getImagePath(): string {

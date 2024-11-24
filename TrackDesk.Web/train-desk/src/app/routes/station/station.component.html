@@ -19,6 +19,7 @@
       <div
         *ngFor="let cashDesk of activeCashDesks"
         [ngStyle]="getCashDeskStyle(cashDesk)"
+        (click)="toggleDeskClosing(cashDesk)"
         class="cash-desk"></div>
       <div
         *ngFor="let entry of activeEntries"
