@@ -45,6 +45,9 @@ public class CashDeskController {
     @MessageMapping("/cashdesk/info")
     public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
         System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
+        if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
+            return;
+        }
         if (cashDeskOpenCloseDto.isClosed()) {
             cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
         } else {
