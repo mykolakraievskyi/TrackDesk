@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +35,10 @@ public class ClientService {
     }
 
     public int getBestCashRegisterId(Client client) {
-        List<CashDesk> cashDesks = stationService.getStationInstance().getCashDesks();
+        Map<Integer, CashDesk> cashDesks = stationService.getStationInstance().getCashDeskMap();
         Comparator<CashDesk> cc = Comparator.comparing((CashDesk cashDesk) -> cashDesk.getPotentialQueuePosition(client))
                 .thenComparingDouble(cashDesk -> calculateDistance(client.getPosition(), cashDesk.getPosition()));
-        CashDesk bestCashDesk = cashDesks.stream()
+        CashDesk bestCashDesk = cashDesks.values().stream()
                 .min(cc)
                 .orElseThrow();
         return bestCashDesk.getId();

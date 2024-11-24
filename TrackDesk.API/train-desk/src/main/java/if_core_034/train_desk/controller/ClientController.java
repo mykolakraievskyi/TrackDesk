@@ -42,9 +42,7 @@ public class ClientController {
     public void generateClient() {
         Client client = clientService.generateClient();
         int cashDeskId = clientService.getBestCashRegisterId(client);
-        stationService.getStationInstance().getCashDesks().stream()
-                                                          .filter(cashDesk -> cashDesk.getId() == cashDeskId)
-                                                          .findFirst().get().getQueue().add(client);
+        stationService.getStationInstance().getCashDeskMap().get(cashDeskId).getQueue().add(client);
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId, client.getEntrance().getId());
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
@@ -65,7 +63,9 @@ public class ClientController {
     private class ClientGeneration extends TimerTask {
         @Override
         public void run() {
-            if(stationService.isInitialized().get()) {
+            Station station = stationService.getStationInstance();
+            if(stationService.isInitialized().get() &&
+                    station.getCurrClientNumber() <= station.getMaxClientCapacity() * 0.7) {
                 generateClient();
             }
             long delay = clientService.getNextArrivalTime();

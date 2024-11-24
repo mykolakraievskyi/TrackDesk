@@ -15,9 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.HashMap;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.time.LocalTime;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 @Service
 public class StationService {
@@ -35,15 +37,18 @@ public class StationService {
 
     public void createStationInstance(StationConfigurationDto stationConfigurationDto) {
         List<Entrance> entrances = stationConfigurationDto.getEntrances();
-        List<CashDesk> cashDesks = new ArrayList<>();
+        Map<Integer, CashDesk> cashDeskMap = new HashMap<>();
         for(var cashDeskDto : stationConfigurationDto.getCashDeskDtos()) {
-            cashDesks.add(new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new PriorityQueue<>(), false, true));
+            CashDesk cashDesk =
+                    new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new PriorityQueue<>(), false, true);
+            cashDeskMap.put(cashDeskDto.getId(), cashDesk);
         }
-        CashDesk reserveCashDesk = new CashDesk(0, new Position(0, 0) , new PriorityQueue<>(), true, false);
+        CashDesk reserveCashDesk = new CashDesk(0,  stationConfigurationDto.getReserveCashDeskDto().getPosition(),
+                                                   new PriorityQueue<>(), true, false);
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
-        int maxClientCapacity = (int) (30 + Math.random() * 50);
-        station = Station.getInstance(entrances, cashDesks, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
+        int maxClientCapacity = cashDeskMap.size() * 5;
+        station = Station.getInstance(entrances, cashDeskMap, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
         createGenerationStrategy(timeRange);
         this.isInitialized.set(true);
     }
