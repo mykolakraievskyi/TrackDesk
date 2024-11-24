@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalTime;
 
 @Data
@@ -20,7 +19,7 @@ public class Ticket {
     @Id
     private int ticketId;
     private String train;
-    private String carriage;
+    private int carriage;
     private String departureStation;
     private String arrivalStation;
     private LocalTime departureTime;

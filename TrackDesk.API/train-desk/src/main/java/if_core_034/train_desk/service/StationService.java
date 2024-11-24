@@ -5,7 +5,6 @@ import if_core_034.train_desk.strategy.UniformGenerationStrategy;
 import if_core_034.train_desk.strategy.RandomGenerationStrategy;
 import if_core_034.train_desk.entity.CashDesk;
 import if_core_034.train_desk.entity.Entrance;
-import if_core_034.train_desk.entity.Position;
 import if_core_034.train_desk.entity.TimeRange;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.dto.StationConfigurationDto;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.time.LocalTime;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 @Service
 public class StationService {

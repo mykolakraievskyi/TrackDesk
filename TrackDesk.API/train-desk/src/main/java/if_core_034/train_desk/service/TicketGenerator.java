@@ -2,7 +2,6 @@ package if_core_034.train_desk.service;
 
 import if_core_034.train_desk.entity.Ticket;
 
-import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -28,7 +27,7 @@ public class TicketGenerator {
     public Ticket generateTicket() {
         Random random = new Random();
         return new Ticket((int) (1 + Math.random() * 1000),
-                this.trains[random.nextInt(trains.length)], "Carriage №" + random.nextInt(5),
+                this.trains[random.nextInt(trains.length)], random.nextInt(5),
                 this.cities[random.nextInt(cities.length)],
                 this.cities[random.nextInt(cities.length)],
                 LocalTime.of(random.nextInt(24), random.nextInt(60)),
