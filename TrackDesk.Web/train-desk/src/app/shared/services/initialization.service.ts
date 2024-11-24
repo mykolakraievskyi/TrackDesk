@@ -119,7 +119,7 @@ export class InitService {
   getCashDeskStyle(cashDesk: CashDesk): any {
     const isTicketBox = cashDesk.type === 'ticket-box';
 
-    return {
+    const styles: any = {
       position: 'absolute',
       left: `${cashDesk.position.x}px`,
       top: `${cashDesk.position.y}px`,
@@ -130,5 +130,11 @@ export class InitService {
       zIndex: '2',
       backgroundSize: 'cover',
     };
+
+    if (cashDesk.isClosed) {
+      styles.filter = 'grayscale(100%)';
+    }
+
+    return styles;
   }
 }
