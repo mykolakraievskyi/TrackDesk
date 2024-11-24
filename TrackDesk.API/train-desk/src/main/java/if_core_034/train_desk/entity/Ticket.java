@@ -1,6 +1,8 @@
 package if_core_034.train_desk.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -17,7 +19,8 @@ import java.time.LocalTime;
 @Table(name = "ticket")
 public class Ticket {
     @Id
-    private int ticketId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     private String train;
     private int carriage;
     private String departureStation;
