@@ -3,12 +3,13 @@ package if_core_034.train_desk.entity;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class Station {
     private static volatile Station instance;
     private List<Entrance> entrances;
-    private List<CashDesk> cashDesks;
+    private Map<Integer, CashDesk> cashDeskMap;
     private CashDesk reserveCashDesk;
     private TimeRange serviceTimeRange;
     private int currClientNumber;
@@ -16,13 +17,13 @@ public class Station {
     private volatile boolean isClosed;
 
     private Station(List<Entrance> entrances,
-                    List<CashDesk> cashDesks,
+                    Map<Integer, CashDesk> cashDesks,
                     CashDesk reserveCashDesk,
                     TimeRange serviceTimeRange,
                     int currClientNumber,
                     int maxClientCapacity) {
         this.entrances = entrances;
-        this.cashDesks = cashDesks;
+        this.cashDeskMap = cashDesks;
         this.reserveCashDesk = reserveCashDesk;
         this.serviceTimeRange = serviceTimeRange;
         this.currClientNumber = currClientNumber;
@@ -31,7 +32,7 @@ public class Station {
     }
 
     public static Station getInstance(List<Entrance> entrances,
-                               List<CashDesk> cashDesks,
+                               Map<Integer, CashDesk> cashDeskMap,
                                CashDesk reserveCashDesk,
                                TimeRange timeRange,
                                int currClientNumber,
@@ -39,7 +40,7 @@ public class Station {
         if(instance == null) {
             synchronized(Station.class) {
                 if(instance == null) {
-                    instance = new Station(entrances, cashDesks, reserveCashDesk, timeRange,
+                    instance = new Station(entrances, cashDeskMap, reserveCashDesk, timeRange,
                                            currClientNumber, maxClientCapacity);
                 }
 
