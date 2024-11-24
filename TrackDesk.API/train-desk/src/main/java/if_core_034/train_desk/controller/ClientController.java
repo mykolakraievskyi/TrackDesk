@@ -1,7 +1,11 @@
 package if_core_034.train_desk.controller;
 
+import if_core_034.train_desk.dto.CashDeskDto;
 import if_core_034.train_desk.dto.ClientDto;
+import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.entity.Client;
+import if_core_034.train_desk.entity.Entrance;
+import if_core_034.train_desk.entity.Position;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
@@ -10,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,16 +48,6 @@ public class ClientController {
         Station station = stationService.getStationInstance();
         station.getCurrClientNumber().set(station.getCurrClientNumber().get() + 1);
 
-//        } else {
-//            List<CashDeskDto> cashDeskDtos = new ArrayList<>();
-//            List<Entrance> entrances = new ArrayList<>();
-//            for(int i = 1; i <= 3; i++) {
-//                cashDeskDtos.add(new CashDeskDto(i, new Position(i * 10, i * 10)));
-//                entrances.add(new Entrance(i, new Position(i * 10, i * 10)));
-//            }
-//            StationConfigurationDto stationConfigurationDto = new StationConfigurationDto(cashDeskDtos, entrances, 15, 15);
-//            stationService.createStationInstance(stationConfigurationDto);
-//        }
     }
 
     private class ClientGeneration extends TimerTask {
@@ -62,6 +57,16 @@ public class ClientController {
             if(stationService.isInitialized().get() &&
                     station.getCurrClientNumber().get() <= station.getMaxClientCapacity() * 0.7) {
                 generateClient();
+            }
+            if(!stationService.isInitialized().get()) {
+                List<CashDeskDto> cashDeskDtos = new ArrayList<>();
+                List<Entrance> entrances = new ArrayList<>();
+                for (int i = 1; i <= 3; i++) {
+                    cashDeskDtos.add(new CashDeskDto(i, new Position(i * 10, i * 10)));
+                    entrances.add(new Entrance(i, new Position(i * 10, i * 10)));
+                }
+                StationConfigurationDto stationConfigurationDto = new StationConfigurationDto(cashDeskDtos, cashDeskDtos.get(0), entrances, 1, 1);
+                stationService.createStationInstance(stationConfigurationDto);
             }
             long delay = clientService.getNextArrivalTime();
             Timer timer = new Timer();
