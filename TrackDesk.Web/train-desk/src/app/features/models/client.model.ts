@@ -7,7 +7,6 @@ export interface Client {
   image: string;
   type: EClientType;
   targetCashDeskId?: number;
-  move(): void;
 }
 
 export class BaseClient implements Client {
@@ -24,16 +23,11 @@ export class BaseClient implements Client {
   private getImagePath(): string {
     const randomImageNumber = this.getRandomNumber(1, 7);
     return this.type === 'regular'
-      ? `../../../assets/images/people/privileged/${randomImageNumber}.png`
-      : `../../../assets/images/people/regular/${randomImageNumber}.png`;
+      ? `../../../assets/images/people/regular/${randomImageNumber}.png`
+      : `../../../assets/images/people/privileged/${randomImageNumber}.png`;
   }
 
   private getRandomNumber(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  move(): void {
-    console.log(`${this.type} client is moving with custom behavior`);
-    //add logic from service for both types
   }
 }

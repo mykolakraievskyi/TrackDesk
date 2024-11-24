@@ -163,4 +163,28 @@ export class StationComponent implements OnInit, OnDestroy {
     });
     return cashDesk.isClosed;
   }
+
+  addClient(client: Client) {
+    this.clients.push(client);
+    this.reorderQueue();
+  }
+
+  private reorderQueue() {
+    // Сортування: пільговики вперед, зберігаючи відносний порядок
+    this.clients.sort((a, b) => {
+      if (
+        a.type === EClientType.PRIVILEGED &&
+        b.type !== EClientType.PRIVILEGED
+      ) {
+        return -1; // Пільговик перед звичайним
+      }
+      if (
+        a.type !== EClientType.PRIVILEGED &&
+        b.type === EClientType.PRIVILEGED
+      ) {
+        return 1; // Звичайний після пільговика
+      }
+      return 0; // В іншому випадку порядок зберігається
+    });
+  }
 }

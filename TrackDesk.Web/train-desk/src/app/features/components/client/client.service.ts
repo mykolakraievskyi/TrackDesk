@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { BaseClient, Client } from '../../models/client.model';
 import { CashDesk } from '../../models/cash-desk.model';
 import { MovementService } from '../../../shared/services/client-movement.service';
@@ -11,20 +9,10 @@ import { EClientType } from '../../../types/client.type';
   providedIn: 'root',
 })
 export class ClientService {
-  private apiUrl = 'https://';
 
   constructor(
-    private http: HttpClient,
     private movementService: MovementService
   ) {}
-
-  getClient(clientId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${clientId}`);
-  }
-
-  getAllClients(): Observable<any> {
-    return this.http.get(`${this.apiUrl}`);
-  }
 
   generateClient(
     id: number,
