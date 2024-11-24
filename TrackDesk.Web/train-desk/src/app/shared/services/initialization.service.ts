@@ -98,7 +98,7 @@ export class InitService {
       height: '60px',
       backgroundImage: `url(${client.image})`,
       backgroundSize: 'cover',
-      zIndex: 1,
+      zIndex: (client.id+5).toString(),
     };
   }
 
