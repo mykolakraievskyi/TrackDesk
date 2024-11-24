@@ -4,7 +4,7 @@ import if_core_034.train_desk.dto.CashDeskOpenCloseDto;
 import if_core_034.train_desk.service.CashDeskService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import if_core_034.train_desk.dto.BuyTicketDTO;
+import if_core_034.train_desk.dto.BuyTicketDto;
 import if_core_034.train_desk.service.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,7 +58,7 @@ public class CashDeskController {
     //            }, 15, TimeUnit.SECONDS);
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
-    public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDTO buyTicketDTO) {
+    public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDTO) {
         //TODO якщо 0 то забрати з резервної каси
         stationService.getStationInstance().getCashDeskMap().get(buyTicketDTO.getCashDeskId())
                 .getQueue().removeIf(client -> client.getId() == buyTicketDTO.getClientId());
