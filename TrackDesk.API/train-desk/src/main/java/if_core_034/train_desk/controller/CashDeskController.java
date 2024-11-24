@@ -67,6 +67,7 @@ public class CashDeskController {
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
         //TODO якщо 0 то забрати з резервної каси
         Station station = stationService.getStationInstance();
+        station.getCurrClientNumber().set(station.getCurrClientNumber().get() - 1);
         CashDesk cashDesk;
         if(buyTicketDto.getCashDeskId() != 0) {
             cashDesk = station.getCashDeskMap().get(buyTicketDto.getCashDeskId());
@@ -80,6 +81,7 @@ public class CashDeskController {
         if(client.isPresent()) {
             LogEntity logEntity = new LogEntity(0, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
                                                    client.get().getTickets(), buyTicketDto.getStartTime(), buyTicketDto.getEndTime());
+
             logEntityService.saveLogEntity(logEntity);
             return ResponseEntity.ok().body(logEntity);
         }
