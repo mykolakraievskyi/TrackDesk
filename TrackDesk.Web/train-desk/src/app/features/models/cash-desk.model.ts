@@ -1,5 +1,8 @@
 import { Position } from './position.model';
 import { Client } from './client.model';
+
+const QUEUE_OFFSET = 31;
+
 export interface CashDesk {
   id: number;
   position: Position;
@@ -45,20 +48,11 @@ export class BaseCashDesk implements CashDesk {
   }
 
   getClientPosition(client: Client): Position {
-    if (this.clientQueue.includes(client)) {
-      const index = this.clientQueue.indexOf(client);
-      if (index === 0) {
-        return this.position;
-      } else {
-        return this.clientQueue[index - 1].position;
-      }
-    } else {
-      if (this.clientQueue.length > 0) {
-        return this.clientQueue[this.clientQueue.length - 1].position;
-      } else {
-        return this.position;
-      }
+    if (!this.clientQueue.includes(client)) {
+      this.addClient(client);
     }
+    const index = this.clientQueue.indexOf(client);
+    return {x:this.position.x + 3, y: this.position.y+((index+1)*QUEUE_OFFSET) }
   }
 
   private getImagePath(): string {

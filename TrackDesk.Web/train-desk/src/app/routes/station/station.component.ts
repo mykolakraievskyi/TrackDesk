@@ -93,6 +93,7 @@ export class StationComponent implements OnInit, OnDestroy {
         this.activeEntries,
         this.activeCashDesks
       );
+      this.movementService.initializeCashDeskPositions(this.activeCashDesks);
       this.confService.setConfiguration();
     }
   }

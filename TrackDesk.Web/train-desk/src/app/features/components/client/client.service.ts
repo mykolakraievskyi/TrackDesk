@@ -34,7 +34,7 @@ export class ClientService {
   ): Client | null {
     const newClient = new BaseClient(
       id,
-      entryPosition,
+      {x:entryPosition.x, y:entryPosition.y},
       status,
       cashDeskId
     );
@@ -47,8 +47,7 @@ export class ClientService {
       this.movementService.moveClientToCashDesk(
         client,
         targetCashDesk,
-        clients,
-        activeCashDesks
+        clients
       );
     });
   }
