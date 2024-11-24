@@ -50,7 +50,6 @@ public class StationService {
         int maxClientCapacity = cashDeskMap.size() * 5;
         if(!this.isInitialized.get()) {
             station = Station.getInstance(entrances, cashDeskMap, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
-            createGenerationStrategy(timeRange);
             this.isInitialized.set(true);
         } else {
             station.setEntrances(entrances);
@@ -61,6 +60,7 @@ public class StationService {
             station.setServiceTimeRange(timeRange);
             station.getCurrClientNumber().set(0);
         }
+        createGenerationStrategy(timeRange);
     }
 
     private void createGenerationStrategy(TimeRange timeRange) {

@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import if_core_034.train_desk.dto.BuyTicketDto;
 import if_core_034.train_desk.service.StationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class CashDeskController {
     private final CashDeskService cashDeskService;
     private final StationService stationService;
@@ -42,6 +44,10 @@ public class CashDeskController {
 
     @MessageMapping("/cashdesk/info")
     public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
+        System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
+        if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
+            return;
+        }
         if (cashDeskOpenCloseDto.isClosed()) {
             cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
         } else {
@@ -65,7 +71,7 @@ public class CashDeskController {
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
-        //TODO якщо 0 то забрати з резервної каси
+        System.out.println("Buy ticket: "+buyTicketDto);
         Station station = stationService.getStationInstance();
         station.getCurrClientNumber().set(station.getCurrClientNumber().get() - 1);
         CashDesk cashDesk;
@@ -81,8 +87,12 @@ public class CashDeskController {
         if(client.isPresent()) {
             LogEntity logEntity = new LogEntity(0, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
                                                    client.get().getTickets(), buyTicketDto.getStartTime(), buyTicketDto.getEndTime());
+<<<<<<< HEAD
 
             logEntityService.saveLogEntity(logEntity);
+=======
+//            logEntityService.saveLogEntity(logEntity);
+>>>>>>> d12d4ac04bbcbfb73c6a7cdf75ac2f727fa6127a
             return ResponseEntity.ok().body(logEntity);
         }
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
