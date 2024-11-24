@@ -156,7 +156,6 @@ export class StationComponent implements OnInit, OnDestroy {
 
   toggleDeskClosing(cashDesk: CashDesk) {
     cashDesk.isClosed = !cashDesk.isClosed;
-    console.log(1);
     this.socketService.emit('/cashdesk/action', {
       isClosed: cashDesk.isClosed,
       id: cashDesk.id,
