@@ -1,5 +1,7 @@
 import { Position } from './position.model';
 import { Client } from './client.model';
+import { EClientType } from '../../types/client.type';
+import { MovementService } from '../../shared/services/client-movement.service';
 
 const QUEUE_OFFSET = 31;
 
@@ -25,7 +27,8 @@ export class BaseCashDesk implements CashDesk {
     public id: number,
     public position: Position,
     public type: 'cash-desk' | 'closed-cash-desk' | 'ticket-box',
-    public isClosed: boolean = false
+    public isClosed: boolean = false,
+    private movementService?: MovementService
   ) {
     this.image = this.getImagePath();
   }
@@ -35,7 +38,26 @@ export class BaseCashDesk implements CashDesk {
   }
 
   addClient(client: Client): void {
-    this.clientQueue.push(client);
+    if (client.type === EClientType.PRIVILEGED) {
+      this.clientQueue.unshift(client);
+    } else {
+      this.clientQueue.push(client);
+    }
+    this.updateClientPositions();
+  }
+
+  private updateClientPositions(): void {
+    this.clientQueue.forEach((client, index) => {
+      const targetPosition = {
+        x: this.position.x + 3,
+        y: this.position.y + (index + 1) * QUEUE_OFFSET,
+      };
+      this.movementService?.moveClientToPosition(
+        client,
+        targetPosition,
+        this.clientQueue
+      );
+    });
   }
 
   popClient(): Client | undefined {

@@ -40,6 +40,7 @@ export class StationComponent implements OnInit, OnDestroy {
   private clientService = inject(ClientService);
   private initService = inject(InitService);
   private socketService = inject(StompService);
+  private anyDeskClosed: any = null;
 
   constructor(private router: Router) {}
 
@@ -157,12 +158,44 @@ export class StationComponent implements OnInit, OnDestroy {
   }
 
   toggleDeskClosing(cashDesk: CashDesk) {
-    cashDesk.isClosed = !cashDesk.isClosed;
-    console.log(1);
-    this.socketService.emit('/cashdesk/action', {
-      isClosed: cashDesk.isClosed,
-      id: cashDesk.id,
+    if (this.anyDeskClosed === cashDesk) {
+      this.anyDeskClosed = null;
+      cashDesk.isClosed = false;
+    } else {
+      if (!this.anyDeskClosed) {
+        this.anyDeskClosed = cashDesk;
+        cashDesk.isClosed = !cashDesk.isClosed;
+        this.socketService.emit('/cashdesk/action', {
+          isClosed: cashDesk.isClosed,
+          id: cashDesk.id,
+        });
+        return cashDesk.isClosed;
+      }
+    }
+    return false;
+  }
+
+  addClient(client: Client) {
+    this.clients.push(client);
+    this.reorderQueue();
+  }
+
+  private reorderQueue() {
+    // Сортування: пільговики вперед, зберігаючи відносний порядок
+    this.clients.sort((a, b) => {
+      if (
+        a.type === EClientType.PRIVILEGED &&
+        b.type !== EClientType.PRIVILEGED
+      ) {
+        return -1; // Пільговик перед звичайним
+      }
+      if (
+        a.type !== EClientType.PRIVILEGED &&
+        b.type === EClientType.PRIVILEGED
+      ) {
+        return 1; // Звичайний після пільговика
+      }
+      return 0; // В іншому випадку порядок зберігається
     });
-    return cashDesk.isClosed;
   }
 }
