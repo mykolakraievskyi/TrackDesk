@@ -10,9 +10,9 @@
         type="number"
         id="exit-doors"
         placeholder="(1-8)"
-        [min]="entryExitMin"
-        [max]="entryExitMax"
-        [(ngModel)]="Exit"
+        [min]="ENTRANCE_EXIT_MIN"
+        [max]="ENTRANCE_EXIT_MAX"
+        [(ngModel)]="exits"
         name="Exit" />
 
       <label for="entry-doors">Num of entry doors:</label>
@@ -20,9 +20,9 @@
         type="number"
         id="entry-doors"
         placeholder="(1-8)"
-        [min]="entryExitMin"
-        [max]="entryExitMax"
-        [(ngModel)]="Entry"
+        [min]="ENTRANCE_EXIT_MIN"
+        [max]="ENTRANCE_EXIT_MAX"
+        [(ngModel)]="entrances"
         name="Entry" />
 
       <label for="cash-registers">Num of cash registers:</label>
@@ -30,10 +30,20 @@
         type="number"
         id="cash-registers"
         placeholder="(2-9)"
-        [min]="registerMin"
-        [max]="registerMax"
-        [(ngModel)]="CashRegisters"
+        [min]="REGISTER_MIN"
+        [max]="REGISTER_MAX"
+        [(ngModel)]="cashRegisters"
         name="CashRegisters" />
+
+        <label for="serve-time">Serve time per ticket:</label>
+        <input
+          type="number"
+          id="serve-time"
+          placeholder="(2-10)"
+          [min]="TIME_MIN"
+          [max]="TIME_MAX"
+          [(ngModel)]="serveTime"
+          name="ServeTime" />
 
       <label>Service time per customer:</label>
       <div class="radio-group">
@@ -58,6 +68,7 @@
         </label>
       </div>
 
+
       @if(timeOption === 'static'){
       <input
         type="number"
@@ -67,12 +78,14 @@
         name="secondsStart" />
       } @if(timeOption === 'random'){
       <input
+        class="rand-time"
         type="number"
         id="start-time"
         placeholder="Start time (2-10 sec)"
         [(ngModel)]="secondsStart"
         name="secondsStart" />
       <input
+        class="rand-time"
         type="number"
         id="end-time"
         placeholder="End time (2-10 sec)"

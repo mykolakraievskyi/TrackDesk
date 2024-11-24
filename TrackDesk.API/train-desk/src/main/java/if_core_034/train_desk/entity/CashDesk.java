@@ -14,13 +14,9 @@ public class CashDesk {
     private boolean isReserve;
     private boolean isOperational;
 
-    boolean serveClient(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
-    }
-    void open(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
-    }
-    void close(){
-        throw new UnsupportedOperationException("Метод ще не реалізовано");
+    public long getPotentialQueuePosition(Client client) {
+        return queue.stream().
+                filter(c -> c.getStatus().compareTo(client.getStatus()) >= 0)
+                .count();
     }
 }

@@ -1,10 +1,12 @@
+import { EClientType } from '../../types/client.type';
 import { Position } from './position.model';
 
 export interface Client {
   id: number;
   position: Position;
+  tickets: number;
   image: string;
-  type: 'regular' | 'privileged';
+  type: EClientType;
   targetCashDeskId?: number;
   move(): void;
 }
@@ -15,15 +17,17 @@ export class BaseClient implements Client {
   constructor(
     public id: number,
     public position: Position,
-    public type: 'regular' | 'privileged'
+    public tickets: number,
+    public type: EClientType,
+    public targetCashDeskId: number
   ) {
     this.image = this.getImagePath();
   }
   private getImagePath(): string {
     const randomImageNumber = this.getRandomNumber(1, 7);
     return this.type === 'regular'
-      ? `../../../assets/images/people/privileged/${randomImageNumber}.png`
-      : `../../../assets/images/people/regular/${randomImageNumber}.png`;
+      ? `../../../assets/images/people/regular/${randomImageNumber}.png`
+      : `../../../assets/images/people/privileged/${randomImageNumber}.png`;
   }
 
   private getRandomNumber(min: number, max: number): number {

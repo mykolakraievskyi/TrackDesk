@@ -3,12 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 
-const ENTRY_EXIT_MIN = 1;
-const ENTRY_EXIT_MAX = 8;
-const REGISTER_MIN = 2;
-const REGISTER_MAX = 9;
-const TIME_MIN = 2;
-const TIME_MAX = 10;
 
 @Component({
   selector: 'app-home',
@@ -23,73 +17,80 @@ export class HomeComponent {
     private configurationService: ConfigurationService
   ) {}
 
-  entryExitMin = ENTRY_EXIT_MIN;
-  entryExitMax = ENTRY_EXIT_MAX;
-  registerMin = REGISTER_MIN;
-  registerMax = REGISTER_MAX;
-  timeMin = TIME_MIN;
-  timeMax = TIME_MAX;
+ENTRANCE_EXIT_MIN = 1;
+ENTRANCE_EXIT_MAX = 8;
+REGISTER_MIN = 2;
+REGISTER_MAX = 9;
+TIME_MIN = 2;
+TIME_MAX = 10;
 
-  Exit: number = 1;
-  Entry: number = 1;
-  CashRegisters: number = 2;
+
+
+  exits: number = 1;
+  entrances: number = 1;
+  cashRegisters: number = 2;
   secondsStart: number = 2;
   secondsEnd: number = 2;
+  serveTime: number = 5;
   timeOption: 'random' | 'static' = 'random';
 
-  onStartClick() {
-    if (this.validateData() === true) {
+  onStartClick(): void {
+    if (this.validateData()) {
       if (this.timeOption === 'static') {
         this.secondsEnd = this.secondsStart;
       }
-      this.configurationService
-        .setConfiguration(
-          this.CashRegisters,
-          this.Entry,
-          this.Exit,
-          this.secondsStart,
-          this.secondsEnd
-        )
-        .subscribe({
-          next: response => {
-            this.router.navigate(['station']);
-          },
-          error: error => console.error('Помилка:', error),
-        });
+      this.configurationService.setBaseConfiguration(
+        this.cashRegisters,
+        this.entrances,
+        this.exits,
+        this.secondsStart,
+        this.secondsEnd,
+        this.serveTime
+      );
+      this.router.navigate(['station']);
     } else {
       alert('Перегляньте коректність даних та спробуйте, будь ласка, знову)');
     }
   }
 
   validateData(): boolean {
-    var result: boolean = true;
-    if (this.Exit < this.entryExitMin || this.Exit > this.entryExitMax) {
-      result = false;
-    }
-    if (this.Entry < this.entryExitMin || this.Entry > this.entryExitMax) {
+    let result: boolean = true;
+    if (
+      this.exits < this.ENTRANCE_EXIT_MIN ||
+      this.exits > this.ENTRANCE_EXIT_MAX
+    ) {
       result = false;
     }
     if (
-      this.CashRegisters < this.registerMin ||
-      this.CashRegisters > this.registerMax
+      this.entrances < this.ENTRANCE_EXIT_MIN ||
+      this.entrances > this.ENTRANCE_EXIT_MAX
+    ) {
+      result = false;
+    }
+    if (
+      this.cashRegisters < this.REGISTER_MIN ||
+      this.cashRegisters > this.REGISTER_MAX
     ) {
       result = false;
     }
     if (this.timeOption === 'static') {
       if (
-        this.secondsStart < this.timeMin ||
-        this.secondsStart > this.timeMax
+        this.secondsStart < this.TIME_MIN ||
+        this.secondsStart > this.TIME_MAX
       ) {
         result = false;
       }
     } else if (this.timeOption === 'random') {
       if (
-        this.secondsStart < this.timeMin ||
-        this.secondsStart > this.timeMax
+        this.secondsStart < this.TIME_MIN ||
+        this.secondsStart > this.TIME_MAX
       ) {
         result = false;
       }
-      if (this.secondsEnd < this.timeMin || this.secondsEnd > this.timeMax) {
+      if (this.secondsEnd < this.TIME_MIN || this.secondsEnd > this.TIME_MAX) {
+        result = false;
+      }
+      if(this.serveTime < this.TIME_MIN || this.serveTime > this.TIME_MAX){
         result = false;
       }
       if (this.secondsStart > this.secondsEnd) {
