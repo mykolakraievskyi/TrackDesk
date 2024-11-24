@@ -24,11 +24,11 @@ public class TicketGenerator {
         this.trains = new String[] {
                 "Intersity +", "Night Express", "Podil Express", "Bukovel Express", "Dnipro Express"
         };
-        this.
+
     }
     public Ticket generateTicket() {
         Random random = new Random();
-        return new Ticket(,
+        return new Ticket((int) (1 + Math.random() * 1000),
                 this.trains[random.nextInt(trains.length)], random.nextInt(5),
                 this.cities[random.nextInt(cities.length)],
                 this.cities[random.nextInt(cities.length)],
