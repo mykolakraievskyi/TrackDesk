@@ -29,16 +29,21 @@ export class ClientService {
     id: number,
     entryPosition: Position,
     cashDeskId: number,
-    status: 'regular' | 'privileged'
+    status: 'regular' | 'privileged',
+
   ): Client | null {
-    return new BaseClient(id, entryPosition, status, cashDeskId);
+    const newClient = new BaseClient(
+      id,
+      entryPosition,
+      status,
+      cashDeskId
+    );
+    return newClient;
   }
 
   moveClientsToCashDesks(clients: Client[], activeCashDesks: CashDesk[]): void {
-    clients.forEach(client => {
-      const targetCashDesk = activeCashDesks.filter(
-        c => c.id === client.targetCashDeskId
-      )[0];
+    clients.forEach((client) => {
+      const targetCashDesk = activeCashDesks.filter(c => c.id === client.targetCashDeskId)[0];
       this.movementService.moveClientToCashDesk(
         client,
         targetCashDesk,
@@ -46,19 +51,5 @@ export class ClientService {
         activeCashDesks
       );
     });
-  }
-
-  relocateClients(
-    currentCashDesk: CashDesk,
-    newCashDesk: CashDesk,
-    clients: Client[],
-    cashDesks: CashDesk[]
-  ): void {
-    this.movementService.relocateClients(
-      currentCashDesk,
-      newCashDesk,
-      clients,
-      cashDesks
-    );
   }
 }
