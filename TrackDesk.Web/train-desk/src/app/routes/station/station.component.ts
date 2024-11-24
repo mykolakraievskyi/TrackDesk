@@ -54,7 +54,6 @@ export class StationComponent implements OnInit, OnDestroy {
       this.confService.entranceNumber
     );
     this.generateClientsPeriodically();
-    this.socketService.connect('http://your-server-url/websocket-endpoint');
 
     this.socketService.listen('/cashdesk/info').subscribe({
       next: data => {
