@@ -56,6 +56,7 @@ public class StationService {
         } else {
             station.setEntrances(entrances);
             station.setCashDeskMap(cashDeskMap);
+            station.getCurrClientNumber().set(0);
             station.setMaxClientCapacity(maxClientCapacity);
             station.setReserveCashDesk(reserveCashDesk);
             station.setServiceTimeRange(timeRange);
