@@ -127,6 +127,7 @@ export class MovementService {
     clients: Client[],
     cashDesks: CashDesk[]
   ): void {
+    console.log(currentDesk);
     currentDesk.clientQueue.forEach(client => {
       this.moveClientToCashDesk(client, newDesk, clients, cashDesks);
     });

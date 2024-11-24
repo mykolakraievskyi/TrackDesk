@@ -7,4 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class StationOpenCloseDto {
     private boolean isClosed;
+    private int stationId;
 }

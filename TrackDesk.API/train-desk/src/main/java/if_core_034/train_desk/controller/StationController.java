@@ -1,6 +1,7 @@
 package if_core_034.train_desk.controller;
 
 import if_core_034.train_desk.dto.StationConfigurationDto;
+import if_core_034.train_desk.service.CashDeskService;
 import if_core_034.train_desk.service.StationService;
 import if_core_034.train_desk.dto.StationOpenCloseDto;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ public class StationController {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final StationService stationService;
+    private final CashDeskService cashDeskService;
 
 
 //    private static Integer[] generateRandomNumbers(int count, int min, int max) {
@@ -42,9 +44,10 @@ public class StationController {
 //        System.out.println(message);
 //    }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 15000)
     public void sendCloseMessage() {
-        simpMessagingTemplate.convertAndSendToUser("standardUser", "/close/message", new StationOpenCloseDto(true));
+        var id = cashDeskService.closeRandomCashDesk();
+        simpMessagingTemplate.convertAndSendToUser("standardUser", "/close/message", new StationOpenCloseDto(true, id));
     }
 
 

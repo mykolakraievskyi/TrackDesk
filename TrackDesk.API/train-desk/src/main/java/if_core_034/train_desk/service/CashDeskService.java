@@ -12,6 +12,9 @@ public class CashDeskService {
     private final StationService stationService;
 
     public int closeRandomCashDesk() {
+        // we open Cash Desks that were previously closed
+        openCashDesk();
+
         Station station = stationService.getStationInstance();
         int cashDeskIndex = (int) (Math.random() * station.getCashDesks().size());
         CashDesk cashDesk = station.getCashDesks().get(cashDeskIndex);

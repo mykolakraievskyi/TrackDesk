@@ -13,6 +13,7 @@ import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { Router, RouterModule } from '@angular/router';
 import { StompService } from '../../shared/services/websocket.service';
+import { CloseCashDeskRequest } from '../../shared/DTOs/dtos';
 
 @Component({
   selector: 'app-station',
@@ -37,6 +38,7 @@ export class StationComponent implements OnInit, OnDestroy {
   private clientService = inject(ClientService);
   private initService = inject(InitService);
   private socketService = inject(StompService);
+  currentClosedCashDeskId: number = -1;
 
   constructor(private router: Router) {}
 
@@ -63,8 +65,37 @@ export class StationComponent implements OnInit, OnDestroy {
   initSubscriptions(): void {
     this.socketService
       .listen('/station/standardUser/close/message')
-      .subscribe(data => {
-        console.log(data);
+      .subscribe((data: CloseCashDeskRequest) => {
+        const cashDeskToClose = this.activeCashDesks.filter(
+          x => x.id === data.cashDeskId
+        )[0];
+        if (data.closed) {
+          if (this.currentClosedCashDeskId === -1) {
+            this.clientService.relocateClients(
+              cashDeskToClose,
+              this.reserveCashDesk,
+              this.clients,
+              this.cashDesks
+            );
+          } else {
+            const cashDeskToOpen = this.activeCashDesks.filter(
+              x => x.id === this.currentClosedCashDeskId
+            )[0];
+            this.clientService.relocateClients(
+              this.reserveCashDesk,
+              cashDeskToOpen,
+              this.clients,
+              this.cashDesks
+            );
+            this.clientService.relocateClients(
+              cashDeskToClose,
+              this.reserveCashDesk,
+              this.clients,
+              this.cashDesks
+            );
+          }
+          this.currentClosedCashDeskId = cashDeskToClose.id;
+        }
       });
 
     this.socketService
