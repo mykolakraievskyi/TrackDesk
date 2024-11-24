@@ -15,7 +15,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private readonly websocketService: WebSocketService) {}
 
   ngOnInit(): void {
-    this.websocketService.connect('ws://localhost:8080');
+    this.websocketService.connect('http://localhost:8080/ws');
   }
 
   ngOnDestroy(): void {

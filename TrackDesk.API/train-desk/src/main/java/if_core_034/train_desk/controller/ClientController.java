@@ -1,11 +1,8 @@
 package if_core_034.train_desk.controller;
 
-import if_core_034.train_desk.dto.CashDeskDto;
+import if_core_034.train_desk.dto.BuyTicketDTO;
 import if_core_034.train_desk.dto.ClientDto;
-import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.entity.Client;
-import if_core_034.train_desk.entity.Entrance;
-import if_core_034.train_desk.entity.Position;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
@@ -15,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,11 +33,17 @@ public class ClientController {
     }
 
 
-//    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
+    //    @Scheduled(fixedRateString = "#{clientService.nextArrivalTime}", initialDelay = 5000)
     public void generateClient() {
         Client client = clientService.generateClient();
         int cashDeskId = clientService.getBestCashRegisterId(client);
+<<<<<<< HEAD
         stationService.getStationInstance().getCashDeskMap().get(cashDeskId).getQueue().add(client);
+=======
+        stationService.getStationInstance().getCashDesks().stream()
+                .filter(cashDesk -> cashDesk.getId() == cashDeskId)
+                .findFirst().get().getQueue().add(client);
+>>>>>>> 168256dde35139da4f52423a47bad40a141b70bd
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId, client.getEntrance().getId());
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();

@@ -12,8 +12,8 @@ class ClientTest {
 
     @Test
     void testCompareTo_WhenStatusesAreEqual() {
-        Client client1 = new Client(1, ClientStatus.REGULAR, Collections.emptyList(), null, null);
-        Client client2 = new Client(2, ClientStatus.REGULAR, Collections.emptyList(), null, null);
+        Client client1 = new Client(1, ClientStatus.regular, Collections.emptyList(), null, null);
+        Client client2 = new Client(2, ClientStatus.regular, Collections.emptyList(), null, null);
 
         int result = client1.compareTo(client2);
         assertEquals(0, result, "Clients with the same status should return 0 from compareTo.");
@@ -21,8 +21,8 @@ class ClientTest {
 
     @Test
     void testCompareTo_WhenStatusesAreDifferent() {
-        Client client1 = new Client(1, ClientStatus.REGULAR, Collections.emptyList(), null, null);
-        Client client2 = new Client(2, ClientStatus.WITH_CHILD, Collections.emptyList(), null, null);
+        Client client1 = new Client(1, ClientStatus.regular, Collections.emptyList(), null, null);
+        Client client2 = new Client(2, ClientStatus.privileged, Collections.emptyList(), null, null);
 
         int result1 = client1.compareTo(client2);
         int result2 = client2.compareTo(client1);
@@ -34,7 +34,7 @@ class ClientTest {
     @Test
     void testCompareTo_WhenOneStatusIsNull() {
         Client client1 = new Client(1, null, Collections.emptyList(), null, null);
-        Client client2 = new Client(2, ClientStatus.REGULAR, Collections.emptyList(), null, null);
+        Client client2 = new Client(2, ClientStatus.regular, Collections.emptyList(), null, null);
 
         assertThrows(NullPointerException.class,
                 () -> client1.compareTo(client2),
