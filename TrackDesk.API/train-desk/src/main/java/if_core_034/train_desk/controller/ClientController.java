@@ -1,22 +1,20 @@
 package if_core_034.train_desk.controller;
 
-import if_core_034.train_desk.dto.CashDeskDto;
+import if_core_034.train_desk.dto.BuyTicketDTO;
 import if_core_034.train_desk.dto.ClientDto;
-import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.entity.Client;
-import if_core_034.train_desk.entity.Entrance;
-import if_core_034.train_desk.entity.Position;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -72,5 +70,11 @@ public class ClientController {
             Timer timer = new Timer();
             timer.schedule(new ClientGeneration(), delay);
         }
+    }
+
+    @PostMapping("/api/v1/cashdesk/buy/ticket")
+    public ResponseEntity<Object> setStationConfiguration(@RequestBody BuyTicketDTO buyTicketDTO) {
+        System.out.println(buyTicketDTO);
+        return ResponseEntity.ok().build();
     }
 }
