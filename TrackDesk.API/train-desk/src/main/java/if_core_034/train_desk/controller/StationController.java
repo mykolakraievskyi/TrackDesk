@@ -42,7 +42,6 @@ public class StationController {
 //        System.out.println(message);
 //    }
 
-    @Scheduled(fixedRate = 5000)
     public void sendCloseMessage() {
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/close/message", new StationOpenCloseDto(true));
     }
