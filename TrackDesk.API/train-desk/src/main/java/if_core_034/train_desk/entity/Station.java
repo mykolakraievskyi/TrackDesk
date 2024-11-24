@@ -2,6 +2,7 @@ package if_core_034.train_desk.entity;
 
 import lombok.Data;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class Station {
     private Map<Integer, CashDesk> cashDeskMap;
     private CashDesk reserveCashDesk;
     private TimeRange serviceTimeRange;
-    private int currClientNumber;
+    private AtomicInteger currClientNumber;
     private int maxClientCapacity;
     private volatile boolean isClosed;
 
@@ -26,7 +27,7 @@ public class Station {
         this.cashDeskMap = cashDesks;
         this.reserveCashDesk = reserveCashDesk;
         this.serviceTimeRange = serviceTimeRange;
-        this.currClientNumber = currClientNumber;
+        this.currClientNumber = new AtomicInteger(currClientNumber);
         this.maxClientCapacity = maxClientCapacity;
         this.isClosed = false;
     }
