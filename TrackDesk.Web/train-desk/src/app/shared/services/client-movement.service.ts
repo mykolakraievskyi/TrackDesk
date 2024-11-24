@@ -230,8 +230,9 @@ export class MovementService {
 
   deleteClient(Client: Client, CashDesk: CashDesk, allClients: Client[]) {
     CashDesk.clientQueue.splice(CashDesk.clientQueue.indexOf(Client), 1);
-    Client.image = '';
     allClients.splice(allClients.indexOf(Client), 1);
+    Client.image = "";
+    Client.position = {x:1, y:1};
   }
 
   moveClientToPosition(
