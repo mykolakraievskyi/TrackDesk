@@ -36,6 +36,7 @@ public class StationService {
     }
 
     public void createStationInstance(StationConfigurationDto stationConfigurationDto) {
+
         List<Entrance> entrances = stationConfigurationDto.getEntrances();
         Map<Integer, CashDesk> cashDeskMap = new HashMap<>();
         for(var cashDeskDto : stationConfigurationDto.getCashDeskDtos()) {
@@ -44,13 +45,17 @@ public class StationService {
             cashDeskMap.put(cashDeskDto.getId(), cashDesk);
         }
         CashDesk reserveCashDesk = new CashDesk(0,  stationConfigurationDto.getReserveCashDeskDto().getPosition(),
-                                                   new PriorityQueue<>(), true, false);
+                new PriorityQueue<>(), true, false);
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
         int maxClientCapacity = cashDeskMap.size() * 5;
-        station = Station.getInstance(entrances, cashDeskMap, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
-        createGenerationStrategy(timeRange);
-        this.isInitialized.set(true);
+        if(this.isInitialized.get()) {
+            station = Station.getInstance(entrances, cashDeskMap, reserveCashDesk, timeRange, currClientNumber, maxClientCapacity);
+            createGenerationStrategy(timeRange);
+            this.isInitialized.set(true);
+        } else {
+
+        }
     }
 
     private void createGenerationStrategy(TimeRange timeRange) {
