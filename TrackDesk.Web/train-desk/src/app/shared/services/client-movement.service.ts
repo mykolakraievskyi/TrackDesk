@@ -13,24 +13,8 @@ const CELL_SIZE = 31;
 export class MovementService {
   private readonly speed: number = 5;
   public stationMatrix: number[][] = [];
-  //private readonly staticObstacles: StaticObstacle[] = [];
 
   constructor(private http: HttpClient) {
-    // this.staticObstacles.push(
-    //   new StaticObstacle(
-    //     { x: 1000, y: 300 },
-    //     { x: 1350, y: 300 },
-    //     { x: 1000, y: 0 },
-    //     { x: 1350, y: 0 }
-    //   ),
-    //   new StaticObstacle(
-    //     { x: 0, y: 560 },
-    //     { x: 200, y: 560 },
-    //     { x: 0, y: 290 },
-    //     { x: 200, y: 290 }
-    //   )
-    // );
-
     this.stationMatrix = [
       [
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -155,8 +139,6 @@ export class MovementService {
     return copyMatrix;
   }
 
-  //detectCollisions(): void {}
-
   moveClientToCashDesk(
     client: Client,
     cashDesk: CashDesk,
@@ -221,84 +203,15 @@ export class MovementService {
     }, 100);
   }
 
-  // correctPosition(oldPosition: Position, newPosition: Position): Position {
-  //   let position: Position = newPosition;
-  //   for (let obstacle of this.staticObstacles) {
-  //     if (
-  //       newPosition.x > obstacle.topLeft.x &&
-  //       newPosition.x < obstacle.bottobRigth.x &&
-  //       newPosition.y > obstacle.topLeft.y &&
-  //       newPosition.y < obstacle.bottobRigth.y
-  //     ) {
-  //       //correction
-  //       if (oldPosition.x < obstacle.topLeft.x) {
-  //         position.x = obstacle.topLeft.x;
-  //       }
-  //       if (oldPosition.x > obstacle.bottobRigth.x) {
-  //         position.x = obstacle.bottobRigth.x;
-  //       }
-  //       if (oldPosition.y < obstacle.topLeft.y) {
-  //         position.y = obstacle.topLeft.y;
-  //       }
-  //       if (newPosition.y > obstacle.bottobRigth.y) {
-  //         position.y = obstacle.bottobRigth.y;
-  //       }
-  //     }
-  //   }
-
-  //   return newPosition;
-  // }
-
-  // findCashDeskWithFewestClients(
-  //   cashDesks: CashDesk[],
-  //   clients: Client[]
-  // ): CashDesk {
-  //   return cashDesks.reduce((minDesk, currentDesk) => {
-  //     const minDeskClientCount = minDesk.clientQueue.length;
-  //     const currentDeskClientCount = currentDesk.clientQueue.length;
-
-  //     return currentDeskClientCount < minDeskClientCount
-  //       ? currentDesk
-  //       : minDesk;
-  //   }, cashDesks[0]);
-  // }
-
-  // assignClientToBestCashDesk(
-  //   client: Client,
-  //   cashDesks: CashDesk[],
-  //   clients: Client[],
-  //   allClients: Client[],
-  //   allCashDesks: CashDesk[]
-  // ): void {
-  //   const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks, clients);
-  //   this.moveClientToCashDesk(client, bestCashDesk, allClients, allCashDesks);
-  // }
-
-  // )))))))
   serveClient(client: Client, cashDesk: CashDesk): void {
     if (!cashDesk.clientQueue.includes(client)) {
       cashDesk.addClient(client);
     }
-    this.http.post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
-      clientId: client.id,
-      cashDeskId: cashDesk.id,
-    });
-
-    // Тут виклик сервісу для обслуговування
-
-    // var deadClient = cashDesk.popClient();
-
-    // if (deadClient) {
-    //   for (let i = cashDesk.clientQueue.length - 1; i >= 0; ++i) {
-    //     if (i > 0) {
-    //       cashDesk.clientQueue[i - 1].position =
-    //         cashDesk.clientQueue[i].position;
-    //     } else {
-    //       cashDesk.clientQueue[i].position = deadClient.position;
-    //     }
-    //   }
-    // } else {
-    //   // похуй
-    // }
+    this.http
+      .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
+        clientId: client.id,
+        cashDeskId: cashDesk.id,
+      })
+      .subscribe(data => {});
   }
 }

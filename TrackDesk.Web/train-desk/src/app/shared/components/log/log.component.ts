@@ -9,28 +9,13 @@ import { ILog } from '../../../types/log.types';
   styleUrl: './log.component.scss',
 })
 export class LogComponent {
-  logsArray: ILog[] = [
-    {
-      id: 1,
-      clientId: 2,
-      clientStatus: true,
-      cashDeskId: 4,
-      tickets: [
-        {
-          ticketId: 2,
-          train: 'string',
-          carriage: 3,
-          departureStation: 'asd',
-          arrivalStation: 'dfv',
-          departureTime: 'asdasd',
-          arrivalTime: 'vsdv',
-          price: 3,
-        },
-      ],
-      startTime: '123',
-      endTime: 'string',
-    },
-  ];
+  logsArray: ILog[] = [];
+
+  constructor(private);
+
+  addLog(log: ILog) {
+    this.logsArray.push(log);
+  }
   getTicketHoverText(log: ILog, index: number): string {
     const ticket = log.tickets[index];
     return `Train: ${ticket.train}\nCarriage: ${ticket.carriage}\nDeparture: ${ticket.departureStation} at ${ticket.departureTime}\nArrival: ${ticket.arrivalStation} at ${ticket.arrivalTime}\nPrice: ${ticket.price}`;
