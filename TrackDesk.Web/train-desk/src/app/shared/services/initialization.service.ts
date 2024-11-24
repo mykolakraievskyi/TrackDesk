@@ -17,17 +17,17 @@ export class InitService {
   private selectedPlace: DeskPlace | null = null;
 
   selectPlace(place: DeskPlace): void {
-    place.isSelected = true; 
+    place.isSelected = true;
   }
 
-  generateRandomEntries(amount: number): Entry[]{
+  generateRandomEntries(amount: number): Entry[] {
     const allEntries = this.initializeEntries();
     const result: Entry[] = [];
 
     for (let i = 0; i < amount; i++) {
-        const randomIndex = Math.floor(Math.random() * allEntries.length);
-        result.push(allEntries[randomIndex]);
-        allEntries.splice(randomIndex, 1);
+      const randomIndex = Math.floor(Math.random() * allEntries.length);
+      result.push(allEntries[randomIndex]);
+      allEntries.splice(randomIndex, 1);
     }
 
     return result;
@@ -126,6 +126,8 @@ export class InitService {
       width: isTicketBox ? '85px' : '110px',
       height: isTicketBox ? '85px' : '110px',
       backgroundImage: `url(${cashDesk.image})`,
+      cursor: 'pointer',
+      zIndex: '2',
       backgroundSize: 'cover',
     };
   }

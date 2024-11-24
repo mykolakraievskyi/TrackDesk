@@ -53,9 +53,20 @@ export class StationComponent implements OnInit, OnDestroy {
       this.confService.entranceNumber
     );
     this.generateClientsPeriodically();
+    this.socketService.connect('http://your-server-url/websocket-endpoint');
+
+    this.socketService.listen('/cashdesk/info').subscribe({
+      next: data => {
+        console.log('Received cash desk info:', data);
+      },
+      error: error => {
+        console.error('Error in subscription:', error);
+      },
+    });
   }
 
   ngOnDestroy(): void {
+    this.socketService.unsubscribe('/cashdesk/info');
     this.socketService.unsubscribe('/station/standardUser/client/generate');
     this.socketService.disconnect();
   }
@@ -141,5 +152,15 @@ export class StationComponent implements OnInit, OnDestroy {
 
   getCashDeskStyle(cashDesk: CashDesk): any {
     return this.initService.getCashDeskStyle(cashDesk);
+  }
+
+  toggleDeskClosing(cashDesk: CashDesk) {
+    cashDesk.isClosed = !cashDesk.isClosed;
+    console.log(1);
+    this.socketService.emit('/cashdesk/action', {
+      isClosed: cashDesk.isClosed,
+      id: cashDesk.id,
+    });
+    return cashDesk.isClosed;
   }
 }
