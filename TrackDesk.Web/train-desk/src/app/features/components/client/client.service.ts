@@ -43,16 +43,12 @@ export class ClientService {
     return newClient;
   }
 
-  moveClientsToCashDesks(clients: Client[], activeCashDesks: CashDesk[]): void {
-    clients.forEach(client => {
-      const targetCashDesk = activeCashDesks.filter(
-        c => c.id === client.targetCashDeskId
-      )[0];
+  moveClientsToCashDesks(clients: Client[],newClient: Client, activeCashDesks: CashDesk[]): void {
+    const targetCashDesk = activeCashDesks.filter(c => c.id === newClient.targetCashDeskId)[0];
       this.movementService.moveClientToCashDesk(
-        client,
+        newClient,
         targetCashDesk,
         clients
       );
-    });
-  }
+}
 }

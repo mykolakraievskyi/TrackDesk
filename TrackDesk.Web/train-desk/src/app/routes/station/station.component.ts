@@ -99,9 +99,10 @@ export class StationComponent implements OnInit, OnDestroy {
           this.clients = [...privilegedClients, ...regularClients];
         }
 
-        //console.log('---this.clients ', this.clients);
+        //console.log('---this.clients ', this.clients)
         this.clientService.moveClientsToCashDesks(
           this.clients,
+          newClient!,
           this.activeCashDesks
         );
       });
