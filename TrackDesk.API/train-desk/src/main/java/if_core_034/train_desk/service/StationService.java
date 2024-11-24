@@ -42,7 +42,7 @@ public class StationService {
                     new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new ArrayList<>(), false, true);
             cashDeskMap.put(cashDeskDto.getId(), cashDesk);
         }
-        CashDesk reserveCashDesk = new CashDesk(0,  stationConfigurationDto.getReserveCashDeskDto().getPosition(),
+        CashDesk reserveCashDesk = new CashDesk(0,  new Position(0,0),
                 new ArrayList<>(), true, false);
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
