@@ -58,11 +58,16 @@ public class CashDeskController {
     //            }, 15, TimeUnit.SECONDS);
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
-    public ResponseEntity<Object> setStationConfiguration(@RequestBody BuyTicketDTO buyTicketDTO) {
+    public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDTO buyTicketDTO) {
         //TODO якщо 0 то забрати з резервної каси
         stationService.getStationInstance().getCashDeskMap().get(buyTicketDTO.getCashDeskId())
                 .getQueue().removeIf(client -> client.getId() == buyTicketDTO.getClientId());
         System.out.println(buyTicketDTO);
+        return ResponseEntity.ok().build();
+    }
+    @PostMapping("/api/v1/cashdesk/close")
+    public ResponseEntity<Object> closeCashDesk(@RequestBody int cashDeskId) {
+        cashDeskService.closeCashDesk(cashDeskId);
         return ResponseEntity.ok().build();
     }
 }
