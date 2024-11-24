@@ -42,6 +42,7 @@ public class CashDeskController {
 
     @MessageMapping("/cashdesk/info")
     public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
+        System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
         if (cashDeskOpenCloseDto.isClosed()) {
             cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
         } else {
@@ -65,6 +66,7 @@ public class CashDeskController {
         }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
+        System.out.println("Buy ticket: "+buyTicketDto);
         Station station = stationService.getStationInstance();
         CashDesk cashDesk;
         if(buyTicketDto.getCashDeskId() != 0) {

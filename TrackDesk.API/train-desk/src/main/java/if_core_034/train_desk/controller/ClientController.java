@@ -39,6 +39,7 @@ public class ClientController {
         stationService.getStationInstance().getCashDeskMap().get(cashDeskId).getQueue().add(client);
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId,
                                             client.getEntrance().getId(), client.getTickets().size());
+        System.out.println("New client: "+clientDto);
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
         station.getCurrClientNumber().set(station.getCurrClientNumber().get() + 1);
