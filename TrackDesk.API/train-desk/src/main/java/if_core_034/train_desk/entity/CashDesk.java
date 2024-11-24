@@ -3,14 +3,14 @@ package if_core_034.train_desk.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.PriorityQueue;
+import java.util.ArrayList;
 
 @Data
 @AllArgsConstructor
 public class CashDesk {
     private int id;
     private Position position;
-    private PriorityQueue<Client> queue;
+    private ArrayList<Client> queue;
     private boolean isReserve;
     private boolean isOperational;
 

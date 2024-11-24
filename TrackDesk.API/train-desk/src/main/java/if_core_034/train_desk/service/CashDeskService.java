@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 @Service
@@ -29,7 +30,7 @@ public class CashDeskService {
         CashDesk cashDesk = station.getCashDeskMap().get(cashDeskId);
         cashDesk.setOperational(true);
         cashDesk.setQueue(station.getReserveCashDesk().getQueue());
-        station.getReserveCashDesk().setQueue(new PriorityQueue<>());
+        station.getReserveCashDesk().setQueue(new ArrayList<>());
         station.getReserveCashDesk().setOperational(false);
     }
 
@@ -39,6 +40,6 @@ public class CashDeskService {
         cashDesk.setOperational(false);
         station.getReserveCashDesk().setQueue(cashDesk.getQueue());
         station.getReserveCashDesk().setOperational(true);
-        cashDesk.setQueue(new PriorityQueue<>());
+        cashDesk.setQueue(new ArrayList<>());
     }
 }
