@@ -16,6 +16,7 @@ export interface CashDesk {
   popClient(): Client | undefined;
   peekClient(): Client | null;
   getClientPosition(client: Client): Position;
+  getFirstClientPosition(): Position;
 }
 
 export class BaseCashDesk implements CashDesk {
@@ -79,6 +80,13 @@ export class BaseCashDesk implements CashDesk {
     return {
       x: this.position.x + 3,
       y: this.position.y + (index + 1) * QUEUE_OFFSET,
+    };
+  }
+
+  getFirstClientPosition(): Position{
+    return {
+      x: this.position.x + 3,
+      y: this.position.y + QUEUE_OFFSET,
     };
   }
 

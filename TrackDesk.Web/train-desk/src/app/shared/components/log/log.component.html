@@ -1,25 +1,38 @@
 <div class="container">
-    <div class="header">
-      <div class="menu-button">
-        <img class="button-image" src="../assets/images/menu.png">
-      </div>
+  <div class="header">
+    <div class="menu-button">
+      <img class="button-image" src="../assets/images/menu.png" />
+    </div>
     <div class="h1-cont">
       <h1>Statistics</h1>
-    </div>  
-      <div class="details-button">
-        <img class="button-image" src="../assets/images/details.png">
-      </div>
     </div>
-    <div class="table">
-      <div class="table-row header-row">
-        <div class="cell">#</div>
-        <div class="cell">Passenger</div>
-      </div>
-      @for (log of logsArray; track $index; let i = $index) {
-        <div class="table-row">
-            <div class="cell">{{i+1}}</div>
-            <div class="cell">{{log.name + "(" + log.description + ")"}}</div>
-          </div>
-      }
+    <div class="details-button">
+      <img class="button-image" src="../assets/images/details.png" />
     </div>
   </div>
+  <div class="table">
+    <div class="table-row header-row">
+      <div class="cell">#</div>
+      <div class="cell">Passenger</div>
+    </div>
+    @for (log of logsArray; track $index; let i = $index) { @for(ticket of
+    log.tickets; track $index; let j = $index) {
+    <div class="item">
+      <div class="table-row">
+        <div class="cell">{{ j * i + 1 }}</div>
+        <div class="cell">
+          {{
+            'Ticket from ' +
+              ticket.departureStation +
+              ' to ' +
+              ticket.arrivalStation
+          }}
+        </div>
+      </div>
+      <div class="sub-cell">
+        <p>{{ getTicketHoverText(log, j) }}</p>
+      </div>
+    </div>
+    } }
+  </div>
+</div>

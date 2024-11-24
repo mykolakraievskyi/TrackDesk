@@ -40,6 +40,7 @@ export class StationComponent implements OnInit, OnDestroy {
   private clientService = inject(ClientService);
   private initService = inject(InitService);
   private socketService = inject(StompService);
+  private anyDeskClosed: any = null;
 
   constructor(private router: Router) {}
 
@@ -53,20 +54,19 @@ export class StationComponent implements OnInit, OnDestroy {
       this.confService.entranceNumber
     );
     this.generateClientsPeriodically();
-    this.socketService.connect('http://your-server-url/websocket-endpoint');
 
-    this.socketService.listen('/cashdesk/info').subscribe({
-      next: data => {
-        console.log('Received cash desk info:', data);
-      },
-      error: error => {
-        console.error('Error in subscription:', error);
-      },
-    });
+    // this.socketService.listen('/cashdesk/info').subscribe({
+    //   next: data => {
+    //     console.log('Received cash desk info:', data);
+    //   },
+    //   error: error => {
+    //     console.error('Error in subscription:', error);
+    //   },
+    // });
   }
 
   ngOnDestroy(): void {
-    this.socketService.unsubscribe('/cashdesk/info');
+    //this.socketService.unsubscribe('/cashdesk/info');
     this.socketService.unsubscribe('/station/standardUser/client/generate');
     this.socketService.disconnect();
   }
@@ -78,10 +78,11 @@ export class StationComponent implements OnInit, OnDestroy {
         const entryPosition = this.activeEntries.filter(
           e => e.id === data.entranceId
         )[0].position;
-        console.log(data);
+        //console.log(data);
         const newClient = this.clientService.generateClient(
           data.id,
           entryPosition,
+          data.ticketNumber,
           data.cashDeskId,
           data.clientStatus as EClientType
         );
@@ -99,7 +100,7 @@ export class StationComponent implements OnInit, OnDestroy {
           this.clients = [...privilegedClients, ...regularClients];
         }
 
-        console.log('---this.clients ', this.clients);
+        //console.log('---this.clients ', this.clients);
         this.clientService.moveClientsToCashDesks(
           this.clients,
           this.activeCashDesks
@@ -116,7 +117,8 @@ export class StationComponent implements OnInit, OnDestroy {
     if (this.selectedPlaces.length === this.confService.cashDeskNumber) {
       this.confService.configEntiesAndCashDesks(
         this.activeEntries,
-        this.activeCashDesks
+        this.activeCashDesks,
+        this.reserveCashDesk
       );
       this.movementService.initializeCashDeskPositions(this.activeCashDesks);
       this.confService.setConfiguration();
@@ -155,13 +157,21 @@ export class StationComponent implements OnInit, OnDestroy {
   }
 
   toggleDeskClosing(cashDesk: CashDesk) {
-    cashDesk.isClosed = !cashDesk.isClosed;
-    console.log(1);
-    this.socketService.emit('/cashdesk/action', {
-      isClosed: cashDesk.isClosed,
-      id: cashDesk.id,
-    });
-    return cashDesk.isClosed;
+    if (this.anyDeskClosed === cashDesk) {
+      this.anyDeskClosed = null;
+      cashDesk.isClosed = false;
+    } else {
+      if (!this.anyDeskClosed) {
+        this.anyDeskClosed = cashDesk;
+        cashDesk.isClosed = !cashDesk.isClosed;
+        this.socketService.emit('/cashdesk/action', {
+          isClosed: cashDesk.isClosed,
+          id: cashDesk.id,
+        });
+        return cashDesk.isClosed;
+      }
+    }
+    return false;
   }
 
   addClient(client: Client) {

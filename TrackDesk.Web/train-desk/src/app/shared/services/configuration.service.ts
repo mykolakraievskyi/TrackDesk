@@ -15,29 +15,34 @@ export class ConfigurationService {
   configuration: Observable<any> | null = null;
   cashDeskNumber!: number;
   cashDesks!: CashDesk[];
+  reserveCashDesk!: CashDesk;
   entranceNumber!: number;
   entrances!: Entry[];
   exitsNumber!: number;
   secondsStart!: number;
   secondsEnd?: number;
+  serveTime!: number
 
   setBaseConfiguration(
     cashRegisters: number,
     entrances: number,
     exits: number,
     secondsStart: number,
-    secondsEnd: number
+    secondsEnd: number,
+    serveTime: number
   ): void {
     this.cashDeskNumber = cashRegisters;
     this.entranceNumber = entrances;
     this.exitsNumber = exits;
     this.secondsStart = secondsStart;
     this.secondsEnd = secondsEnd;
+    this.serveTime = serveTime
   }
 
-  configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[]): void {
+  configEntiesAndCashDesks(entries: Entry[], cashDesk: CashDesk[], reserveCashDesk: CashDesk): void {
     this.cashDesks = cashDesk;
     this.entrances = entries;
+    this.reserveCashDesk = reserveCashDesk;
   }
 
   setConfiguration(): void {
@@ -55,6 +60,7 @@ export class ConfigurationService {
       `http://127.0.0.1:8080/api/v1/configuration`,
       {
         cashDeskDtos: formattedCashDesks,
+        reserveCashDeskDto: this.reserveCashDesk,
         entrances: formatedEntries,
         secondsStart: this.secondsStart,
         secondsEnd: this.secondsEnd,

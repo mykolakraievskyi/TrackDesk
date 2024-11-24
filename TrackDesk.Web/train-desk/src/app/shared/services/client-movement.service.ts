@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
 //import { getPlural } from 'astar-typescript';
 import * as AStar from 'astar-typescript';
 import { HttpClient } from '@angular/common/http';
 import { Position } from '../../features/models/position.model';
+import { ConfigurationService } from './configuration.service';
 
 const CELL_SIZE = 31;
 
@@ -12,26 +13,11 @@ const CELL_SIZE = 31;
   providedIn: 'root',
 })
 export class MovementService {
+  private cofigurationService = inject(ConfigurationService);
   private readonly speed: number = 5;
   public stationMatrix: number[][] = [];
-  //private readonly staticObstacles: StaticObstacle[] = [];
 
   constructor(private http: HttpClient) {
-    // this.staticObstacles.push(
-    //   new StaticObstacle(
-    //     { x: 1000, y: 300 },
-    //     { x: 1350, y: 300 },
-    //     { x: 1000, y: 0 },
-    //     { x: 1350, y: 0 }
-    //   ),
-    //   new StaticObstacle(
-    //     { x: 0, y: 560 },
-    //     { x: 200, y: 560 },
-    //     { x: 0, y: 290 },
-    //     { x: 200, y: 290 }
-    //   )
-    // );
-
     this.stationMatrix = [
       [
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -156,8 +142,6 @@ export class MovementService {
     return copyMatrix;
   }
 
-  //detectCollisions(): void {}
-
   moveClientToCashDesk(
     client: Client,
     cashDesk: CashDesk,
@@ -188,7 +172,6 @@ export class MovementService {
       const bestPathway = aStarInstance.findPath(clientPos, targetPosition);
 
       if (!bestPathway || bestPathway.length === 0) {
-        clearInterval(moveInterval);
         return;
       }
 
@@ -207,10 +190,14 @@ export class MovementService {
         client.position.y = nextstep[1] * CELL_SIZE;
 
         if (
+          targetPosition.x ===
+            Math.round(cashDesk.getFirstClientPosition().x / CELL_SIZE) &&
+          targetPosition.y ===
+            Math.round(cashDesk.getFirstClientPosition().y / CELL_SIZE) &&
           nextstep[0] === targetPosition.x &&
           nextstep[1] === targetPosition.y
         ) {
-          this.serveClient(client, cashDesk);
+          this.serveClient(client, cashDesk, allClients);
           clearInterval(moveInterval);
         }
       } else {
@@ -222,85 +209,29 @@ export class MovementService {
     }, 100);
   }
 
-  // correctPosition(oldPosition: Position, newPosition: Position): Position {
-  //   let position: Position = newPosition;
-  //   for (let obstacle of this.staticObstacles) {
-  //     if (
-  //       newPosition.x > obstacle.topLeft.x &&
-  //       newPosition.x < obstacle.bottobRigth.x &&
-  //       newPosition.y > obstacle.topLeft.y &&
-  //       newPosition.y < obstacle.bottobRigth.y
-  //     ) {
-  //       //correction
-  //       if (oldPosition.x < obstacle.topLeft.x) {
-  //         position.x = obstacle.topLeft.x;
-  //       }
-  //       if (oldPosition.x > obstacle.bottobRigth.x) {
-  //         position.x = obstacle.bottobRigth.x;
-  //       }
-  //       if (oldPosition.y < obstacle.topLeft.y) {
-  //         position.y = obstacle.topLeft.y;
-  //       }
-  //       if (newPosition.y > obstacle.bottobRigth.y) {
-  //         position.y = obstacle.bottobRigth.y;
-  //       }
-  //     }
-  //   }
-
-  //   return newPosition;
-  // }
-
-  // findCashDeskWithFewestClients(
-  //   cashDesks: CashDesk[],
-  //   clients: Client[]
-  // ): CashDesk {
-  //   return cashDesks.reduce((minDesk, currentDesk) => {
-  //     const minDeskClientCount = minDesk.clientQueue.length;
-  //     const currentDeskClientCount = currentDesk.clientQueue.length;
-
-  //     return currentDeskClientCount < minDeskClientCount
-  //       ? currentDesk
-  //       : minDesk;
-  //   }, cashDesks[0]);
-  // }
-
-  // assignClientToBestCashDesk(
-  //   client: Client,
-  //   cashDesks: CashDesk[],
-  //   clients: Client[],
-  //   allClients: Client[],
-  //   allCashDesks: CashDesk[]
-  // ): void {
-  //   const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks, clients);
-  //   this.moveClientToCashDesk(client, bestCashDesk, allClients, allCashDesks);
-  // }
-
-  // )))))))
-  serveClient(client: Client, cashDesk: CashDesk): void {
+  serveClient(client: Client, cashDesk: CashDesk, allClients: Client[]): void {
     if (!cashDesk.clientQueue.includes(client)) {
       cashDesk.addClient(client);
     }
-    this.http.post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
-      clientId: client.id,
-      cashDeskId: cashDesk.id,
-    });
+    const startTime = new Date().toLocaleTimeString();
+    setTimeout(() => {
+      this.deleteClient(client, cashDesk, allClients);
+      console.log('adsdadadadasdas');
+      this.http
+        .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
+          clientId: client.id,
+          cashDeskId: cashDesk.id,
+          startTime: startTime,
+          endTime: new Date().toLocaleTimeString(),
+        })
+        .subscribe(message => console.log(message));
+    }, this.cofigurationService.serveTime * 1000 * client.tickets);
+  }
 
-    // Тут виклик сервісу для обслуговування
-
-    // var deadClient = cashDesk.popClient();
-
-    // if (deadClient) {
-    //   for (let i = cashDesk.clientQueue.length - 1; i >= 0; ++i) {
-    //     if (i > 0) {
-    //       cashDesk.clientQueue[i - 1].position =
-    //         cashDesk.clientQueue[i].position;
-    //     } else {
-    //       cashDesk.clientQueue[i].position = deadClient.position;
-    //     }
-    //   }
-    // } else {
-    //   // похуй
-    // }
+  deleteClient(Client: Client, CashDesk: CashDesk, allClients: Client[]) {
+    CashDesk.clientQueue.splice(CashDesk.clientQueue.indexOf(Client), 1);
+    Client.image = '';
+    allClients.splice(allClients.indexOf(Client), 1);
   }
 
   moveClientToPosition(

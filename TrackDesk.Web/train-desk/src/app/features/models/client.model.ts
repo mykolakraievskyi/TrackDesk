@@ -4,6 +4,7 @@ import { Position } from './position.model';
 export interface Client {
   id: number;
   position: Position;
+  tickets: number;
   image: string;
   type: EClientType;
   targetCashDeskId?: number;
@@ -15,6 +16,7 @@ export class BaseClient implements Client {
   constructor(
     public id: number,
     public position: Position,
+    public tickets: number,
     public type: EClientType,
     public targetCashDeskId: number
   ) {
