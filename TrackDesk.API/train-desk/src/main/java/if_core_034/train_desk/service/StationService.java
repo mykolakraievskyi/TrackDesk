@@ -41,11 +41,11 @@ public class StationService {
         for(var cashDeskDto : stationConfigurationDto.getCashDeskDtos()) {
             assert cashDeskDto.getId()!=0:"ID zero can only be at the reserve cash desk";
             CashDesk cashDesk =
-                    new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new PriorityQueue<>(), false, true);
+                    new CashDesk(cashDeskDto.getId(), cashDeskDto.getPosition(), new ArrayList<>(), false, true);
             cashDeskMap.put(cashDeskDto.getId(), cashDesk);
         }
         CashDesk reserveCashDesk = new CashDesk(0,  stationConfigurationDto.getReserveCashDeskDto().getPosition(),
-                new PriorityQueue<>(), true, false);
+                new ArrayList<>(), true, false);
         TimeRange timeRange = new TimeRange(LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsStart()), LocalTime.ofSecondOfDay(stationConfigurationDto.getSecondsEnd()));
         int currClientNumber = 0;
         int maxClientCapacity = cashDeskMap.size() * 5;
