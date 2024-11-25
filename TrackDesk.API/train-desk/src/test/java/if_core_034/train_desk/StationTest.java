@@ -38,7 +38,7 @@ class StationTest {
         assertSame(cashDeskMock, station.getCashDeskMap().get(2), "CashDesk with key 2 should match");
         assertNotNull(station.getReserveCashDesk(), "ReserveCashDesk should not be null");
         assertEquals(timeRangeMock, station.getServiceTimeRange(), "ServiceTimeRange should match");
-        assertEquals(5, station.getCurrClientNumber(), "Current client number should match");
+        assertEquals(5, station.getCurrClientNumber().get(), "Current client number should match");
         assertEquals(200, station.getMaxClientCapacity(), "Max client capacity should match");
     }
 
