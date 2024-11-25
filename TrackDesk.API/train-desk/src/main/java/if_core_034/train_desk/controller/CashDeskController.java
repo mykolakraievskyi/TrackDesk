@@ -102,7 +102,7 @@ public class CashDeskController {
             LogEntity logEntity = new LogEntity(1, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
                                                    client.get().getTickets(), buyTicketDto.getStartTime(), buyTicketDto.getEndTime());
 
-            logEntityService.saveLogEntity(logEntity);
+//            logEntityService.saveLogEntity(logEntity);
             return ResponseEntity.ok().body(logEntity);
         }
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
