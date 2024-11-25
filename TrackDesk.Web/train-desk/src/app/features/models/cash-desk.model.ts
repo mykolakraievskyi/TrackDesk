@@ -15,6 +15,8 @@ export interface CashDesk {
   addClient(client: Client): void;
   popClient(): Client | undefined;
   peekClient(): Client | null;
+  getPositionForPrivilaged(client :Client): Position;
+  getFirstClientPositionForPrivilaged(): Position;
   getClientPosition(client: Client): Position;
   getFirstClientPosition(): Position;
 }
@@ -39,31 +41,7 @@ export class BaseCashDesk implements CashDesk {
 
   addClient(client: Client): void {
     this.clientQueue.push(client);
-    // if (client.type === EClientType.PRIVILEGED) {
-    //   const lastPrivilegedIndex = this.clientQueue
-    //     .map(c => c.type)
-    //     .lastIndexOf(EClientType.PRIVILEGED);
-
-    //   if (lastPrivilegedIndex === -1) {
-    //     this.clientQueue.unshift(client);
-    //   } else {
-    //     this.clientQueue.splice(lastPrivilegedIndex + 1, 0, client);
-    //   }
-    // } else {
-    //   this.clientQueue.push(client);
-    // }
   }
-
-  // private updateClientPositions(): void {
-  //   this.clientQueue.forEach((client, index) => {
-  //     const targetPosition = {
-  //       x: this.position.x + 3,
-  //       y: this.position.y + (index + 1) * QUEUE_OFFSET,
-  //     };
-  //     this.movementService?.moveClientToPosition(
-  //       { client, targetPosition, allClients: this.clientQueue }      );
-  //   });
-  // }
 
   popClient(): Client | undefined {
     return this.clientQueue.shift();
@@ -77,11 +55,43 @@ export class BaseCashDesk implements CashDesk {
     }
   }
 
-  getClientPosition(client: Client): Position {
+  getPositionForPrivilaged(client:Client): Position{
+    if(this.type === "ticket-box"){
+      if (!this.clientQueue.includes(client)) {
+        this.addClient(client);
+      }
+      const index = this.clientQueue.indexOf(client)
+      return {
+        x: this.position.x + 3,
+        y: this.position.y + (index + 1) * QUEUE_OFFSET,
+      };
+    }else{
     if (!this.clientQueue.includes(client)) {
       this.addClient(client);
     }
-    const index = this.clientQueue.indexOf(client);
+    const index = this.clientQueue.filter(c=> c.type == EClientType.PRIVILEGED).indexOf(client)
+    return {
+      x: this.position.x + QUEUE_OFFSET +3,
+      y: this.position.y + (index+1) * QUEUE_OFFSET,
+    };
+  }
+  }
+
+  getClientPosition(client: Client): Position {
+    if(this.type == "ticket-box"){
+      if (!this.clientQueue.includes(client)) {
+        this.addClient(client);
+      }
+      const index = this.clientQueue.indexOf(client)
+      return {
+        x: this.position.x + 3,
+        y: this.position.y + (index + 1) * QUEUE_OFFSET,
+      };
+    }
+    if (!this.clientQueue.includes(client)) {
+      this.addClient(client);
+    }
+    const index = this.clientQueue.filter(c=> c.type == EClientType.REGULAR).indexOf(client)
     return {
       x: this.position.x + 3,
       y: this.position.y + (index + 1) * QUEUE_OFFSET,
@@ -91,6 +101,19 @@ export class BaseCashDesk implements CashDesk {
   getFirstClientPosition(): Position{
     return {
       x: this.position.x + 3,
+      y: this.position.y + QUEUE_OFFSET,
+    };
+  }
+
+  getFirstClientPositionForPrivilaged(): Position{
+    if(this.type == "ticket-box"){
+      return {
+        x: this.position.x + 3,
+        y: this.position.y + QUEUE_OFFSET,
+      };
+    }
+    return {
+      x: this.position.x + QUEUE_OFFSET+3,
       y: this.position.y + QUEUE_OFFSET,
     };
   }

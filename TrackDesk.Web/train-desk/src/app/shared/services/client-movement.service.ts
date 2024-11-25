@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Position } from '../../features/models/position.model';
 import { ConfigurationService } from './configuration.service';
 import { LogService } from '../components/log/log.service';
+import { EClientType } from '../../types/client.type';
 
 const CELL_SIZE = 31;
 
@@ -23,8 +24,8 @@ export class MovementService {
     this.stationMatrix = [
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
       ],
       [
@@ -102,14 +103,10 @@ export class MovementService {
     CashDesks.forEach(c => {
       const i = Math.round(c.position.x / CELL_SIZE);
       const j = Math.round(c.position.y / CELL_SIZE);
-      this.stationMatrix[j][i] = 1;
-      this.stationMatrix[j - 1][i] = 1;
-      this.stationMatrix[j - 1][i + 1] = 1;
-      this.stationMatrix[j][i + 1] = 1;
-      this.stationMatrix[j + 1][i + 1] = 1;
-      this.stationMatrix[j + 2][i + 1] = 1;
-      this.stationMatrix[j - 1][i + 2] = 1;
-      this.stationMatrix[j][i + 2] = 1;
+      this.stationMatrix[j][i] = 1; 
+      this.stationMatrix[j - 1][i] = 1; 
+      this.stationMatrix[j - 1][i + 1] = 1;  
+      this.stationMatrix[j][i + 1] = 1;    
       this.stationMatrix[j + 1][i + 2] = 1;
       this.stationMatrix[j + 2][i + 2] = 1;
     });
@@ -144,7 +141,12 @@ export class MovementService {
       else{
        cashDesk = allcashDesk.filter(c => c.id === client.targetCashDeskId)[0];
       }
-      const targetClientPositionXY = cashDesk.getClientPosition(client);
+      let targetClientPositionXY;
+      if(client.type == EClientType.PRIVILEGED){
+      targetClientPositionXY = cashDesk.getPositionForPrivilaged(client);
+      }else{
+      targetClientPositionXY = cashDesk.getClientPosition(client);
+      }
       const targetPosition = {
         x: Math.round(targetClientPositionXY.x / CELL_SIZE),
         y: Math.round(targetClientPositionXY.y / CELL_SIZE),
@@ -184,7 +186,20 @@ export class MovementService {
       if (Math.abs(deltaX) <= this.speed && Math.abs(deltaY) <= this.speed) {
         client.position.x = nextstep[0] * CELL_SIZE;
         client.position.y = nextstep[1] * CELL_SIZE;
-
+      
+        if(client.type === EClientType.PRIVILEGED){
+          if (
+            targetPosition.x ===
+              Math.round(cashDesk.getFirstClientPositionForPrivilaged().x / CELL_SIZE) &&
+            targetPosition.y ===
+              Math.round(cashDesk.getFirstClientPositionForPrivilaged().y / CELL_SIZE) &&
+            nextstep[0] === targetPosition.x &&
+            nextstep[1] === targetPosition.y
+          ) {
+            this.serveClient(client, cashDesk, allClients);
+            clearInterval(moveInterval);
+          }
+        }else{
         if (
           targetPosition.x ===
             Math.round(cashDesk.getFirstClientPosition().x / CELL_SIZE) &&
@@ -196,6 +211,7 @@ export class MovementService {
           this.serveClient(client, cashDesk, allClients);
           clearInterval(moveInterval);
         }
+      }
       } else {
         client.position.x +=
           Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX));

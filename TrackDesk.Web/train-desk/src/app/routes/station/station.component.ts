@@ -54,19 +54,9 @@ export class StationComponent implements OnInit, OnDestroy {
       this.confService.entranceNumber
     );
     this.generateClientsPeriodically();
-
-    // this.socketService.listen('/cashdesk/info').subscribe({
-    //   next: data => {
-    //     console.log('Received cash desk info:', data);
-    //   },
-    //   error: error => {
-    //     console.error('Error in subscription:', error);
-    //   },
-    // });
   }
 
   ngOnDestroy(): void {
-    //this.socketService.unsubscribe('/cashdesk/info');
     this.socketService.unsubscribe('/station/standardUser/client/generate');
     this.socketService.disconnect();
   }
@@ -166,8 +156,7 @@ export class StationComponent implements OnInit, OnDestroy {
         this.anyDeskClosed = cashDesk;
         cashDesk.isClosed = !cashDesk.isClosed;
         this.reserveCashDesk.clientQueue.push(...cashDesk.clientQueue.slice(1));
-        console.log(this.reserveCashDesk);
-        cashDesk.clientQueue.forEach(c => {c.targetCashDeskId = 0});
+        this.reserveCashDesk.clientQueue.forEach(c => {c.targetCashDeskId = 0});
         cashDesk.clientQueue.splice(1);
         this.movementService.changeChasDeskStatus(cashDesk.isClosed, cashDesk.id);
         return cashDesk.isClosed;
