@@ -6,6 +6,7 @@ import * as AStar from 'astar-typescript';
 import { HttpClient } from '@angular/common/http';
 import { Position } from '../../features/models/position.model';
 import { ConfigurationService } from './configuration.service';
+import { LogService } from '../components/log/log.service';
 
 const CELL_SIZE = 31;
 
@@ -14,6 +15,7 @@ const CELL_SIZE = 31;
 })
 export class MovementService {
   private cofigurationService = inject(ConfigurationService);
+  private logService  = inject(LogService);
   private readonly speed: number = 5;
   public stationMatrix: number[][] = [];
 
@@ -217,7 +219,7 @@ export class MovementService {
           startTime: startTime,
           endTime: new Date().toLocaleTimeString(),
         })
-        .subscribe(message => console.log(message));
+        .subscribe(message => {this.logService.addLog(message)});
     }, this.cofigurationService.serveTime * 1000 * client.tickets);
   }
 
@@ -232,7 +234,7 @@ export class MovementService {
     this.http.post(`http://127.0.0.1:8080/api/v1/cashdesk/cashdesk/set_status`, {
           isClosed: isClosed,
           id: id,
-        }).subscribe(message => console.log(message));
+        }).subscribe(message => {console.log(message)});
   }
 
 //   moveClientToPosition(

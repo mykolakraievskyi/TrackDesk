@@ -165,7 +165,7 @@ export class StationComponent implements OnInit, OnDestroy {
       if (!this.anyDeskClosed) {
         this.anyDeskClosed = cashDesk;
         cashDesk.isClosed = !cashDesk.isClosed;
-        this.reserveCashDesk.clientQueue = [...cashDesk.clientQueue.slice(1)];
+        this.reserveCashDesk.clientQueue.push(...cashDesk.clientQueue.slice(1));
         console.log(this.reserveCashDesk);
         cashDesk.clientQueue.forEach(c => {c.targetCashDeskId = 0});
         cashDesk.clientQueue.splice(1);
