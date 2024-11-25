@@ -17,7 +17,20 @@ export class InitService {
   private selectedPlace: DeskPlace | null = null;
 
   selectPlace(place: DeskPlace): void {
-    place.isSelected = true; 
+    place.isSelected = true;
+  }
+
+  generateRandomEntries(amount: number): Entry[] {
+    const allEntries = this.initializeEntries();
+    const result: Entry[] = [];
+
+    for (let i = 0; i < amount; i++) {
+      const randomIndex = Math.floor(Math.random() * allEntries.length);
+      result.push(allEntries[randomIndex]);
+      allEntries.splice(randomIndex, 1);
+    }
+
+    return result;
   }
 
   initializeCashDesks(): CashDesk[] {
@@ -85,7 +98,7 @@ export class InitService {
       height: '60px',
       backgroundImage: `url(${client.image})`,
       backgroundSize: 'cover',
-      zIndex: 1,
+      zIndex: (client.id + 5).toString(),
     };
   }
 
@@ -106,14 +119,22 @@ export class InitService {
   getCashDeskStyle(cashDesk: CashDesk): any {
     const isTicketBox = cashDesk.type === 'ticket-box';
 
-    return {
+    const styles: any = {
       position: 'absolute',
       left: `${cashDesk.position.x}px`,
       top: `${cashDesk.position.y}px`,
       width: isTicketBox ? '85px' : '110px',
       height: isTicketBox ? '85px' : '110px',
       backgroundImage: `url(${cashDesk.image})`,
+      cursor: 'pointer',
+      zIndex: '2',
       backgroundSize: 'cover',
     };
+
+    if (cashDesk.isClosed) {
+      styles.filter = 'grayscale(100%)';
+    }
+
+    return styles;
   }
 }

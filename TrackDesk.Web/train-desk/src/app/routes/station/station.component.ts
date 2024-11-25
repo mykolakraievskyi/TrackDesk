@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Client } from '../../features/models/client.model';
 import { MovementService } from '../../shared/services/client-movement.service';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,8 @@ import {
 import { ClientService } from '../../features/components/client/client.service';
 import { ModalComponent } from '../../shared/components/modal/modal.component';
 import { Router, RouterModule } from '@angular/router';
+import { StompService } from '../../shared/services/websocket.service';
+import { EClientType } from '../../types/client.type';
 
 @Component({
   selector: 'app-station',
@@ -21,91 +23,105 @@ import { Router, RouterModule } from '@angular/router';
   templateUrl: './station.component.html',
   styleUrls: ['./station.component.scss'],
 })
-export class StationComponent implements OnInit {
+export class StationComponent implements OnInit, OnDestroy {
   clients: Client[] = [];
   cashDesks: CashDesk[] = [];
-  entries: Entry[] = [];
   activeEntries: Entry[] = [];
   activeCashDesks: CashDesk[] = [];
   deskPlaces: DeskPlace[] = [];
   selectedPlaces: number[] = [];
-  requiredPlacesNum: number = 0;
   reserveCashDesk: CashDesk = new BaseCashDesk(
     0,
     { x: 800, y: 20 },
     'cash-desk'
   );
-  movementService: MovementService;
+  movementService = inject(MovementService);
+  confService = inject(ConfigurationService);
+  private clientService = inject(ClientService);
+  private initService = inject(InitService);
+  private socketService = inject(StompService);
+  private anyDeskClosed: any = null;
 
-  constructor(
-    private clientService: ClientService,
-    private initService: InitService,
-    private entryService: InitService,
-    private confService: ConfigurationService,
-    private router: Router
-  ) {
-    this.movementService = new MovementService();
-  }
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.deskPlaces = this.initService.initializeDeskPlaces();
     this.cashDesks = this.initService.initializeCashDesks();
-    this.entries = this.entryService.initializeEntries();
-    this.applyConfig();
+    if (!this.confService.cashDeskNumber) {
+      this.router.navigate(['home']);
+    }
+    this.activeEntries = this.initService.generateRandomEntries(
+      this.confService.entranceNumber
+    );
     this.generateClientsPeriodically();
+
+    // this.socketService.listen('/cashdesk/info').subscribe({
+    //   next: data => {
+    //     console.log('Received cash desk info:', data);
+    //   },
+    //   error: error => {
+    //     console.error('Error in subscription:', error);
+    //   },
+    // });
+  }
+
+  ngOnDestroy(): void {
+    //this.socketService.unsubscribe('/cashdesk/info');
+    this.socketService.unsubscribe('/station/standardUser/client/generate');
+    this.socketService.disconnect();
   }
 
   generateClientsPeriodically(): void {
-    setInterval(() => {
-      const newClient = this.clientService.generateClient(
-        this.activeEntries,
-        this.selectedPlaces,
-        this.requiredPlacesNum
-      );
-      if (newClient) this.clients.push(newClient);
-      this.clientService.moveClientsToCashDesks(
-        this.clients,
-        this.activeCashDesks
-      );
-    }, 3000);
-  }
+    this.socketService
+      .listen('/station/standardUser/client/generate')
+      .subscribe(data => {
+        const entryPosition = this.activeEntries.filter(
+          e => e.id === data.entranceId
+        )[0].position;
+        const newClient = this.clientService.generateClient(
+          data.id,
+          entryPosition,
+          data.ticketNumber,
+          data.cashDeskId,
+          data.clientStatus as EClientType
+        );
+        if (newClient) {
+          const tempClients = [...this.clients, newClient];
 
-  applyConfig(): void {
-    const currentConfig = this.confService.getConfigurationNumbers();
+          const regularClients = tempClients
+            .filter(client => client.type === EClientType.REGULAR)
+            .sort((a, b) => a.id - b.id);
 
-    this.requiredPlacesNum = currentConfig.cashDesks;
-    if (this.requiredPlacesNum === 0) {
-      this.router.navigate(['home']);
-    }
+          const privilegedClients = tempClients
+            .filter(client => client.type === EClientType.PRIVILEGED)
+            .sort((a, b) => a.id - b.id);
 
-    this.activeEntries = this.entries.slice(0, currentConfig.entrances);
+          this.clients = [...privilegedClients, ...regularClients];
+        }
+
+        this.clientService.moveClientsToCashDesks(
+          this.clients,
+          newClient!,
+          this.reserveCashDesk,
+          this.activeCashDesks
+        );
+      });
   }
 
   onPlaceClick(id: number): void {
-    if (this.selectedPlaces.length < this.requiredPlacesNum) {
+    if (this.selectedPlaces.length < this.confService.cashDeskNumber) {
       this.selectedPlaces.push(id);
       this.activateCashDesks();
       this.selectPlace(this.deskPlaces[id - 1]);
     }
-    if (this.selectedPlaces.length === this.requiredPlacesNum) {
-      console.log('hello');
-      const currentConfig = this.confService.getConfigurationNumbers();
-      this.confService
-        .setConfiguration({
-          cashDesks: this.activeCashDesks.map(cashDesk => ({
-            id: cashDesk.id,
-            position: cashDesk.position,
-          })),
-          entrances: this.activeEntries.map(entrance => ({
-            id: entrance.id,
-            position: entrance.position,
-          })),
-          secondsStart: currentConfig.secondsStart,
-          secondsEnd: currentConfig.secondsEnd,
-        })
-        .subscribe(() => {
-          console.log('penis');
-        });
+    if (this.selectedPlaces.length === this.confService.cashDeskNumber) {
+      this.confService.configEntiesAndCashDesks(
+        this.activeEntries,
+        this.activeCashDesks,
+        this.reserveCashDesk
+      );
+      this.movementService.initializeCashDeskPositions(this.activeCashDesks);
+      this.confService.setConfiguration();
     }
   }
 
@@ -138,5 +154,48 @@ export class StationComponent implements OnInit {
 
   getCashDeskStyle(cashDesk: CashDesk): any {
     return this.initService.getCashDeskStyle(cashDesk);
+  }
+
+  toggleDeskClosing(cashDesk: CashDesk) {
+    if (this.anyDeskClosed === cashDesk) {
+      this.anyDeskClosed = null;
+      cashDesk.isClosed = false;
+      this.movementService.changeChasDeskStatus(cashDesk.isClosed, cashDesk.id);
+    } else {
+      if (!this.anyDeskClosed) {
+        this.anyDeskClosed = cashDesk;
+        cashDesk.isClosed = !cashDesk.isClosed;
+        this.reserveCashDesk.clientQueue.push(...cashDesk.clientQueue.slice(1));
+        console.log(this.reserveCashDesk);
+        cashDesk.clientQueue.forEach(c => {c.targetCashDeskId = 0});
+        cashDesk.clientQueue.splice(1);
+        this.movementService.changeChasDeskStatus(cashDesk.isClosed, cashDesk.id);
+        return cashDesk.isClosed;
+      }
+    }
+    return false;
+  }
+
+  addClient(client: Client) {
+    this.clients.push(client);
+    this.reorderQueue();
+  }
+
+  private reorderQueue() {
+    this.clients.sort((a, b) => {
+      if (
+        a.type === EClientType.PRIVILEGED &&
+        b.type !== EClientType.PRIVILEGED
+      ) {
+        return -1;
+      }
+      if (
+        a.type !== EClientType.PRIVILEGED &&
+        b.type === EClientType.PRIVILEGED
+      ) {
+        return 1;
+      }
+      return 0;
+    });
   }
 }

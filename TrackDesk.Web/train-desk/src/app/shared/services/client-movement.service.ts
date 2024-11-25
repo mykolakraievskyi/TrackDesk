@@ -1,151 +1,305 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
-import { StaticObstacle } from '../../features/models/obstacle.model';
-import { Position } from '../../features/models/position.model';
+//import { getPlural } from 'astar-typescript';
+import * as AStar from 'astar-typescript';
+import { HttpClient } from '@angular/common/http';
+import { ConfigurationService } from './configuration.service';
+import { LogService } from '../components/log/log.service';
 
-const QUEUE_OFFSET = 32;
+const CELL_SIZE = 31;
 
 @Injectable({
   providedIn: 'root',
 })
 export class MovementService {
+  private cofigurationService = inject(ConfigurationService);
+  private logService = inject(LogService);
   private readonly speed: number = 5;
-  private readonly staticObstacles: StaticObstacle[] = [];
+  public stationMatrix: number[][] = [];
 
-  constructor() {
-    this.staticObstacles.push(
-      new StaticObstacle(
-        { x: 1000, y: 300 },
-        { x: 1350, y: 300 },
-        { x: 1000, y: 0 },
-        { x: 1350, y: 0 }
-      ),
-      new StaticObstacle(
-        { x: 0, y: 560 },
-        { x: 200, y: 560 },
-        { x: 0, y: 290 },
-        { x: 200, y: 290 }
-      )
-    );
+  constructor(private http: HttpClient) {
+    this.stationMatrix = [
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+      [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ],
+    ];
   }
 
-  detectCollisions(): void {}
+  initializeCashDeskPositions(CashDesks: CashDesk[]) {
+    CashDesks.forEach(c => {
+      const i = Math.round(c.position.x / CELL_SIZE);
+      const j = Math.round(c.position.y / CELL_SIZE);
+      this.stationMatrix[j][i] = 1;
+      this.stationMatrix[j - 1][i] = 1;
+      this.stationMatrix[j - 1][i + 1] = 1;
+      this.stationMatrix[j][i + 1] = 1;
+      this.stationMatrix[j + 1][i + 1] = 1;
+      this.stationMatrix[j + 2][i + 1] = 1;
+      this.stationMatrix[j - 1][i + 2] = 1;
+      this.stationMatrix[j][i + 2] = 1;
+      this.stationMatrix[j + 1][i + 2] = 1;
+      this.stationMatrix[j + 2][i + 2] = 1;
+    });
+  }
+
+  initializeWithClients(Clients: Client[], currentClient: Client): number[][] {
+    const copyMatrix = this.stationMatrix.map(row => [...row]);
+    Clients.forEach(c => {
+      const i = Math.round(c.position.x / CELL_SIZE);
+      const j = Math.round(c.position.y / CELL_SIZE);
+      if (copyMatrix[j] && copyMatrix[j][i] !== undefined) {
+        copyMatrix[j][i] = 1;
+      }
+    });
+    const i = Math.round(currentClient.position.x / CELL_SIZE);
+    const j = Math.round(currentClient.position.y / CELL_SIZE);
+    copyMatrix[j][i] = 0;
+    return copyMatrix;
+  }
 
   moveClientToCashDesk(
     client: Client,
-    cashDesk: CashDesk,
-    allClients: Client[],
-    allCashDesks: CashDesk[]
+    allcashDesk: CashDesk[],
+    reservedCashDesk: CashDesk,
+    allClients: Client[]
   ): void {
-    client.targetCashDeskId = cashDesk.id;
     const moveInterval = setInterval(() => {
-      const lastClientPosition = cashDesk.getClientPosition(client);
+      let cashDesk;
+      if (client.targetCashDeskId === 0) {
+        cashDesk = reservedCashDesk;
+      } else {
+        cashDesk = allcashDesk.filter(c => c.id === client.targetCashDeskId)[0];
+      }
+      const targetClientPositionXY = cashDesk.getClientPosition(client);
       const targetPosition = {
-        x: lastClientPosition.x,
-        y: lastClientPosition.y + QUEUE_OFFSET,
+        x: Math.round(targetClientPositionXY.x / CELL_SIZE),
+        y: Math.round(targetClientPositionXY.y / CELL_SIZE),
       };
 
-      const deltaX = targetPosition.x - client.position.x;
-      const deltaY = targetPosition.y - client.position.y;
+      const matrix = this.initializeWithClients(allClients, client);
 
-      if (Math.abs(deltaX) <= this.speed && Math.abs(deltaY) <= this.speed) {
-        client.position.x = targetPosition.x;
-        client.position.y = targetPosition.y;
-        this.serveClient(client, cashDesk);
-        clearInterval(moveInterval);
+      const aStarInstance = new AStar.AStarFinder({
+        grid: {
+          width: matrix[0].length,
+          height: matrix.length,
+          matrix: matrix,
+        },
+      });
+
+      const clientPos = {
+        x: Math.round(client.position.x / CELL_SIZE),
+        y: Math.round(client.position.y / CELL_SIZE),
+      };
+
+      const bestPathway = aStarInstance.findPath(clientPos, targetPosition);
+
+      if (!bestPathway || bestPathway.length === 0) {
         return;
       }
 
-      let newPosition = {
-        x:
-          client.position.x +
-          Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX)),
-        y:
-          client.position.y +
-          Math.sign(deltaY) * Math.min(this.speed, Math.abs(deltaY)),
-      };
+      let nextstep;
+      if (bestPathway.length === 1) {
+        nextstep = bestPathway[0];
+      } else {
+        nextstep = bestPathway[1];
+      }
 
-      client.position = this.correctPosition(client.position, newPosition);
+      const deltaX = nextstep[0] * CELL_SIZE - client.position.x;
+      const deltaY = nextstep[1] * CELL_SIZE - client.position.y;
+
+      if (Math.abs(deltaX) <= this.speed && Math.abs(deltaY) <= this.speed) {
+        client.position.x = nextstep[0] * CELL_SIZE;
+        client.position.y = nextstep[1] * CELL_SIZE;
+
+        if (
+          targetPosition.x ===
+            Math.round(cashDesk.getFirstClientPosition().x / CELL_SIZE) &&
+          targetPosition.y ===
+            Math.round(cashDesk.getFirstClientPosition().y / CELL_SIZE) &&
+          nextstep[0] === targetPosition.x &&
+          nextstep[1] === targetPosition.y
+        ) {
+          this.serveClient(client, cashDesk, allClients);
+          clearInterval(moveInterval);
+        }
+      } else {
+        client.position.x +=
+          Math.sign(deltaX) * Math.min(this.speed, Math.abs(deltaX));
+        client.position.y +=
+          Math.sign(deltaY) * Math.min(this.speed, Math.abs(deltaY));
+      }
     }, 100);
   }
 
-  correctPosition(oldPosition: Position, newPosition: Position): Position {
-    let position: Position = newPosition;
-    for (let obstacle of this.staticObstacles) {
-      if (
-        newPosition.x > obstacle.topLeft.x &&
-        newPosition.x < obstacle.bottobRigth.x &&
-        newPosition.y > obstacle.topLeft.y &&
-        newPosition.y < obstacle.bottobRigth.y
-      ) {
-        //correction
-        if (oldPosition.x < obstacle.topLeft.x) {
-          position.x = obstacle.topLeft.x;
-        }
-        if (oldPosition.x > obstacle.bottobRigth.x) {
-          position.x = obstacle.bottobRigth.x;
-        }
-        if (oldPosition.y < obstacle.topLeft.y) {
-          position.y = obstacle.topLeft.y;
-        }
-        if (newPosition.y > obstacle.bottobRigth.y) {
-          position.y = obstacle.bottobRigth.y;
-        }
-      }
-    }
-
-    return newPosition;
-  }
-
-  findCashDeskWithFewestClients(
-    cashDesks: CashDesk[],
-    clients: Client[]
-  ): CashDesk {
-    return cashDesks.reduce((minDesk, currentDesk) => {
-      const minDeskClientCount = minDesk.clientQueue.length;
-      const currentDeskClientCount = currentDesk.clientQueue.length;
-
-      return currentDeskClientCount < minDeskClientCount
-        ? currentDesk
-        : minDesk;
-    }, cashDesks[0]);
-  }
-
-  assignClientToBestCashDesk(
-    client: Client,
-    cashDesks: CashDesk[],
-    clients: Client[],
-    allClients: Client[],
-    allCashDesks: CashDesk[]
-  ): void {
-    const bestCashDesk = this.findCashDeskWithFewestClients(cashDesks, clients);
-    this.moveClientToCashDesk(client, bestCashDesk, allClients, allCashDesks);
-  }
-
-  // )))))))
-  serveClient(client: Client, cashDesk: CashDesk): void {
+  serveClient(client: Client, cashDesk: CashDesk, allClients: Client[]): void {
     if (!cashDesk.clientQueue.includes(client)) {
       cashDesk.addClient(client);
     }
-
-    // Тут виклик сервісу для обслуговування
-
-    // var deadClient = cashDesk.popClient();
-
-    // if (deadClient) {
-    //   for (let i = cashDesk.clientQueue.length - 1; i >= 0; ++i) {
-    //     if (i > 0) {
-    //       cashDesk.clientQueue[i - 1].position =
-    //         cashDesk.clientQueue[i].position;
-    //     } else {
-    //       cashDesk.clientQueue[i].position = deadClient.position;
-    //     }
-    //   }
-    // } else {
-    //   // похуй
-    // }
+    const startTime = new Date().toLocaleTimeString();
+    setTimeout(
+      () => {
+        this.deleteClient(client, cashDesk, allClients);
+        this.http
+          .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
+            clientId: client.id,
+            cashDeskId: cashDesk.id,
+            startTime: startTime,
+            endTime: new Date().toLocaleTimeString(),
+          })
+          .subscribe(message => {
+            this.logService.addLog(message);
+          });
+      },
+      this.cofigurationService.serveTime * 1000
+      //this.cofigurationService.serveTime * 1000 * client.tickets
+    );
   }
 
-  relocateClients(currentDesk: CashDesk, newDsk: CashDesk) {}
+  deleteClient(Client: Client, CashDesk: CashDesk, allClients: Client[]) {
+    CashDesk.clientQueue.splice(CashDesk.clientQueue.indexOf(Client), 1);
+    allClients.splice(allClients.indexOf(Client), 1);
+    Client.image = '';
+    Client.position = { x: 1, y: 1 };
+  }
+
+  changeChasDeskStatus(isClosed: boolean, id: number) {
+    this.http
+      .post(`http://127.0.0.1:8080/api/v1/cashdesk/cashdesk/set_status`, {
+        isClosed: isClosed,
+        id: id,
+      })
+      .subscribe(message => {
+        console.log(message);
+      });
+  }
+
+  //   moveClientToPosition(
+  // { client, targetPosition, allClients }: { client: Client; targetPosition: Position; allClients: Client[]; }  ): void {
+  //     const moveInterval = setInterval(() => {
+  //       const targetPos = {
+  //         x: Math.round(targetPosition.x / CELL_SIZE),
+  //         y: Math.round(targetPosition.y / CELL_SIZE),
+  //       };
+
+  //       const matrix = this.initializeWithClients(allClients, client);
+
+  //       const aStarInstance = new AStar.AStarFinder({
+  //         grid: {
+  //           width: matrix[0].length,
+  //           height: matrix.length,
+  //           matrix: matrix,
+  //         },
+  //       });
+  //       const clientPos = {
+  //         x: Math.round(client.position.x / CELL_SIZE),
+  //         y: Math.round(client.position.y / CELL_SIZE),
+  //       };
+
+  //       const bestPathway = aStarInstance.findPath(clientPos, targetPos);
+
+  //       if (!bestPathway || bestPathway.length === 0) {
+  //         clearInterval(moveInterval);
+  //         return;
+  //       }
+
+  //       const nextStep = bestPathway[1];
+  //       if (nextStep) {
+  //         client.position.x = nextStep[0] * CELL_SIZE;
+  //         client.position.y = nextStep[1] * CELL_SIZE;
+  //       }
+
+  //       if (
+  //         client.position.x === targetPosition.x &&
+  //         client.position.y === targetPosition.y
+  //       ) {
+  //         clearInterval(moveInterval);
+  //       }
+  //     }, 100);
+  //   }
 }
