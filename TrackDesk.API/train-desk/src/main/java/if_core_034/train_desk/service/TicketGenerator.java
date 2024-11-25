@@ -12,7 +12,7 @@ public class TicketGenerator {
 
     private final String[] cities;
     private final String[] trains;
-    private final int ticketNumber;
+    private int ticketNumber;
 
     public TicketGenerator() {
         this.cities = new String[] {
@@ -29,6 +29,7 @@ public class TicketGenerator {
 
     public Ticket generateTicket() {
         Random random = new Random();
+        this.ticketNumber++;
         return new Ticket(ticketNumber,
                 this.trains[random.nextInt(trains.length)], random.nextInt(5),
                 this.cities[random.nextInt(cities.length)],
