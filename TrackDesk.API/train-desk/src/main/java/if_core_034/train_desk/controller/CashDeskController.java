@@ -55,7 +55,7 @@ public class CashDeskController {
 //            cashDeskService.openCashDesk(cashDeskOpenCloseDto.getId());
 //        }
 //    }
-    @PostMapping("/cashdesk/info")
+    @PostMapping("/api/v1/cashdesk/cashdesk/set_status")
     public ResponseEntity<Object> setCashDeskInfo(@RequestBody CashDeskOpenCloseDto cashDeskOpenCloseDto) {
         System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
         if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
