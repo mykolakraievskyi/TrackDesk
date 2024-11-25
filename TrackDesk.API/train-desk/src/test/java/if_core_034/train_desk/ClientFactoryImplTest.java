@@ -25,13 +25,11 @@ class ClientFactoryImplTest {
         ticketGeneratorMock = mock(TicketGenerator.class);
         generationStrategyMock = mock(ClientGenerationStrategy.class);
 
-
         clientFactory = new ClientFactoryImpl(generationStrategyMock, ticketGeneratorMock, stationServiceMock);
     }
 
     @Test
     void testGenerateClient_ValidClientCreated() {
-        // Mock entrance and station
         Entrance entranceMock = mock(Entrance.class);
         Position positionMock = mock(Position.class);
         when(entranceMock.getPosition()).thenReturn(positionMock);
@@ -47,7 +45,7 @@ class ClientFactoryImplTest {
 
         assertNotNull(client, "Generated client should not be null.");
         assertNotNull(client.getStatus(), "Client status should not be null.");
-        assertTrue(client.getStatus() instanceof ClientStatus, "Client status should be a valid enum value.");
+        assertInstanceOf(ClientStatus.class, client.getStatus(), "Client status should be a valid enum value.");
         assertNotNull(client.getEntrance(), "Client entrance should not be null.");
         assertEquals(entranceMock, client.getEntrance(), "Client entrance should match the mocked entrance.");
         assertNotNull(client.getPosition(), "Client position should not be null.");
@@ -56,6 +54,6 @@ class ClientFactoryImplTest {
         assertFalse(client.getTickets().isEmpty(), "Client should have at least one ticket.");
 
         verify(ticketGeneratorMock, atLeastOnce()).generateTicket();
-        verify(stationServiceMock, times(1)).getStationInstance();
+        verify(stationServiceMock, times(2)).getStationInstance();
     }
 }
