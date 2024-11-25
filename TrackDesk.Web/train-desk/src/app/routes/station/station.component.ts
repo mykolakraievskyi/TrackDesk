@@ -100,9 +100,10 @@ export class StationComponent implements OnInit, OnDestroy {
           this.clients = [...privilegedClients, ...regularClients];
         }
 
-        //console.log('---this.clients ', this.clients);
+        //console.log('---this.clients ', this.clients)
         this.clientService.moveClientsToCashDesks(
           this.clients,
+          newClient!,
           this.activeCashDesks
         );
       });
@@ -185,7 +186,7 @@ export class StationComponent implements OnInit, OnDestroy {
         a.type === EClientType.PRIVILEGED &&
         b.type !== EClientType.PRIVILEGED
       ) {
-        return -1; 
+        return -1;
       }
       if (
         a.type !== EClientType.PRIVILEGED &&
@@ -194,6 +195,7 @@ export class StationComponent implements OnInit, OnDestroy {
         return 1; 
       }
       return 0; 
+
     });
   }
 }

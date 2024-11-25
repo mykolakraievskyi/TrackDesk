@@ -33,10 +33,6 @@ export class BaseCashDesk implements CashDesk {
     this.image = this.getImagePath();
   }
 
-  get positionForClient() {
-    return;
-  }
-
   addClient(client: Client): void {
     if (client.type === EClientType.PRIVILEGED) {
       let insertIndex = 0;
