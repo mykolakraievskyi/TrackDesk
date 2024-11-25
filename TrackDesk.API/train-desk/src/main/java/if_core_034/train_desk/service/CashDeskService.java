@@ -8,29 +8,16 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.PriorityQueue;
 
 @Service
 @RequiredArgsConstructor
 public class CashDeskService {
     private final StationService stationService;
 
-//    public int closeRandomCashDesk() {
-//        Station station = stationService.getStationInstance();
-//        int cashDeskIndex = (int) (Math.random() * station.getCashDesks().size());
-//        CashDesk cashDesk = station.getCashDesks().get(cashDeskIndex);
-//        cashDesk.setOperational(false);
-//        station.getReserveCashDesk().setQueue(cashDesk.getQueue());
-//
-//        return cashDesk.getId();
-//    }
-
     public void openCashDesk(int cashDeskId) {
         Station station = stationService.getStationInstance();
         CashDesk cashDesk = station.getCashDeskMap().get(cashDeskId);
         cashDesk.setOperational(true);
-//        cashDesk.setQueue(station.getReserveCashDesk().getQueue());
-//        station.getReserveCashDesk().setQueue(new ArrayList<>());
         station.getReserveCashDesk().setOperational(false);
     }
 

@@ -1,11 +1,7 @@
 package if_core_034.train_desk.controller;
 
-import if_core_034.train_desk.dto.CashDeskDto;
 import if_core_034.train_desk.dto.ClientDto;
-import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.entity.Client;
-import if_core_034.train_desk.entity.Entrance;
-import if_core_034.train_desk.entity.Position;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
@@ -14,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 

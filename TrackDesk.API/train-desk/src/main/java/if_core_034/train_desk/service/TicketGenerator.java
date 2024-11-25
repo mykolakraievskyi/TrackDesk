@@ -12,7 +12,7 @@ public class TicketGenerator {
 
     private final String[] cities;
     private final String[] trains;
-    private int ticketNumber;
+    private final int ticketNumber;
 
     public TicketGenerator() {
         this.cities = new String[] {

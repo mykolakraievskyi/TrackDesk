@@ -7,7 +7,6 @@ import if_core_034.train_desk.entity.LogEntity;
 import if_core_034.train_desk.service.CashDeskService;
 import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.LogEntityService;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import if_core_034.train_desk.dto.BuyTicketDto;
 import if_core_034.train_desk.service.StationService;
 import org.springframework.http.ResponseEntity;
@@ -28,47 +27,21 @@ public class CashDeskController {
     private final StationService stationService;
     private final LogEntityService logEntityService;
 
-//    @Scheduled(fixedRate = 30000, initialDelay = 15000)
-//    public void closeRandomCashDesk() {
-//        int cashDeskId = cashDeskService.closeRandomCashDesk();
-//        CashDeskOpenCloseDto cashDeskOpenCloseDto = new CashDeskOpenCloseDto(cashDeskId, true);
-//        simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-//
-////        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-////        cashDeskOpenCloseDto.setClosed(false);
-////        scheduledExecutorService.schedule(() -> {
-////            cashDeskService.openCashDesk();
-////            simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-////            }, 15, TimeUnit.SECONDS);
-//    }
-
-    @MessageMapping("/cashdesk/info")
-    public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
+    @PostMapping("/api/v1/cashdesk/cashdesk/set_status")
+    public ResponseEntity<Object> setCashDeskInfo(@RequestBody CashDeskOpenCloseDto cashDeskOpenCloseDto) {
         System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
-        if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
-            return;
+        if (cashDeskOpenCloseDto.getId() == 0) {
+            return ResponseEntity.ok().build();
         }
         if (cashDeskOpenCloseDto.isClosed()) {
             cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
         } else {
             cashDeskService.openCashDesk(cashDeskOpenCloseDto.getId());
         }
+        return ResponseEntity.ok().build();
     }
 
 
-    /*    @Scheduled(fixedRate = 30000, initialDelay = 15000)
-        public void closeRandomCashDesk() {
-            int cashDeskId = cashDeskService.closeRandomCashDesk();
-            CashDeskOpenCloseDto cashDeskOpenCloseDto = new CashDeskOpenCloseDto(cashDeskId, true);
-            simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-
-    //        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-    //        cashDeskOpenCloseDto.setClosed(false);
-    //        scheduledExecutorService.schedule(() -> {
-    //            cashDeskService.openCashDesk();
-    //            simpMessagingTemplate.convertAndSendToUser("standardUser", "/cashdesk/info", cashDeskOpenCloseDto);
-    //            }, 15, TimeUnit.SECONDS);
-        }*/
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
         System.out.println("Buy ticket: "+buyTicketDto);
@@ -81,10 +54,20 @@ public class CashDeskController {
         } else {
             cashDesk = station.getReserveCashDesk();
         }
+
         Optional<Client> client;
         synchronized(CashDeskController.class) {
             client = cashDesk.getQueue().stream().filter(clientNew ->
-                                                         clientNew.getId() == buyTicketDto.getClientId()).findFirst();
+                    clientNew.getId() == buyTicketDto.getClientId()).findFirst();
+        }
+        if(client.isEmpty()){
+            var temp_cashDesk = station.getReserveCashDesk();
+            Optional<Client> temp_client = temp_cashDesk.getQueue().stream().filter(clientNew ->
+                    clientNew.getId() == buyTicketDto.getClientId()).findFirst();
+            if(temp_client.isPresent()){
+                cashDesk=temp_cashDesk;
+                client=temp_client;
+            }
         }
         if(client.isPresent()) {
             LogEntity logEntity = new LogEntity(1, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
@@ -94,6 +77,8 @@ public class CashDeskController {
             synchronized(CashDeskController.class) {
                 cashDesk.getQueue().remove(client.get());
             }
+            cashDesk.getQueue().remove(client.get());
+
             return ResponseEntity.ok().body(logEntity);
         }
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
