@@ -1,6 +1,7 @@
 package if_core_034.train_desk.controller;
 
 import if_core_034.train_desk.dto.CashDeskOpenCloseDto;
+import if_core_034.train_desk.dto.StationConfigurationDto;
 import if_core_034.train_desk.entity.CashDesk;
 import if_core_034.train_desk.entity.Client;
 import if_core_034.train_desk.entity.LogEntity;
@@ -42,17 +43,30 @@ public class CashDeskController {
 ////            }, 15, TimeUnit.SECONDS);
 //    }
 
-    @MessageMapping("/cashdesk/info")
-    public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
+//    @PostMapping("/cashdesk/info")
+//    public void getCashDeskInfo(CashDeskOpenCloseDto cashDeskOpenCloseDto) {
+//        System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
+//        if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
+//            return;
+//        }
+//        if (cashDeskOpenCloseDto.isClosed()) {
+//            cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
+//        } else {
+//            cashDeskService.openCashDesk(cashDeskOpenCloseDto.getId());
+//        }
+//    }
+    @PostMapping("/cashdesk/info")
+    public ResponseEntity<Object> setCashDeskInfo(@RequestBody CashDeskOpenCloseDto cashDeskOpenCloseDto) {
         System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
         if (cashDeskOpenCloseDto.getId()==0){// при спробі закрити резервну касу
-            return;
+            return ResponseEntity.ok().build();
         }
         if (cashDeskOpenCloseDto.isClosed()) {
             cashDeskService.closeCashDesk(cashDeskOpenCloseDto.getId());
         } else {
             cashDeskService.openCashDesk(cashDeskOpenCloseDto.getId());
         }
+        return ResponseEntity.ok().build();
     }
 
 
