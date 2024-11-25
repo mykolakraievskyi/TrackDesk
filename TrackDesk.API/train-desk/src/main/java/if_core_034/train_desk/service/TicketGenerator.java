@@ -22,7 +22,7 @@ public class TicketGenerator {
                 "Mykolaiv", "Kherson", "Sumy", "Zhytomyr"
         };
         this.trains = new String[] {
-                "Intersity +", "Night Express", "Podil Express", "Bukovel Express", "Dnipro Express"
+                "Intercity +", "Night Express", "Podil Express", "Bukovel Express", "Dnipro Express"
         };
         this.ticketNumber = 0;
     }
