@@ -41,7 +41,9 @@ public class ClientController {
     public void generateClient() {
         Client client = clientService.generateClient();
         int cashDeskId = clientService.getBestCashRegisterId(client);
-        stationService.getStationInstance().getCashDeskMap().get(cashDeskId).getQueue().add(client);
+        synchronized(ClientController.class) {
+            stationService.getStationInstance().getCashDeskMap().get(cashDeskId).getQueue().add(client);
+        }
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId,
                                             client.getEntrance().getId(), client.getTickets().size());
         System.out.println("New client: "+clientDto);

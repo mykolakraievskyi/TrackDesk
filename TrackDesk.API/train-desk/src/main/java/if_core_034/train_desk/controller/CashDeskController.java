@@ -81,14 +81,19 @@ public class CashDeskController {
         } else {
             cashDesk = station.getReserveCashDesk();
         }
-        Optional<Client> client = cashDesk.getQueue().stream().filter(clientNew ->
-                                                               clientNew.getId() == buyTicketDto.getClientId()).findFirst();
-
+        Optional<Client> client;
+        synchronized(CashDeskController.class) {
+            client = cashDesk.getQueue().stream().filter(clientNew ->
+                                                         clientNew.getId() == buyTicketDto.getClientId()).findFirst();
+        }
         if(client.isPresent()) {
             LogEntity logEntity = new LogEntity(1, client.get().getId(), client.get().getStatus(), cashDesk.getId(),
                                                    client.get().getTickets(), buyTicketDto.getStartTime(), buyTicketDto.getEndTime());
 
             logEntityService.saveLogEntity(logEntity);
+            synchronized(CashDeskController.class) {
+                cashDesk.getQueue().remove(client.get());
+            }
             return ResponseEntity.ok().body(logEntity);
         }
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
