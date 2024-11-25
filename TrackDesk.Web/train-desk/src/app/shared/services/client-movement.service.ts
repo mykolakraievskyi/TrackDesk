@@ -1,10 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { CashDesk } from '../../features/models/cash-desk.model';
 import { Client } from '../../features/models/client.model';
-//import { getPlural } from 'astar-typescript';
 import * as AStar from 'astar-typescript';
 import { HttpClient } from '@angular/common/http';
-import { Position } from '../../features/models/position.model';
 import { ConfigurationService } from './configuration.service';
 
 const CELL_SIZE = 31;
@@ -231,54 +229,7 @@ export class MovementService {
   deleteClient(Client: Client, CashDesk: CashDesk, allClients: Client[]) {
     CashDesk.clientQueue.splice(CashDesk.clientQueue.indexOf(Client), 1);
     allClients.splice(allClients.indexOf(Client), 1);
-    Client.image = "";
-    Client.position = {x:1, y:1};
-  }
-
-  moveClientToPosition(
-    client: Client,
-    targetPosition: Position,
-    allClients: Client[]
-  ): void {
-    const moveInterval = setInterval(() => {
-      const targetPos = {
-        x: Math.round(targetPosition.x / CELL_SIZE),
-        y: Math.round(targetPosition.y / CELL_SIZE),
-      };
-
-      const matrix = this.initializeWithClients(allClients, client);
-
-      const aStarInstance = new AStar.AStarFinder({
-        grid: {
-          width: matrix[0].length,
-          height: matrix.length,
-          matrix: matrix,
-        },
-      });
-      const clientPos = {
-        x: Math.round(client.position.x / CELL_SIZE),
-        y: Math.round(client.position.y / CELL_SIZE),
-      };
-
-      const bestPathway = aStarInstance.findPath(clientPos, targetPos);
-
-      if (!bestPathway || bestPathway.length === 0) {
-        clearInterval(moveInterval);
-        return;
-      }
-
-      const nextStep = bestPathway[1];
-      if (nextStep) {
-        client.position.x = nextStep[0] * CELL_SIZE;
-        client.position.y = nextStep[1] * CELL_SIZE;
-      }
-
-      if (
-        client.position.x === targetPosition.x &&
-        client.position.y === targetPosition.y
-      ) {
-        clearInterval(moveInterval);
-      }
-    }, 100);
+    Client.image = '';
+    Client.position = { x: 1, y: 1 };
   }
 }

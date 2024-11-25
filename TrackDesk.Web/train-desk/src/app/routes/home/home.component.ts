@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfigurationService } from '../../shared/services/configuration.service';
 
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -17,14 +16,12 @@ export class HomeComponent {
     private configurationService: ConfigurationService
   ) {}
 
-ENTRANCE_EXIT_MIN = 1;
-ENTRANCE_EXIT_MAX = 8;
-REGISTER_MIN = 2;
-REGISTER_MAX = 9;
-TIME_MIN = 2;
-TIME_MAX = 10;
-
-
+  ENTRANCE_EXIT_MIN = 1;
+  ENTRANCE_EXIT_MAX = 8;
+  REGISTER_MIN = 2;
+  REGISTER_MAX = 9;
+  TIME_MIN = 2;
+  TIME_MAX = 10;
 
   exits: number = 1;
   entrances: number = 1;
@@ -90,7 +87,7 @@ TIME_MAX = 10;
       if (this.secondsEnd < this.TIME_MIN || this.secondsEnd > this.TIME_MAX) {
         result = false;
       }
-      if(this.serveTime < this.TIME_MIN || this.serveTime > this.TIME_MAX){
+      if (this.serveTime < this.TIME_MIN || this.serveTime > this.TIME_MAX) {
         result = false;
       }
       if (this.secondsStart > this.secondsEnd) {
