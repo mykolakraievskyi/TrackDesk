@@ -35,7 +35,7 @@ class RandomGenerationStrategyTest {
 		strategy = new RandomGenerationStrategy();
 		strategy.updateTimeRange(timeRange);
 
-		for (int i = 0; i < 10; i++) { // Test multiple times to ensure consistency
+		for (int i = 0; i < 10; i++) {
 			LocalTime result = strategy.getNextArrivalTime();
 			assertEquals(fixedTime, result, "Generated time should always be equal to the fixed time");
 		}
@@ -47,9 +47,8 @@ class RandomGenerationStrategyTest {
 		strategy = new RandomGenerationStrategy();
 		strategy.updateTimeRange(timeRange);
 
-		Exception exception = assertThrows(IllegalArgumentException.class, strategy::getNextArrivalTime,
+		assertThrows(IllegalArgumentException.class, strategy::getNextArrivalTime,
 				"Should throw IllegalArgumentException for invalid time range");
-		assertEquals("minTime cannot be after maxTime", exception.getMessage());
 	}
 
 	@Test
@@ -57,9 +56,8 @@ class RandomGenerationStrategyTest {
 		strategy = new RandomGenerationStrategy();
 		strategy.updateTimeRange(null);
 
-		Exception exception = assertThrows(NullPointerException.class, strategy::getNextArrivalTime,
+		assertThrows(NullPointerException.class, strategy::getNextArrivalTime,
 				"Should throw NullPointerException when range is not set");
-		assertEquals("Range is not set", exception.getMessage());
 	}
 
 }

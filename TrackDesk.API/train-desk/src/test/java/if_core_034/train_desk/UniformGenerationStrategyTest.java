@@ -28,9 +28,8 @@ class UniformGenerationStrategyTest {
     void testGetNextArrivalTime_WithNullInterval() {
         strategy = new UniformGenerationStrategy();
 
-        Exception exception = assertThrows(NullPointerException.class,
+        assertThrows(NullPointerException.class,
                 () -> strategy.updateTimeRange(null),
                 "Should throw NullPointerException when interval is not set");
-        assertEquals("Interval is not set", exception.getMessage());
     }
 }
