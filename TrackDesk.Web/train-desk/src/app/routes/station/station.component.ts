@@ -78,7 +78,6 @@ export class StationComponent implements OnInit, OnDestroy {
         const entryPosition = this.activeEntries.filter(
           e => e.id === data.entranceId
         )[0].position;
-        //console.log(data);
         const newClient = this.clientService.generateClient(
           data.id,
           entryPosition,
@@ -100,10 +99,10 @@ export class StationComponent implements OnInit, OnDestroy {
           this.clients = [...privilegedClients, ...regularClients];
         }
 
-        //console.log('---this.clients ', this.clients)
         this.clientService.moveClientsToCashDesks(
           this.clients,
           newClient!,
+          this.reserveCashDesk,
           this.activeCashDesks
         );
       });
@@ -161,14 +160,16 @@ export class StationComponent implements OnInit, OnDestroy {
     if (this.anyDeskClosed === cashDesk) {
       this.anyDeskClosed = null;
       cashDesk.isClosed = false;
+      this.movementService.changeChasDeskStatus(cashDesk.isClosed, cashDesk.id);
     } else {
       if (!this.anyDeskClosed) {
         this.anyDeskClosed = cashDesk;
         cashDesk.isClosed = !cashDesk.isClosed;
-        this.socketService.emit('/cashdesk/action', {
-          isClosed: cashDesk.isClosed,
-          id: cashDesk.id,
-        });
+        this.reserveCashDesk.clientQueue = [...cashDesk.clientQueue.slice(1)];
+        console.log(this.reserveCashDesk);
+        cashDesk.clientQueue.forEach(c => {c.targetCashDeskId = 0});
+        cashDesk.clientQueue.splice(1);
+        this.movementService.changeChasDeskStatus(cashDesk.isClosed, cashDesk.id);
         return cashDesk.isClosed;
       }
     }
@@ -181,21 +182,20 @@ export class StationComponent implements OnInit, OnDestroy {
   }
 
   private reorderQueue() {
-    // Сортування: пільговики вперед, зберігаючи відносний порядок
     this.clients.sort((a, b) => {
       if (
         a.type === EClientType.PRIVILEGED &&
         b.type !== EClientType.PRIVILEGED
       ) {
-        return -1; // Пільговик перед звичайним
+        return -1;
       }
       if (
         a.type !== EClientType.PRIVILEGED &&
         b.type === EClientType.PRIVILEGED
       ) {
-        return 1; // Звичайний після пільговика
+        return 1;
       }
-      return 0; // В іншому випадку порядок зберігається
+      return 0;
     });
   }
 }

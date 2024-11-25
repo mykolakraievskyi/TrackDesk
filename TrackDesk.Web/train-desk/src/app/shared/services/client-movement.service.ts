@@ -19,25 +19,11 @@ export class MovementService {
 
   constructor(private http: HttpClient) {
     this.stationMatrix = [
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      ],
-      [
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
       ],
       [
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -144,10 +130,18 @@ export class MovementService {
 
   moveClientToCashDesk(
     client: Client,
-    cashDesk: CashDesk,
+    allcashDesk: CashDesk[],
+    reservedCashDesk: CashDesk,
     allClients: Client[]
   ): void {
     const moveInterval = setInterval(() => {
+      let cashDesk;
+      if(client.targetCashDeskId === 0){
+        cashDesk = reservedCashDesk;
+      }
+      else{
+       cashDesk = allcashDesk.filter(c => c.id === client.targetCashDeskId)[0];
+      }
       const targetClientPositionXY = cashDesk.getClientPosition(client);
       const targetPosition = {
         x: Math.round(targetClientPositionXY.x / CELL_SIZE),
@@ -216,7 +210,6 @@ export class MovementService {
     const startTime = new Date().toLocaleTimeString();
     setTimeout(() => {
       this.deleteClient(client, cashDesk, allClients);
-      console.log('adsdadadadasdas');
       this.http
         .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
           clientId: client.id,
@@ -235,50 +228,54 @@ export class MovementService {
     Client.position = {x:1, y:1};
   }
 
-  moveClientToPosition(
-    client: Client,
-    targetPosition: Position,
-    allClients: Client[]
-  ): void {
-    const moveInterval = setInterval(() => {
-      const targetPos = {
-        x: Math.round(targetPosition.x / CELL_SIZE),
-        y: Math.round(targetPosition.y / CELL_SIZE),
-      };
-
-      const matrix = this.initializeWithClients(allClients, client);
-
-      const aStarInstance = new AStar.AStarFinder({
-        grid: {
-          width: matrix[0].length,
-          height: matrix.length,
-          matrix: matrix,
-        },
-      });
-      const clientPos = {
-        x: Math.round(client.position.x / CELL_SIZE),
-        y: Math.round(client.position.y / CELL_SIZE),
-      };
-
-      const bestPathway = aStarInstance.findPath(clientPos, targetPos);
-
-      if (!bestPathway || bestPathway.length === 0) {
-        clearInterval(moveInterval);
-        return;
-      }
-
-      const nextStep = bestPathway[1];
-      if (nextStep) {
-        client.position.x = nextStep[0] * CELL_SIZE;
-        client.position.y = nextStep[1] * CELL_SIZE;
-      }
-
-      if (
-        client.position.x === targetPosition.x &&
-        client.position.y === targetPosition.y
-      ) {
-        clearInterval(moveInterval);
-      }
-    }, 100);
+  changeChasDeskStatus(isClosed: boolean, id: number){
+    this.http.post(`http://127.0.0.1:8080/api/v1/cashdesk/cashdesk/set_status`, {
+          isClosed: isClosed,
+          id: id,
+        }).subscribe(message => console.log(message));
   }
+
+//   moveClientToPosition(
+// { client, targetPosition, allClients }: { client: Client; targetPosition: Position; allClients: Client[]; }  ): void {
+//     const moveInterval = setInterval(() => {
+//       const targetPos = {
+//         x: Math.round(targetPosition.x / CELL_SIZE),
+//         y: Math.round(targetPosition.y / CELL_SIZE),
+//       };
+
+//       const matrix = this.initializeWithClients(allClients, client);
+
+//       const aStarInstance = new AStar.AStarFinder({
+//         grid: {
+//           width: matrix[0].length,
+//           height: matrix.length,
+//           matrix: matrix,
+//         },
+//       });
+//       const clientPos = {
+//         x: Math.round(client.position.x / CELL_SIZE),
+//         y: Math.round(client.position.y / CELL_SIZE),
+//       };
+
+//       const bestPathway = aStarInstance.findPath(clientPos, targetPos);
+
+//       if (!bestPathway || bestPathway.length === 0) {
+//         clearInterval(moveInterval);
+//         return;
+//       }
+
+//       const nextStep = bestPathway[1];
+//       if (nextStep) {
+//         client.position.x = nextStep[0] * CELL_SIZE;
+//         client.position.y = nextStep[1] * CELL_SIZE;
+//       }
+
+//       if (
+//         client.position.x === targetPosition.x &&
+//         client.position.y === targetPosition.y
+//       ) {
+//         clearInterval(moveInterval);
+//       }
+//     }, 100);
+//   }
 }

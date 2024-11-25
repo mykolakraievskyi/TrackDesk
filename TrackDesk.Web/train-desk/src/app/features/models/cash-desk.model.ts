@@ -38,27 +38,32 @@ export class BaseCashDesk implements CashDesk {
   }
 
   addClient(client: Client): void {
-    if (client.type === EClientType.PRIVILEGED) {
-      this.clientQueue.unshift(client);
-    } else {
-      this.clientQueue.push(client);
-    }
-    this.updateClientPositions();
+    this.clientQueue.push(client);
+    // if (client.type === EClientType.PRIVILEGED) {
+    //   const lastPrivilegedIndex = this.clientQueue
+    //     .map(c => c.type)
+    //     .lastIndexOf(EClientType.PRIVILEGED);
+  
+    //   if (lastPrivilegedIndex === -1) {
+    //     this.clientQueue.unshift(client);
+    //   } else {
+    //     this.clientQueue.splice(lastPrivilegedIndex + 1, 0, client);
+    //   }
+    // } else {
+    //   this.clientQueue.push(client);
+    // }
   }
 
-  private updateClientPositions(): void {
-    this.clientQueue.forEach((client, index) => {
-      const targetPosition = {
-        x: this.position.x + 3,
-        y: this.position.y + (index + 1) * QUEUE_OFFSET,
-      };
-      this.movementService?.moveClientToPosition(
-        client,
-        targetPosition,
-        this.clientQueue
-      );
-    });
-  }
+  // private updateClientPositions(): void {
+  //   this.clientQueue.forEach((client, index) => {
+  //     const targetPosition = {
+  //       x: this.position.x + 3,
+  //       y: this.position.y + (index + 1) * QUEUE_OFFSET,
+  //     };
+  //     this.movementService?.moveClientToPosition(
+  //       { client, targetPosition, allClients: this.clientQueue }      );
+  //   });
+  // }
 
   popClient(): Client | undefined {
     return this.clientQueue.shift();
