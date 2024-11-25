@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ILog } from '../../../types/log.types';
+import { LogService } from './log.service';
 
 @Component({
   selector: 'app-log',
@@ -11,11 +12,14 @@ import { ILog } from '../../../types/log.types';
 export class LogComponent {
   logsArray: ILog[] = [];
 
-  // constructor(private);
+  constructor(private logService: LogService) {}
 
-  addLog(log: ILog) {
+  ngOnInit(): void {
+    this.logService.getLogs().subscribe(log => {
     this.logsArray.push(log);
+    });
   }
+  
   getTicketHoverText(log: ILog, index: number): string {
     const ticket = log.tickets[index];
     return `Train: ${ticket.train}\nCarriage: ${ticket.carriage}\nDeparture: ${ticket.departureStation} at ${ticket.departureTime}\nArrival: ${ticket.arrivalStation} at ${ticket.arrivalTime}\nPrice: ${ticket.price}`;

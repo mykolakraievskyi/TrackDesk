@@ -1,20 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class LoggingService {
-  private apiUrl = 'https://';
+export class LogService {
+  private logSubject = new Subject<any>();
 
-  constructor(private http: HttpClient) {}
-
-  logEvent(eventData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/log`, eventData);
+  addLog(log: any): void {
+    this.logSubject.next(log);
   }
 
   getLogs(): Observable<any> {
-    return this.http.get(`${this.apiUrl}`);
+    return this.logSubject.asObservable();
   }
 }

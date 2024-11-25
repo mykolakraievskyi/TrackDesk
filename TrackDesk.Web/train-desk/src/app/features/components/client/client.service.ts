@@ -28,11 +28,11 @@ export class ClientService {
     return newClient;
   }
 
-  moveClientsToCashDesks(clients: Client[],newClient: Client, activeCashDesks: CashDesk[]): void {
-    const targetCashDesk = activeCashDesks.filter(c => c.id === newClient.targetCashDeskId)[0];
+  moveClientsToCashDesks(clients: Client[],newClient: Client, reservedCashDesk: CashDesk, activeCashDesks: CashDesk[]): void {
       this.movementService.moveClientToCashDesk(
         newClient,
-        targetCashDesk,
+        activeCashDesks,
+        reservedCashDesk,
         clients
       );
 }

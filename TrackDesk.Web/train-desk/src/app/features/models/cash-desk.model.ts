@@ -33,31 +33,38 @@ export class BaseCashDesk implements CashDesk {
     this.image = this.getImagePath();
   }
 
-  addClient(client: Client): void {
-    if (client.type === EClientType.PRIVILEGED) {
-      let insertIndex = 0;
-      while (
-        insertIndex < this.clientQueue.length &&
-        this.clientQueue[insertIndex].type === EClientType.PRIVILEGED
-      ) {
-        insertIndex++;
-      }
-      this.clientQueue.splice(insertIndex, 0, client);
-    } else {
-      this.clientQueue.push(client);
-    }
-    this.updateClientPositions();
+  get positionForClient() {
+    return;
   }
 
-  private updateClientPositions(): void {
-    this.clientQueue.forEach(client => {
-      this.movementService?.moveClientToCashDesk(
-        client,
-        this,
-        this.clientQueue
-      );
-    });
+  addClient(client: Client): void {
+    this.clientQueue.push(client);
+    // if (client.type === EClientType.PRIVILEGED) {
+    //   const lastPrivilegedIndex = this.clientQueue
+    //     .map(c => c.type)
+    //     .lastIndexOf(EClientType.PRIVILEGED);
+
+    //   if (lastPrivilegedIndex === -1) {
+    //     this.clientQueue.unshift(client);
+    //   } else {
+    //     this.clientQueue.splice(lastPrivilegedIndex + 1, 0, client);
+    //   }
+    // } else {
+    //   this.clientQueue.push(client);
+    // }
   }
+
+  // private updateClientPositions(): void {
+  //   this.clientQueue.forEach((client, index) => {
+  //     const targetPosition = {
+  //       x: this.position.x + 3,
+  //       y: this.position.y + (index + 1) * QUEUE_OFFSET,
+  //     };
+  //     this.movementService?.moveClientToPosition(
+  //       { client, targetPosition, allClients: this.clientQueue }      );
+  //   });
+  // }
+
   popClient(): Client | undefined {
     return this.clientQueue.shift();
   }
@@ -81,7 +88,7 @@ export class BaseCashDesk implements CashDesk {
     };
   }
 
-  getFirstClientPosition(): Position {
+  getFirstClientPosition(): Position{
     return {
       x: this.position.x + 3,
       y: this.position.y + QUEUE_OFFSET,
