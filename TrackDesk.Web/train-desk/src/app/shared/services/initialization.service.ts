@@ -14,7 +14,7 @@ export interface DeskPlace {
   providedIn: 'root',
 })
 export class InitService {
-  //private selectedPlace: DeskPlace | null = null;
+  private selectedPlace: DeskPlace | null = null;
 
   selectPlace(place: DeskPlace): void {
     place.isSelected = true;

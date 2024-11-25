@@ -176,26 +176,26 @@ export class StationComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  // addClient(client: Client) {
-  //   this.clients.push(client);
-  //   this.reorderQueue();
-  // }
+  addClient(client: Client) {
+    this.clients.push(client);
+    this.reorderQueue();
+  }
 
-  // private reorderQueue() {
-  //   this.clients.sort((a, b) => {
-  //     if (
-  //       a.type === EClientType.PRIVILEGED &&
-  //       b.type !== EClientType.PRIVILEGED
-  //     ) {
-  //       return -1;
-  //     }
-  //     if (
-  //       a.type !== EClientType.PRIVILEGED &&
-  //       b.type === EClientType.PRIVILEGED
-  //     ) {
-  //       return 1;
-  //     }
-  //     return 0;
-  //   });
-  // }
+  private reorderQueue() {
+    this.clients.sort((a, b) => {
+      if (
+        a.type === EClientType.PRIVILEGED &&
+        b.type !== EClientType.PRIVILEGED
+      ) {
+        return -1;
+      }
+      if (
+        a.type !== EClientType.PRIVILEGED &&
+        b.type === EClientType.PRIVILEGED
+      ) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 }
