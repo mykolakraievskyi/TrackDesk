@@ -211,7 +211,6 @@ export class MovementService {
     }
     const startTime = new Date().toLocaleTimeString();
     setTimeout(() => {
-      this.deleteClient(client, cashDesk, allClients);
       this.http
         .post(`http://127.0.0.1:8080/api/v1/cashdesk/buy/ticket`, {
           clientId: client.id,
@@ -220,6 +219,7 @@ export class MovementService {
           endTime: new Date().toLocaleTimeString(),
         })
         .subscribe(message => {this.logService.addLog(message)});
+      this.deleteClient(client, cashDesk, allClients);
     }, this.cofigurationService.serveTime * 1000 * client.tickets);
   }
 
