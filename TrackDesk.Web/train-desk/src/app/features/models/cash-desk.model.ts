@@ -39,7 +39,14 @@ export class BaseCashDesk implements CashDesk {
 
   addClient(client: Client): void {
     if (client.type === EClientType.PRIVILEGED) {
-      this.clientQueue.unshift(client);
+      let insertIndex = 0;
+      while (
+        insertIndex < this.clientQueue.length &&
+        this.clientQueue[insertIndex].type === EClientType.PRIVILEGED
+      ) {
+        insertIndex++;
+      }
+      this.clientQueue.splice(insertIndex, 0, client);
     } else {
       this.clientQueue.push(client);
     }
@@ -47,19 +54,14 @@ export class BaseCashDesk implements CashDesk {
   }
 
   private updateClientPositions(): void {
-    this.clientQueue.forEach((client, index) => {
-      const targetPosition = {
-        x: this.position.x + 3,
-        y: this.position.y + (index + 1) * QUEUE_OFFSET,
-      };
-      this.movementService?.moveClientToPosition(
+    this.clientQueue.forEach(client => {
+      this.movementService?.moveClientToCashDesk(
         client,
-        targetPosition,
+        this,
         this.clientQueue
       );
     });
   }
-
   popClient(): Client | undefined {
     return this.clientQueue.shift();
   }
@@ -83,7 +85,7 @@ export class BaseCashDesk implements CashDesk {
     };
   }
 
-  getFirstClientPosition(): Position{
+  getFirstClientPosition(): Position {
     return {
       x: this.position.x + 3,
       y: this.position.y + QUEUE_OFFSET,
