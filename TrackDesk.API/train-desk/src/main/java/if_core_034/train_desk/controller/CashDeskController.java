@@ -98,11 +98,12 @@ public class CashDeskController {
         Optional<Client> client = cashDesk.getQueue().stream().filter(clientNew ->
                                                                clientNew.getId() == buyTicketDto.getClientId()).findFirst();
         if(!client.isPresent()){
-            Optional<Client> temp = cashDesk.getQueue().stream().filter(clientNew ->
-                    clientNew.getId() == 0).findFirst();
-            if(temp.isPresent()){
-                cashDesk.setId(0);
-                client=temp;
+            var temp_cashDesk = station.getReserveCashDesk();
+            Optional<Client> temp_client = temp_cashDesk.getQueue().stream().filter(clientNew ->
+                    clientNew.getId() == buyTicketDto.getClientId()).findFirst();
+            if(temp_client.isPresent()){
+                cashDesk=temp_cashDesk;
+                client=temp_client;
             }
         }
         if(client.isPresent()) {
