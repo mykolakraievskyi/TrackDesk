@@ -50,19 +50,14 @@ export class BaseCashDesk implements CashDesk {
   }
 
   private updateClientPositions(): void {
-    this.clientQueue.forEach((client, index) => {
-      const targetPosition = {
-        x: this.position.x + 3,
-        y: this.position.y + (index + 1) * QUEUE_OFFSET,
-      };
-      this.movementService?.moveClientToPosition(
+    this.clientQueue.forEach(client => {
+      this.movementService?.moveClientToCashDesk(
         client,
-        targetPosition,
+        this,
         this.clientQueue
       );
     });
   }
-
   popClient(): Client | undefined {
     return this.clientQueue.shift();
   }

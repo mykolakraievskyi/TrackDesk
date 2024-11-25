@@ -192,9 +192,10 @@ export class StationComponent implements OnInit, OnDestroy {
         a.type !== EClientType.PRIVILEGED &&
         b.type === EClientType.PRIVILEGED
       ) {
-        return 1;
+        return 1; 
       }
-      return 0;
+      return 0; 
+
     });
   }
 }
