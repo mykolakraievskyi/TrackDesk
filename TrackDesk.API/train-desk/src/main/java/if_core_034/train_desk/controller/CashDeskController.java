@@ -105,6 +105,7 @@ public class CashDeskController {
 //            logEntityService.saveLogEntity(logEntity);
             return ResponseEntity.ok().body(logEntity);
         }
+        System.out.println("Error buy ticket: "+buyTicketDto);
         return ResponseEntity.badRequest().body("Client with id - " + buyTicketDto.getClientId() + " does not found");
     }
 }
