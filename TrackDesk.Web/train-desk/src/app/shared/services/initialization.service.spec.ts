@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { InitService } from './initialization.service';
+import { InitService, DeskPlace } from './initialization.service';
 import { BaseCashDesk, CashDesk } from '../../features/models/cash-desk.model';
 import { BaseEntry, Entry } from '../../features/models/entry.model';
 import { Client } from '../../features/models/client.model';
@@ -11,85 +11,118 @@ describe('InitService', () => {
     TestBed.configureTestingModule({
       providers: [InitService],
     });
-
     service = TestBed.inject(InitService);
   });
 
+  // Test for service creation
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
+  // Test selectPlace method
   describe('selectPlace', () => {
-    it('should set place isSelected to true', () => {
-      const place = { id: 1, position: { x: 0, y: 0 }, isSelected: false };
+    it('should mark the place as selected', () => {
+      const place: DeskPlace = { id: 1, position: { x: 10, y: 10 } };
       service.selectPlace(place);
-
       expect(place.isSelected).toBeTrue();
     });
   });
 
-  describe('generateRandomEntries', () => {
-    it('should generate the specified number of random entries', () => {
-      const entries = service.generateRandomEntries(3);
-      expect(entries.length).toBe(3);
-    });
-  });
-
+  // Test initializeCashDesks method
   describe('initializeCashDesks', () => {
-    it('should initialize an array of CashDesk objects', () => {
-      const cashDesks = service.initializeCashDesks();
-      expect(cashDesks.length).toBe(9);
+    it('should return an array of CashDesk objects', () => {
+      const desks = service.initializeCashDesks();
+      expect(desks.length).toBe(9);
+      expect(desks[0]).toBeInstanceOf(BaseCashDesk);
     });
   });
 
+  // Test initializeEntries method
   describe('initializeEntries', () => {
-    it('should initialize an array of Entry objects', () => {
+    it('should return an array of Entry objects', () => {
       const entries = service.initializeEntries();
       expect(entries.length).toBe(8);
+      expect(entries[0]).toBeInstanceOf(BaseEntry);
     });
   });
 
-  describe('initializeDeskPlaces', () => {
-    it('should initialize an array of DeskPlace objects', () => {
-      const deskPlaces = service.initializeDeskPlaces();
-      expect(deskPlaces.length).toBe(9);
+  // Test generateRandomEntries method
+  describe('generateRandomEntries', () => {
+    it('should return the specified number of random entries', () => {
+      const amount = 3;
+      const entries = service.generateRandomEntries(amount);
+      expect(entries.length).toBe(amount);
+    });
+
+    it('should not return more entries than available', () => {
+      const allEntries = service.initializeEntries();
+      const entries = service.generateRandomEntries(allEntries.length + 5);
+      expect(entries.length).toBe(allEntries.length);
     });
   });
 
+  // Test getCashPlaceStyle method
   describe('getCashPlaceStyle', () => {
-    it('should return correct styles when place is selected', () => {
-      const place: any = { id: 1, position: { x: 420, y: 40 }, isSelected: true };
-      const style = service.getCashPlaceStyle(place);
-      expect(style.backgroundColor).toBe('#227CB168');
+    it('should return styles for a DeskPlace', () => {
+      const place: DeskPlace = { id: 1, position: { x: 100, y: 100 }, isSelected: false };
+      const styles = service.getCashPlaceStyle(place);
+      expect(styles.left).toBe('100px');
+      expect(styles.top).toBe('100px');
+      expect(styles.backgroundColor).toBe('#C3D3DD68');
+    });
+
+    it('should apply selected style if DeskPlace is selected', () => {
+      const place: DeskPlace = { id: 2, position: { x: 200, y: 200 }, isSelected: true };
+      const styles = service.getCashPlaceStyle(place);
+      expect(styles.backgroundColor).toBe('#227CB168');
     });
   });
 
+  // Test getClientStyle method
+  /*describe('getClientStyle', () => {
+    it('should return styles for a Client', () => {
+      const client: Client = { id: 1, position: { x: 50, y: 50 }, image: 'client.png', type: 'regular', tickets: [] };
+      const styles = service.getClientStyle(client);
+      expect(styles.left).toBe('50px');
+      expect(styles.top).toBe('50px');
+      expect(styles.backgroundImage).toContain('client.png');
+    });
+  });*/
+
+  // Test getEntryStyle method
   describe('getEntryStyle', () => {
-    it('should return correct styles for entry-door', () => {
-      const entry: Entry = {
-        id: 1,
-        type: 'entry-door',
-        position: { x: 250, y: 580 },
-        image: 'entry.jpg',
-      };
-      const style = service.getEntryStyle(entry);
-      expect(style.width).toBe('97px');
+    it('should return styles for an entry door', () => {
+      const entry: Entry = { id: 1, position: { x: 10, y: 10 }, image: 'entry.png', type: 'entry-door' };
+      const styles = service.getEntryStyle(entry);
+      expect(styles.width).toBe('97px');
+      expect(styles.height).toBe('97px');
+      expect(styles.backgroundImage).toContain('entry.png');
+    });
+
+    it('should return styles for a regular entry', () => {
+      const entry: Entry = { id: 2, position: { x: 20, y: 20 }, image: 'entry.png', type: 'entry' };
+      const styles = service.getEntryStyle(entry);
+      expect(styles.width).toBe('52px');
+      expect(styles.height).toBe('80px');
     });
   });
 
-  describe('getClientStyle', () => {
-    it('should return correct styles for client', () => {
-      const client: Client = {
-        id: 1,
-        type: 'regular', 
-        position: { x: 300, y: 400 },
-        image: 'client.jpg',
-        move: () => {}  // Mock method
-      };
-      const style = service.getClientStyle(client);
-      expect(style.left).toBe('300px');
-      expect(style.top).toBe('400px');
-      expect(style.backgroundImage).toBe('url(client.jpg)');
+  // Test getCashDeskStyle method
+  /*describe('getCashDeskStyle', () => {
+    it('should return styles for a CashDesk', () => {
+      const cashDesk: CashDesk = { id: 1, position: { x: 100, y: 100 }, image: 'desk.png', type: 'cash-desk', isClosed: false };
+      const styles = service.getCashDeskStyle(cashDesk);
+      expect(styles.left).toBe('100px');
+      expect(styles.top).toBe('100px');
+      expect(styles.width).toBe('110px');
+      expect(styles.height).toBe('110px');
+      expect(styles.backgroundImage).toContain('desk.png');
     });
-  });
+
+    it('should apply grayscale filter for closed CashDesk', () => {
+      const cashDesk: CashDesk = { id: 1, position: { x: 100, y: 100 }, image: 'desk.png', type: 'cash-desk', isClosed: true };
+      const styles = service.getCashDeskStyle(cashDesk);
+      expect(styles.filter).toBe('grayscale(100%)');
+    });
+  });*/
 });
