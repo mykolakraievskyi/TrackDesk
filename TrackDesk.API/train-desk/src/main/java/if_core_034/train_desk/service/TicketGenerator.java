@@ -26,12 +26,7 @@ public class TicketGenerator {
         };
         this.ticketNumber = 0;
     }
-    public Ticket generateTicket() {
-        Random random = new Random();
-        this.ticketNumber++;
-        return new Ticket(ticketNumber,
 
-    }
     public Ticket generateTicket() {
         Random random = new Random();
         return new Ticket(ticketNumber,
