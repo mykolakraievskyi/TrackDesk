@@ -10,17 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class StationController {
     private final StationService stationService;
 
     @PostMapping("/api/v1/configuration")
     public ResponseEntity<Object> setStationConfiguration(@RequestBody StationConfigurationDto stationConfigurationDto) {
         stationService.createStationInstance(stationConfigurationDto);
-        System.out.println("Configuration installed: "+stationConfigurationDto);
+        log.debug("[Station Controller] created station configuration - {}", stationService.getStationInstance());
         return ResponseEntity.ok().build();
     }
 

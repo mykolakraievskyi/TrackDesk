@@ -21,7 +21,8 @@ public class UniformGenerationStrategy implements ClientGenerationStrategy {
         return this.interval;
     }
 
-    public void updateTimeRange(TimeRange timeRange) {
+    public boolean updateTimeRange(TimeRange timeRange) {
         this.interval = timeRange.getMaxTime();
+        return true;
     }
 }

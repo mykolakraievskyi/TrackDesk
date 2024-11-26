@@ -9,5 +9,5 @@ import org.springframework.stereotype.Component;
 public interface ClientGenerationStrategy {
     LocalTime getNextArrivalTime();
 
-    void updateTimeRange(TimeRange timeRange);
+    boolean updateTimeRange(TimeRange timeRange);
 }

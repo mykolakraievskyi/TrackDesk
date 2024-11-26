@@ -6,6 +6,7 @@ import if_core_034.train_desk.entity.Station;
 import if_core_034.train_desk.service.ClientService;
 import if_core_034.train_desk.service.StationService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -14,7 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @RestController
-//@RequiredArgsConstructor
+@Slf4j
 public class ClientController {
     private final ClientService clientService;
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -40,7 +41,7 @@ public class ClientController {
         }
         ClientDto clientDto = new ClientDto(client.getId(), client.getStatus(), cashDeskId,
                                             client.getEntrance().getId(), client.getTickets().size());
-        System.out.println("New client: "+clientDto);
+        log.debug("[Client Controller] New client - {}", clientDto);
         simpMessagingTemplate.convertAndSendToUser("standardUser", "/client/generate", clientDto);
         Station station = stationService.getStationInstance();
         station.getCurrClientNumber().set(station.getCurrClientNumber().get() + 1);

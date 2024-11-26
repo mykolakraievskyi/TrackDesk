@@ -21,7 +21,11 @@ public class RandomGenerationStrategy implements ClientGenerationStrategy {
         return LocalTime.ofSecondOfDay(minTimeSecondOfDay + (int) (Math.random() * (maxTimeSecondOfDay - minTimeSecondOfDay)));
     }
 
-    public void updateTimeRange(TimeRange timeRange) {
-        this.timeRange = timeRange;
+    public boolean updateTimeRange(TimeRange timeRange) {
+        if(timeRange.getMaxTime().isBefore(timeRange.getMinTime())) {
+            this.timeRange = timeRange;
+            return true;
+        }
+        return false;
     }
 }

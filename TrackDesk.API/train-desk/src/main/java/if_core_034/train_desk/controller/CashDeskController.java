@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Slf4j
 public class CashDeskController {
     private final CashDeskService cashDeskService;
     private final StationService stationService;
@@ -29,7 +31,7 @@ public class CashDeskController {
 
     @PostMapping("/api/v1/cashdesk/cashdesk/set_status")
     public ResponseEntity<Object> setCashDeskInfo(@RequestBody CashDeskOpenCloseDto cashDeskOpenCloseDto) {
-        System.out.println("Open/Close CashDesk: "+cashDeskOpenCloseDto);
+        log.debug("[CashDeskController] received cashDeskOpenCloseDto {}", cashDeskOpenCloseDto);
         if (cashDeskOpenCloseDto.getId() == 0) {
             return ResponseEntity.ok().build();
         }
@@ -44,13 +46,12 @@ public class CashDeskController {
 
     @PostMapping("/api/v1/cashdesk/buy/ticket")
     public ResponseEntity<Object> buyTicket(@RequestBody BuyTicketDto buyTicketDto) {
-        System.out.println("Buy ticket: "+buyTicketDto);
+        log.debug("[CashDesk Controller] buyTicketDto received - {}", buyTicketDto);
         Station station = stationService.getStationInstance();
         station.getCurrClientNumber().set(station.getCurrClientNumber().get() - 1);
         CashDesk cashDesk;
         if(buyTicketDto.getCashDeskId() != 0) {
             cashDesk = station.getCashDeskMap().get(buyTicketDto.getCashDeskId());
-            System.out.println(buyTicketDto);
         } else {
             cashDesk = station.getReserveCashDesk();
         }
@@ -78,6 +79,7 @@ public class CashDeskController {
                 cashDesk.getQueue().remove(client.get());
             }
             cashDesk.getQueue().remove(client.get());
+            log.debug("[CashDesk Controller] created logEntity - {}", logEntity);
 
             return ResponseEntity.ok().body(logEntity);
         }

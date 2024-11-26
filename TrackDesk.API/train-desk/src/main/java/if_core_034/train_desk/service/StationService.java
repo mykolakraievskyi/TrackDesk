@@ -61,7 +61,6 @@ public class StationService {
             station.getCurrClientNumber().set(0);
         }
         createGenerationStrategy(timeRange);
-        System.out.println("tesr");
     }
 
     private void createGenerationStrategy(TimeRange timeRange) {

@@ -49,6 +49,7 @@ class RandomGenerationStrategyTest {
 
 		assertThrows(IllegalArgumentException.class, strategy::getNextArrivalTime,
 				"Should throw IllegalArgumentException for invalid time range");
+		assertTrue(strategy.getNextArrivalTime().toSecondOfDay() != 0);
 	}
 
 	@Test
