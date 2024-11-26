@@ -58,7 +58,6 @@ export class StationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.socketService.unsubscribe('/station/standardUser/client/generate');
-    this.socketService.disconnect();
   }
 
   generateClientsPeriodically(): void {
